@@ -1,0 +1,225 @@
+:root {
+    --primary: #1f6f43;
+    --primary-dark: #154d2e;
+    --bg: #f4f6f5;
+    --card-bg: #ffffff;
+    --text: #1c1c1c;
+    --muted: #6b7280;
+    --border: #e2e5e3;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    font-family: -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+}
+
+.topbar {
+    background: var(--primary-dark);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1.5rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.topbar .brand { font-weight: 700; }
+
+.topbar nav a {
+    color: #fff;
+    text-decoration: none;
+    margin-left: 1rem;
+    font-size: 0.9rem;
+}
+
+.topbar nav a:hover { text-decoration: underline; }
+
+.user-pill {
+    margin-left: 1rem;
+    background: var(--primary);
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+}
+
+.container {
+    max-width: 1100px;
+    margin: 1.5rem auto;
+    padding: 0 1rem;
+}
+
+.card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.25rem;
+    margin-bottom: 1.25rem;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--card-bg);
+}
+
+th, td {
+    border: 1px solid var(--border);
+    padding: 0.5rem 0.75rem;
+    text-align: left;
+    font-size: 0.92rem;
+}
+
+th { background: #eef3f0; }
+
+.btn {
+    display: inline-block;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    text-decoration: none;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.btn:hover { background: var(--primary-dark); }
+
+label { display: block; margin-bottom: 0.3rem; font-weight: 600; font-size: 0.9rem; }
+
+input, select, textarea {
+    width: 100%;
+    padding: 0.5rem;
+    margin-bottom: 0.9rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 0.95rem;
+}
+
+.alert {
+    padding: 0.6rem 1rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+}
+
+.alert-error { background: #fdecea; color: #b3261e; border: 1px solid #f5c2bf; }
+.alert-success { background: #e8f5e9; color: #1f6f43; border: 1px solid #bfe3c8; }
+
+.footer {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.8rem;
+    padding: 1rem 0 2rem;
+}
+
+.grade-A { color: #1f6f43; font-weight: 700; }
+.grade-B { color: #2f7d32; font-weight: 700; }
+.grade-C { color: #b8860b; font-weight: 700; }
+.grade-D { color: #c2410c; font-weight: 700; }
+.grade-E { color: #b3261e; font-weight: 700; }
+
+/* ===================================================================
+   New Curriculum Report Card
+   =================================================================== */
+.report-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.5rem;
+}
+
+.report-header {
+    text-align: center;
+    border-bottom: 2px solid var(--primary);
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+}
+
+.report-header h1 { margin: 0 0 0.25rem; color: var(--primary-dark); }
+.report-header .school-tagline { color: var(--muted); font-size: 0.9rem; margin: 0; }
+.report-header .report-title {
+    display: inline-block;
+    margin-top: 0.5rem;
+    background: var(--primary);
+    color: #fff;
+    padding: 0.2rem 0.8rem;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.report-meta {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.25rem 1.5rem;
+    margin-bottom: 1.25rem;
+    font-size: 0.92rem;
+}
+
+.report-meta div span.label { color: var(--muted); margin-right: 0.4rem; }
+
+.report-section-title {
+    margin: 1.5rem 0 0.5rem;
+    padding-bottom: 0.25rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--primary-dark);
+    font-size: 1.05rem;
+}
+
+.skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 0.75rem;
+}
+
+.skill-card {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.6rem 0.8rem;
+}
+
+.skill-card .skill-name { font-weight: 600; font-size: 0.9rem; }
+.skill-card .skill-rating { font-size: 0.85rem; margin: 0.15rem 0; }
+.skill-card .skill-remarks { font-size: 0.82rem; color: var(--muted); margin: 0; }
+
+.comment-box {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.75rem;
+    margin-bottom: 0.75rem;
+}
+
+.comment-box .comment-label { font-weight: 600; font-size: 0.85rem; color: var(--primary-dark); display: block; margin-bottom: 0.2rem; }
+
+.attendance-summary {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.5rem;
+}
+
+.attendance-summary .stat { text-align: center; }
+.attendance-summary .stat .num { font-size: 1.4rem; font-weight: 700; color: var(--primary-dark); display: block; }
+.attendance-summary .stat .lbl { font-size: 0.8rem; color: var(--muted); }
+
+.grading-key {
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-top: 0.5rem;
+}
+
+.no-print { }
+
+@media print {
+    .topbar, .footer, .no-print { display: none !important; }
+    body { background: #fff; }
+    .container { max-width: 100%; margin: 0; padding: 0; }
+    .report-card { border: none; padding: 0; }
+    table { font-size: 0.85rem; }
+}
