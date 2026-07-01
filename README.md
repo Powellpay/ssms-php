@@ -56,4 +56,8 @@ php artisan make:module ModuleName
 # Creates app/Domain/{ModuleName}/ with full 12-file SOLID scaffold
 ```
 
+## Frontend
+
+The React frontend is at `https://github.com/Powellpay/ssms-php` on the `opiyo-oscar/sms-web` branch.
+
 Full documentation: `DOCUMENTATION.md`
