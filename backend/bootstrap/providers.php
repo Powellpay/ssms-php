@@ -12,6 +12,7 @@ return [
     App\Providers\StaffServiceProvider::class,
     App\Providers\StudentServiceProvider::class,
     App\Providers\GuardianServiceProvider::class,
+    App\Providers\StudentGuardianServiceProvider::class,
     App\Providers\EnrollmentServiceProvider::class,
     App\Providers\SubjectServiceProvider::class,
     App\Providers\ClassSubjectServiceProvider::class,
