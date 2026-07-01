@@ -1,0 +1,11 @@
+# Root level gitignore
+backend/.env
+backend/.phpunit.result.cache
+backend/vendor/
+backend/node_modules/
+backend/storage/*.key
+backend/public/build/
+backend/public/hot/
+backend/public/storage/
+.DS_Store
+Thumbs.db
