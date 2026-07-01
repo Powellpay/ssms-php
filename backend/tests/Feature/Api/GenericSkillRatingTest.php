@@ -2,14 +2,14 @@
 
 namespace Tests\Feature\Api;
 
-use App\Models\GenericSkill;
-use App\Models\GenericSkillRating;
-use App\Models\Role;
-use App\Models\SkillRatingScale;
-use App\Models\Staff;
-use App\Models\Student;
-use App\Models\Term;
-use App\Models\User;
+use App\Domain\Curriculum\Models\GenericSkill;
+use App\Domain\Assessment\Models\GenericSkillRating;
+use App\Domain\Auth\Models\Role;
+use App\Domain\Assessment\Models\SkillRatingScale;
+use App\Domain\Staff\Models\Staff;
+use App\Domain\Students\Models\Student;
+use App\Domain\Academic\Models\Term;
+use App\Domain\Auth\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -38,7 +38,7 @@ class GenericSkillRatingTest extends TestCase
         ]);
         $this->token = $user->createToken('test-token')->plainTextToken;
 
-        $academicYear = \App\Models\AcademicYear::create([
+        $academicYear = \App\Domain\Academic\Models\AcademicYear::create([
             'year_name' => '2026', 'start_date' => '2026-02-03', 'end_date' => '2026-12-04',
         ]);
         $this->term = Term::create([

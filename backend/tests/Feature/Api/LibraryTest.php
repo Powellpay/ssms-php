@@ -2,12 +2,12 @@
 
 namespace Tests\Feature\Api;
 
-use App\Models\BookLoan;
-use App\Models\LibraryBook;
-use App\Models\Role;
-use App\Models\Staff;
-use App\Models\Student;
-use App\Models\User;
+use App\Domain\Library\Models\BookLoan;
+use App\Domain\Library\Models\LibraryBook;
+use App\Domain\Auth\Models\Role;
+use App\Domain\Staff\Models\Staff;
+use App\Domain\Students\Models\Student;
+use App\Domain\Auth\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 

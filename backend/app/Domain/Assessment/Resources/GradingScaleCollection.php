@@ -1,0 +1,18 @@
+<?php
+
+namespace App\Domain\Assessment\Resources;
+
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\ResourceCollection;
+
+class GradingScaleCollection extends ResourceCollection
+{
+    public $collects = GradingScaleResource::class;
+
+    public function toArray(Request $request): array
+    {
+        return [
+            'data' => $this->collection,
+        ];
+    }
+}

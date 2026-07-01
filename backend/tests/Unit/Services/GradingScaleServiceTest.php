@@ -2,9 +2,9 @@
 
 namespace Tests\Unit\Services;
 
-use App\Models\GradingScale;
-use App\Repositories\Contracts\GradingScaleRepositoryInterface;
-use App\Services\GradingScaleService;
+use App\Domain\Assessment\Models\GradingScale;
+use App\Domain\Assessment\Repositories\Contracts\GradingScaleRepositoryInterface;
+use App\Domain\Assessment\Services\GradingScaleService;
 use Illuminate\Database\Eloquent\Collection;
 use Mockery;
 use Mockery\MockInterface;

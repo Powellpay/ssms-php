@@ -1,0 +1,18 @@
+<?php
+
+namespace App\Domain\Academic\Resources;
+
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\ResourceCollection;
+
+class AcademicYearCollection extends ResourceCollection
+{
+    public $collects = AcademicYearResource::class;
+
+    public function toArray(Request $request): array
+    {
+        return [
+            'data' => $this->collection,
+        ];
+    }
+}

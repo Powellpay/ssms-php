@@ -2,9 +2,9 @@
 
 namespace Tests\Unit\Services;
 
-use App\Models\AcademicYear;
-use App\Repositories\Contracts\AcademicYearRepositoryInterface;
-use App\Services\AcademicYearService;
+use App\Domain\Academic\Models\AcademicYear;
+use App\Domain\Academic\Repositories\Contracts\AcademicYearRepositoryInterface;
+use App\Domain\Academic\Services\AcademicYearService;
 use Illuminate\Database\Eloquent\Collection;
 use Mockery;
 use Mockery\MockInterface;

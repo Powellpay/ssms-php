@@ -2,14 +2,14 @@
 
 namespace Tests\Feature\Api;
 
-use App\Models\AcademicYear;
-use App\Models\ClassLevel;
-use App\Models\GradingScale;
-use App\Models\Role;
-use App\Models\Student;
-use App\Models\Subject;
-use App\Models\Term;
-use App\Models\User;
+use App\Domain\Academic\Models\AcademicYear;
+use App\Domain\Academic\Models\ClassLevel;
+use App\Domain\Assessment\Models\GradingScale;
+use App\Domain\Auth\Models\Role;
+use App\Domain\Students\Models\Student;
+use App\Domain\Curriculum\Models\Subject;
+use App\Domain\Academic\Models\Term;
+use App\Domain\Auth\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -99,7 +99,7 @@ class SubjectTermResultTest extends TestCase
             'subject_code' => 'ENG', 'subject_name' => 'English', 'category' => 'Core',
         ]);
 
-        $result = \App\Models\SubjectTermResult::create([
+        $result = \App\Domain\Assessment\Models\SubjectTermResult::create([
             'student_id' => $student->id,
             'subject_id' => $subject->id,
             'term_id' => $term->id,
@@ -132,7 +132,7 @@ class SubjectTermResultTest extends TestCase
             'subject_code' => 'BIO', 'subject_name' => 'Biology', 'category' => 'Core',
         ]);
 
-        $result = \App\Models\SubjectTermResult::create([
+        $result = \App\Domain\Assessment\Models\SubjectTermResult::create([
             'student_id' => $student->id,
             'subject_id' => $subject->id,
             'term_id' => $term->id,

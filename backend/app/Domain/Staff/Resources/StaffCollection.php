@@ -1,0 +1,18 @@
+<?php
+
+namespace App\Domain\Staff\Resources;
+
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\ResourceCollection;
+
+class StaffCollection extends ResourceCollection
+{
+    public $collects = StaffResource::class;
+
+    public function toArray(Request $request): array
+    {
+        return [
+            'data' => $this->collection,
+        ];
+    }
+}

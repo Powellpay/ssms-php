@@ -2,14 +2,14 @@
 
 namespace Tests\Feature\Api;
 
-use App\Models\AcademicYear;
-use App\Models\ClassLevel;
-use App\Models\ReportCard;
-use App\Models\Role;
-use App\Models\Stream;
-use App\Models\Student;
-use App\Models\Term;
-use App\Models\User;
+use App\Domain\Academic\Models\AcademicYear;
+use App\Domain\Academic\Models\ClassLevel;
+use App\Domain\Reports\Models\ReportCard;
+use App\Domain\Auth\Models\Role;
+use App\Domain\Academic\Models\Stream;
+use App\Domain\Students\Models\Student;
+use App\Domain\Academic\Models\Term;
+use App\Domain\Auth\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 

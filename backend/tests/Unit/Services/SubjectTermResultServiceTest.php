@@ -2,11 +2,11 @@
 
 namespace Tests\Unit\Services;
 
-use App\Models\GradingScale;
-use App\Models\SubjectTermResult;
-use App\Repositories\Contracts\SubjectTermResultRepositoryInterface;
-use App\Services\Contracts\GradingScaleServiceInterface;
-use App\Services\SubjectTermResultService;
+use App\Domain\Assessment\Models\GradingScale;
+use App\Domain\Assessment\Models\SubjectTermResult;
+use App\Domain\Assessment\Repositories\Contracts\SubjectTermResultRepositoryInterface;
+use App\Domain\Assessment\Services\Contracts\GradingScaleServiceInterface;
+use App\Domain\Assessment\Services\SubjectTermResultService;
 use Mockery;
 use Mockery\MockInterface;
 use Tests\TestCase;

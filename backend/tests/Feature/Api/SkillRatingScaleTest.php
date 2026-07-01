@@ -2,9 +2,9 @@
 
 namespace Tests\Feature\Api;
 
-use App\Models\Role;
-use App\Models\SkillRatingScale;
-use App\Models\User;
+use App\Domain\Auth\Models\Role;
+use App\Domain\Assessment\Models\SkillRatingScale;
+use App\Domain\Auth\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 

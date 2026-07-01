@@ -2,15 +2,15 @@
 
 namespace Tests\Feature\Api;
 
-use App\Models\AcademicYear;
-use App\Models\AssessmentRecord;
-use App\Models\AssessmentType;
-use App\Models\Role;
-use App\Models\Staff;
-use App\Models\Student;
-use App\Models\Subject;
-use App\Models\Term;
-use App\Models\User;
+use App\Domain\Academic\Models\AcademicYear;
+use App\Domain\Assessment\Models\AssessmentRecord;
+use App\Domain\Assessment\Models\AssessmentType;
+use App\Domain\Auth\Models\Role;
+use App\Domain\Staff\Models\Staff;
+use App\Domain\Students\Models\Student;
+use App\Domain\Curriculum\Models\Subject;
+use App\Domain\Academic\Models\Term;
+use App\Domain\Auth\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 

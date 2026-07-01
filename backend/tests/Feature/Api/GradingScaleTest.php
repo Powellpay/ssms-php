@@ -2,9 +2,9 @@
 
 namespace Tests\Feature\Api;
 
-use App\Models\GradingScale;
-use App\Models\Role;
-use App\Models\User;
+use App\Domain\Assessment\Models\GradingScale;
+use App\Domain\Auth\Models\Role;
+use App\Domain\Auth\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 

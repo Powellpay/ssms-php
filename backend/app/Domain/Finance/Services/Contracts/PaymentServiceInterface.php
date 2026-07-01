@@ -1,0 +1,21 @@
+<?php
+
+namespace App\Domain\Finance\Services\Contracts;
+
+use App\Domain\Finance\Models\Payment;
+use Illuminate\Database\Eloquent\Collection;
+
+interface PaymentServiceInterface
+{
+    public function all(): Collection;
+
+    public function find(int $id): ?Payment;
+
+    public function create(array $data): Payment;
+
+    public function update(int $id, array $data): Payment;
+
+    public function delete(int $id): bool;
+
+    public function recordPayment(int $invoiceId, int $studentId, float $amount, string $method): Payment;
+}

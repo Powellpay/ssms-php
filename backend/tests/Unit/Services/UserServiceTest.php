@@ -2,9 +2,9 @@
 
 namespace Tests\Unit\Services;
 
-use App\Models\User;
-use App\Repositories\Contracts\UserRepositoryInterface;
-use App\Services\UserService;
+use App\Domain\Auth\Models\User;
+use App\Domain\Auth\Repositories\Contracts\UserRepositoryInterface;
+use App\Domain\Auth\Services\UserService;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Hash;
 use Mockery;
