@@ -1,7 +1,8 @@
 # SSMS API — School Management System
 
 **Aligned to Uganda's Competency-Based Curriculum (NCDC Lower Secondary)**  
-Laravel 12 + Sanctum + Spatie Permission
+Laravel 12 + Sanctum + Spatie Permission  
+Domain-driven folder structure
 
 ## Quick Start
 
@@ -19,26 +20,40 @@ php artisan serve
 php artisan test
 ```
 
-## 13 Modules | 31 Tables | 174 API Routes
+## 13 Domain Modules | 31 Tables | 174 API Routes
 
-| Module | Key Entities |
-|--------|-------------|
-| Users & Roles | `roles`, `users` |
-| Academic Structure | `academic_years`, `terms`, `class_levels`, `streams` |
-| Staff | `staff` |
-| Students & Guardians | `students`, `guardians`, `student_guardians`, `enrollments` |
-| Curriculum | `subjects`, `class_subjects`, `subject_teachers`, `curriculum_themes`, `learning_outcomes`, `generic_skills` |
-| Assessment & Grading | `assessment_types`, `grading_scale`, `skill_rating_scale`, `assessment_records`, `generic_skill_ratings`, `subject_term_results` |
-| Report Cards | `report_cards` |
-| Attendance | `attendance` |
-| Timetable | `timetable` |
-| Finance | `fee_structures`, `invoices`, `payments` |
-| Discipline | `discipline_records` |
-| Library | `library_books`, `book_loans` |
-| Announcements | `announcements` |
+```
+app/Domain/
+  Auth/             Roles, Users, AuthController
+  Academic/         AcademicYear, Term, ClassLevel, Stream
+  Staff/            Staff
+  Students/         Student, Guardian, StudentGuardian, Enrollment
+  Curriculum/       Subject, ClassSubject, SubjectTeacher, themes, outcomes, skills
+  Assessment/       AssessmentType, GradingScale, SkillRatingScale, records, results
+  Reports/          ReportCard
+  Attendance/       Attendance
+  Timetable/        Timetable
+  Finance/          FeeStructure, Invoice, Payment
+  Discipline/       DisciplineRecord
+  Library/          LibraryBook, BookLoan
+  Announcements/    Announcement
+```
 
 ## Architecture
 
-SOLID Repository + Service pattern: Controller → Service Interface → Service (business logic) → Repository Interface → Repository (Eloquent) → Model. All bindings in `bootstrap/providers.php`.
+SOLID Repository + Service pattern per domain module. Each module owns its Models, Controllers, Services, Repositories, Requests, Resources, routes, and Provider.
+
+```
+Controller → ServiceInterface → Service → RepositoryInterface → Repository → Model
+```
+
+All bindings in `bootstrap/providers.php` (auto-generated via `scripts/gen-providers.php`).
+
+## Scaffold a New Module
+
+```bash
+php artisan make:module ModuleName
+# Creates app/Domain/{ModuleName}/ with full 12-file SOLID scaffold
+```
 
 Full documentation: `DOCUMENTATION.md`

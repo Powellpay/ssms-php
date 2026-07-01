@@ -45,23 +45,25 @@ php artisan test
 
 ## 1. Architecture
 
-### SOLID Repository + Service Pattern
+### Domain-Driven SOLID Pattern
 
-Every entity follows a strict 12-file structure:
+Code is organized into **domain modules** under `app/Domain/{Module}/`. Each module is self-contained with its own Models, Controllers, Services, Repositories, Requests, Resources, routes, and Provider.
+
+Every entity follows a strict 12-file structure within its domain module:
 
 ```
 Migration    → database/migrations/
-Model        → app/Models/
-Repository   → app/Repositories/Contracts/ (Interface)
-                app/Repositories/Eloquent/ (Implementation)
-Service      → app/Services/Contracts/ (Interface)
-                app/Services/ (Implementation)
-Request      → app/Http/Requests/
-Resource     → app/Http/Resources/
-Collection   → app/Http/Resources/
-Controller   → app/Http/Controllers/Api/
-Routes       → routes/api_v1/[module]/_index.php
-Provider     → app/Providers/ + registered in bootstrap/providers.php
+Model        → app/Domain/{Module}/Models/
+Repository   → app/Domain/{Module}/Repositories/Contracts/ (Interface)
+                app/Domain/{Module}/Repositories/Eloquent/ (Implementation)
+Service      → app/Domain/{Module}/Services/Contracts/ (Interface)
+                app/Domain/{Module}/Services/ (Implementation)
+Request      → app/Domain/{Module}/Requests/
+Resource     → app/Domain/{Module}/Resources/
+Collection   → app/Domain/{Module}/Resources/
+Controller   → app/Domain/{Module}/Controllers/
+Routes       → app/Domain/{Module}/routes/{entity}_index.php
+Provider     → app/Domain/{Module}/Providers/ + registered in bootstrap/providers.php
 ```
 
 ### Dependency Flow
@@ -76,7 +78,7 @@ Controller → ServiceInterface → Service (business logic)
 
 ### Provider Registration
 
-All entity bindings registered in `bootstrap/providers.php` only.  
+All entity bindings registered in `bootstrap/providers.php` only (auto-generated via `scripts/gen-providers.php`).  
 `AppServiceProvider.php` is never modified for entity bindings.
 
 ---
@@ -387,29 +389,39 @@ php artisan test --coverage
 sms/
 ├── frontend/                    # (empty — ready for React/TS)
 ├── backend/
-│   ├── AGENTS.md                # AI agent orchestration (Mike → Sage → Blue → Rex → Vera → Quill)
+│   ├── AGENTS.md                # AI agent orchestration (gitignored)
 │   ├── scripts/
 │   │   ├── vera-fast.php        # php -l on changed PHP files
-│   │   └── vera-extended.php    # Fast + migrate pretend + filtered tests
+│   │   ├── vera-extended.php    # Fast + migrate pretend + filtered tests
+│   │   ├── refactor-domains.php # Migrate flat structure → domains
+│   │   ├── update-namespaces.php# Update namespace references
+│   │   └── gen-providers.php    # Auto-generate bootstrap/providers.php
 │   ├── docs/
 │   │   ├── entities.md          # Entity documentation (append-only)
-│   │   └── decisions.md         # Architecture Decision Records
+│   │   ├── decisions.md         # Architecture Decision Records
+│   │   ├── tests.md             # Test results documentation
+│   │   └── modular-proposal.md  # Domain folder proposal
 │   ├── app/
-│   │   ├── Models/              # 33 Eloquent models
-│   │   ├── Repositories/
-│   │   │   ├── Contracts/       # 33 repository interfaces
-│   │   │   └── Eloquent/        # 33 implementations
-│   │   ├── Services/
-│   │   │   ├── Contracts/       # 33 service interfaces
-│   │   │   └── *.php            # 33 implementations + business logic
-│   │   ├── Http/
-│   │   │   ├── Controllers/Api/ # 33 controllers + AuthController
-│   │   │   ├── Requests/        # 32 form requests
-│   │   │   └── Resources/       # 64 resources + collections
-│   │   └── Providers/           # 34 service providers
+│   │   ├── Domain/              # 13 domain modules
+│   │   │   ├── Auth/            # Roles, Users
+│   │   │   ├── Academic/        # Years, Terms, Classes, Streams
+│   │   │   ├── Staff/           # Staff
+│   │   │   ├── Students/        # Students, Guardians, Enrollments
+│   │   │   ├── Curriculum/      # Subjects, Themes, Outcomes, Skills
+│   │   │   ├── Assessment/      # Types, Grading, Records, Results
+│   │   │   ├── Reports/         # Report Cards
+│   │   │   ├── Attendance/      # Attendance
+│   │   │   ├── Timetable/       # Timetable
+│   │   │   ├── Finance/         # Fees, Invoices, Payments
+│   │   │   ├── Discipline/      # Discipline Records
+│   │   │   ├── Library/         # Books, Loans
+│   │   │   └── Announcements/   # Announcements
+│   │   │   └── Shared/          # Shared base classes
+│   │   ├── Console/Commands/    # make:module command
+│   │   └── Providers/           # AppServiceProvider only
 │   ├── routes/
-│   │   ├── api.php              # Requires all module route files
-│   │   └── api_v1/              # 33 module route files
+│   │   └── api.php              # Auto-discovers domain routes via glob
+│   ├── bootstrap/providers.php  # Auto-generated by gen-providers.php
 │   ├── database/
 │   │   ├── migrations/          # 10 migration files (31 tables)
 │   │   └── seeders/             # DatabaseSeeder with sample data
@@ -417,6 +429,39 @@ sms/
 │       ├── Unit/Services/       # 4 unit test files (24 tests)
 │       └── Feature/Api/         # 20 feature test files (144 tests)
 ```
+
+---
+
+## Module Scaffolding
+
+Create a new domain module with all SOLID boilerplate:
+
+```bash
+php artisan make:module ModuleName
+```
+
+This generates `app/Domain/{ModuleName}/` with:
+- Model, Controller, Service (+Interface), Repository (+Interface)
+- Form Request, Resource, Collection
+- Service Provider, route file
+
+After scaffolding:
+1. `php scripts/gen-providers.php` — registers the provider
+2. `composer dump-autoload`
+3. Add your migration and fill in the business logic
+
+---
+
+## Scripts Reference
+
+| Script | Purpose |
+|--------|---------|
+| `scripts/vera-fast.php` | php -l on changed PHP files |
+| `scripts/vera-extended.php` | Fast + migrate pretend + filtered tests |
+| `scripts/refactor-domains.php` | Flat→domain migration |
+| `scripts/update-namespaces.php` | Bulk namespace update |
+| `scripts/gen-providers.php` | Auto-generate bootstrap/providers.php |
+| `scripts/fix-namespaces.php` | Fix namespace double-prefix issues |
 
 ---
 
