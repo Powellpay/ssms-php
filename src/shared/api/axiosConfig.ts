@@ -24,7 +24,16 @@ let isHandling401 = false;
 api.interceptors.response.use(
   (response) => response,
   (error: AxiosError) => {
-    if (error.response?.status === 401 && !isHandling401 && !error.config?.skipAuthRedirect) {
+    const isAuthUrl = error.config?.url?.includes('/auth/');
+    const hasToken = !!localStorage.getItem('token');
+
+    if (
+      error.response?.status === 401 &&
+      hasToken &&
+      !isAuthUrl &&
+      !isHandling401 &&
+      !error.config?.skipAuthRedirect
+    ) {
       isHandling401 = true;
       localStorage.removeItem('token');
       window.location.href = '/login';

@@ -6,8 +6,17 @@ interface AuthState {
   token: string | null;
 }
 
+function loadUser(): User | null {
+  try {
+    const raw = localStorage.getItem('user');
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
 const initialState: AuthState = {
-  user: null,
+  user: loadUser(),
   token: localStorage.getItem('token'),
 };
 
@@ -18,12 +27,14 @@ const authSlice = createSlice({
     setCredentials(state, action: PayloadAction<{ user: User; token: string }>) {
       state.user = action.payload.user;
       state.token = action.payload.token;
-      if (action.payload.token) localStorage.setItem('token', action.payload.token);
+      localStorage.setItem('token', action.payload.token);
+      localStorage.setItem('user', JSON.stringify(action.payload.user));
     },
     logout(state) {
       state.user = null;
       state.token = null;
       localStorage.removeItem('token');
+      localStorage.removeItem('user');
     },
   },
 });
