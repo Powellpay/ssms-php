@@ -1,9 +1,11 @@
-export const API_ENDPOINTS = {
+export const ENDPOINTS = {
   AUTH: {
     LOGIN: '/auth/login',
     REGISTER: '/auth/register',
     LOGOUT: '/auth/logout',
     ME: '/auth/me',
+    FORGOT_PASSWORD: '/auth/forgot-password',
+    RESET_PASSWORD: '/auth/reset-password',
   },
   ROLES: '/roles',
   USERS: '/users',
@@ -37,4 +39,4 @@ export const API_ENDPOINTS = {
   LIBRARY_BOOKS: '/library-books',
   BOOK_LOANS: '/book-loans',
   ANNOUNCEMENTS: '/announcements',
-};
+} as const;
