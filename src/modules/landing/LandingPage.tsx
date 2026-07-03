@@ -104,7 +104,6 @@ export default function LandingPage() {
               className="flex items-center gap-4 justify-center lg:justify-start text-sm text-muted"
             >
               <span className="flex items-center gap-1"><CheckCircle className="w-4 h-4 text-primary" /> Free to use</span>
-              <span className="flex items-center gap-1"><CheckCircle className="w-4 h-4 text-primary" /> Offline-ready</span>
               <span className="flex items-center gap-1"><CheckCircle className="w-4 h-4 text-primary" /> CBC Aligned</span>
             </motion.div>
           </div>
