@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import api from '../../axiosConfig';
-import { ENDPOINTS } from '../../endpoints';
-import type { Staff } from '../../../types';
+import api from '../axiosConfig';
+import { ENDPOINTS } from '../endpoints';
+import type { Staff } from '../../types';
 
 export const staffKeys = {
   all: ['staff'] as const,
@@ -41,14 +41,17 @@ export function useCreateStaff() {
   });
 }
 
-export function useUpdateStaff(id: number) {
+export function useUpdateStaff() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async (payload: Partial<Staff>) => {
+    mutationFn: async ({ id, ...payload }: Partial<Staff> & { id: number }) => {
       const { data } = await api.put(`${ENDPOINTS.STAFF}/${id}`, payload);
       return data.data ?? data;
     },
-    onSuccess: () => { qc.invalidateQueries({ queryKey: staffKeys.list() }); qc.invalidateQueries({ queryKey: staffKeys.detail(id) }); },
+    onSuccess: (_data, variables) => {
+      qc.invalidateQueries({ queryKey: staffKeys.list() });
+      qc.invalidateQueries({ queryKey: staffKeys.detail(variables.id) });
+    },
   });
 }
 

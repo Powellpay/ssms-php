@@ -1,26 +1,26 @@
 import { useState } from 'react';
-import { useStaffList, useCreateStaff, useUpdateStaff, useDeleteStaff } from '../../shared/api/staff/staffQueries';
+import { useStaffList, useCreateStaff, useUpdateStaff, useDeleteStaff } from '../../../shared/api/staff/staffQueries';
 import { Plus, Pencil, Trash2, X, UserCircle } from 'lucide-react';
-import type { Staff } from '../../shared/types';
+import type { Staff } from '../../../shared/types';
 
-const defaultForm = { staff_no: '', first_name: '', last_name: '', gender: 'Male' as const, email: '', phone: '', designation: '', status: 'active' as const, dob: '', date_joined: '' };
+const defaultForm: Partial<Staff> = { staff_no: '', first_name: '', last_name: '', gender: 'Male', email: '', phone: '', designation: '', status: 'active', dob: '' };
 
 export default function StaffListPage() {
   const { data: staffList, isLoading } = useStaffList();
   const createStaff = useCreateStaff();
-  const updateStaff = useUpdateStaff(0);
+  const updateStaff = useUpdateStaff();
   const deleteStaff = useDeleteStaff();
   const [modal, setModal] = useState<{ open: boolean; edit?: Staff }>({ open: false });
   const [form, setForm] = useState(defaultForm);
   const [deleteId, setDeleteId] = useState<number | null>(null);
 
   const openAdd = () => { setForm(defaultForm); setModal({ open: true }); };
-  const openEdit = (s: Staff) => { setForm({ staff_no: s.staff_no, first_name: s.first_name, last_name: s.last_name, gender: s.gender, email: s.email || '', phone: s.phone || '', designation: s.designation || '', status: s.status, dob: s.dob || '', date_joined: '' }); setModal({ open: true, edit: s }); };
+  const openEdit = (s: Staff) => { setForm({ staff_no: s.staff_no, first_name: s.first_name, last_name: s.last_name, gender: s.gender, email: s.email || '', phone: s.phone || '', designation: s.designation || '', status: s.status, dob: s.dob || '' }); setModal({ open: true, edit: s }); };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (modal.edit) {
-      updateStaff.mutate({ ...form, id: modal.edit.id } as unknown as Partial<Staff>, { onSuccess: () => setModal({ open: false }) });
+      updateStaff.mutate({ ...form, id: modal.edit.id } as Partial<Staff> & { id: number }, { onSuccess: () => setModal({ open: false }) });
     } else {
       createStaff.mutate(form, { onSuccess: () => setModal({ open: false }) });
     }
@@ -63,7 +63,7 @@ export default function StaffListPage() {
                 </tr>
               </thead>
               <tbody>
-                {staffList.map((s) => (
+                {staffList.map((s: Staff) => (
                   <tr key={s.id} className="border-t border-border hover:bg-gray-50/50">
                     <td className="p-3 text-sm font-medium text-gray-900">{s.staff_no}</td>
                     <td className="p-3 text-sm text-gray-700">{s.first_name} {s.last_name}</td>
