@@ -3,6 +3,7 @@
 namespace App\Domain\Auth\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Domain\Auth\Models\School;
 use App\Domain\Auth\Requests\UserRequest;
 use App\Domain\Auth\Resources\UserResource;
 use App\Domain\Auth\Services\Contracts\UserServiceInterface;
@@ -18,12 +19,23 @@ class AuthController extends Controller
 
     public function register(UserRequest $request): JsonResponse
     {
-        $user = $this->userService->create($request->validated());
+        $data = $request->validated();
+
+        $school = School::create([
+            'name' => $data['school_name'] ?? ($data['name'] . '\'s School'),
+            'email' => $data['email'] ?? null,
+        ]);
+
+        $data['school_id'] = $school->id;
+        $data['role_id'] ??= 1;
+
+        $user = $this->userService->create($data);
         $token = $user->createToken('auth-token')->plainTextToken;
 
         return response()->json([
             'user' => new UserResource($user),
             'token' => $token,
+            'school' => $school,
         ], 201);
     }
 
