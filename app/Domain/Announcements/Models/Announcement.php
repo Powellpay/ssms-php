@@ -3,11 +3,14 @@
 namespace App\Domain\Announcements\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Domain\Shared\Traits\BelongsToSchool;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Announcement extends Model
 {
+    use BelongsToSchool;
     protected $fillable = [
+        'school_id',
         'title',
         'message',
         'target_role',

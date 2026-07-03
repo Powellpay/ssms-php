@@ -3,12 +3,15 @@
 namespace App\Domain\Finance\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Domain\Shared\Traits\BelongsToSchool;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Invoice extends Model
 {
+    use BelongsToSchool;
     protected $fillable = [
+        'school_id',
         'student_id',
         'term_id',
         'total_amount',

@@ -3,12 +3,15 @@
 namespace App\Domain\Academic\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Domain\Shared\Traits\BelongsToSchool;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Stream extends Model
 {
+    use BelongsToSchool;
     protected $fillable = [
+        'school_id',
         'class_level_id',
         'academic_year_id',
         'stream_name',

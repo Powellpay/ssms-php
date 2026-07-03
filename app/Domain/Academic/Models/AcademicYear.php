@@ -3,11 +3,14 @@
 namespace App\Domain\Academic\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Domain\Shared\Traits\BelongsToSchool;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class AcademicYear extends Model
 {
+    use BelongsToSchool;
     protected $fillable = [
+        'school_id',
         'year_name',
         'start_date',
         'end_date',

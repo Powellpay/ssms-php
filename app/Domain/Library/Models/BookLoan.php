@@ -3,11 +3,14 @@
 namespace App\Domain\Library\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Domain\Shared\Traits\BelongsToSchool;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class BookLoan extends Model
 {
+    use BelongsToSchool;
     protected $fillable = [
+        'school_id',
         'book_id',
         'student_id',
         'staff_id',

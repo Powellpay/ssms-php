@@ -3,12 +3,15 @@
 namespace App\Domain\Curriculum\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Domain\Shared\Traits\BelongsToSchool;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class CurriculumTheme extends Model
 {
+    use BelongsToSchool;
     protected $fillable = [
+        'school_id',
         'subject_id',
         'class_level_id',
         'theme_code',

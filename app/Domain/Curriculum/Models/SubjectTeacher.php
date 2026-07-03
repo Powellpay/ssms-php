@@ -3,11 +3,14 @@
 namespace App\Domain\Curriculum\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Domain\Shared\Traits\BelongsToSchool;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class SubjectTeacher extends Model
 {
+    use BelongsToSchool;
     protected $fillable = [
+        'school_id',
         'subject_id',
         'stream_id',
         'staff_id',

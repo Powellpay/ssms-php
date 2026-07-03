@@ -3,12 +3,15 @@
 namespace App\Domain\Academic\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Domain\Shared\Traits\BelongsToSchool;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Term extends Model
 {
+    use BelongsToSchool;
     protected $fillable = [
+        'school_id',
         'academic_year_id',
         'term_name',
         'start_date',

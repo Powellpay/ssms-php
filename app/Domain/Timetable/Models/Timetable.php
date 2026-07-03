@@ -3,13 +3,16 @@
 namespace App\Domain\Timetable\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Domain\Shared\Traits\BelongsToSchool;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Timetable extends Model
 {
+    use BelongsToSchool;
     protected $table = 'timetable';
 
     protected $fillable = [
+        'school_id',
         'stream_id',
         'subject_id',
         'staff_id',

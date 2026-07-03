@@ -3,12 +3,15 @@
 namespace App\Domain\Attendance\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Domain\Shared\Traits\BelongsToSchool;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Attendance extends Model
 {
+    use BelongsToSchool;
     protected $table = 'attendance';
     protected $fillable = [
+        'school_id',
         'student_id',
         'term_id',
         'attendance_date',

@@ -3,11 +3,14 @@
 namespace App\Domain\Assessment\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Domain\Shared\Traits\BelongsToSchool;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class GenericSkillRating extends Model
 {
+    use BelongsToSchool;
     protected $fillable = [
+        'school_id',
         'student_id',
         'term_id',
         'generic_skill_id',

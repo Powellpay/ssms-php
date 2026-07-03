@@ -3,11 +3,14 @@
 namespace App\Domain\Discipline\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Domain\Shared\Traits\BelongsToSchool;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class DisciplineRecord extends Model
 {
+    use BelongsToSchool;
     protected $fillable = [
+        'school_id',
         'student_id',
         'term_id',
         'incident_date',
