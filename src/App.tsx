@@ -5,7 +5,8 @@ import LandingPage from './modules/landing/LandingPage';
 import LoginPage from './modules/auth/LoginPage';
 import RegisterPage from './modules/auth/RegisterPage';
 import ForgotPasswordPage from './modules/auth/ForgotPasswordPage';
-import DashboardModule from './modules/dashboard/ui/DashboardModule';
+import AppLayout from './shared/components/layout/AppLayout';
+import DashboardPage from './modules/dashboard/DashboardPage';
 
 function App() {
   return (
@@ -15,13 +16,16 @@ function App() {
         <Route path={ROUTES.HOME} element={<LandingPage />} />
       </Route>
 
-      {/* Auth pages (standalone) */}
+      {/* Auth pages */}
       <Route path={ROUTES.AUTH.LOGIN} element={<LoginPage />} />
       <Route path={ROUTES.AUTH.REGISTER} element={<RegisterPage />} />
       <Route path={ROUTES.AUTH.FORGOT_PASSWORD} element={<ForgotPasswordPage />} />
 
-      {/* Authenticated pages */}
-      <Route path={ROUTES.DASHBOARD} element={<DashboardModule />} />
+      {/* Authenticated pages with sidebar layout */}
+      <Route element={<AppLayout />}>
+        <Route path={ROUTES.DASHBOARD} element={<DashboardPage />} />
+        {/* Future: add more module routes here */}
+      </Route>
 
       {/* Catch-all */}
       <Route path="*" element={<Navigate to={ROUTES.HOME} replace />} />
