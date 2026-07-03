@@ -9,23 +9,17 @@ export const studentKeys = {
   detail: (id: number) => ['students', id] as const,
 };
 
-export function useStudents() {
+export function useStudentList() {
   return useQuery<Student[]>({
     queryKey: studentKeys.list(),
-    queryFn: async () => {
-      const { data } = await api.get(ENDPOINTS.STUDENTS);
-      return data.data ?? data;
-    },
+    queryFn: async () => { const { data } = await api.get(ENDPOINTS.STUDENTS); return data.data ?? data; },
   });
 }
 
 export function useStudent(id: number) {
   return useQuery<Student>({
     queryKey: studentKeys.detail(id),
-    queryFn: async () => {
-      const { data } = await api.get(`${ENDPOINTS.STUDENTS}/${id}`);
-      return data.data ?? data;
-    },
+    queryFn: async () => { const { data } = await api.get(`${ENDPOINTS.STUDENTS}/${id}`); return data.data ?? data; },
     enabled: !!id,
   });
 }
@@ -33,83 +27,37 @@ export function useStudent(id: number) {
 export function useCreateStudent() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async (payload: Partial<Student>) => {
-      const { data } = await api.post(ENDPOINTS.STUDENTS, payload);
-      return data.data ?? data;
-    },
+    mutationFn: async (payload: Partial<Student>) => { const { data } = await api.post(ENDPOINTS.STUDENTS, payload); return data.data ?? data; },
     onSuccess: () => qc.invalidateQueries({ queryKey: studentKeys.list() }),
   });
 }
 
-export function useUpdateStudent(id: number) {
+export function useUpdateStudent() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async (payload: Partial<Student>) => {
-      const { data } = await api.put(`${ENDPOINTS.STUDENTS}/${id}`, payload);
-      return data.data ?? data;
-    },
-    onSuccess: () => qc.invalidateQueries({ queryKey: studentKeys.list() }),
+    mutationFn: async ({ id, ...payload }: Partial<Student> & { id: number }) => { const { data } = await api.put(`${ENDPOINTS.STUDENTS}/${id}`, payload); return data.data ?? data; },
+    onSuccess: (_data, vars) => { qc.invalidateQueries({ queryKey: studentKeys.list() }); qc.invalidateQueries({ queryKey: studentKeys.detail(vars.id) }); },
   });
 }
 
 export function useDeleteStudent() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async (id: number) => {
-      await api.delete(`${ENDPOINTS.STUDENTS}/${id}`);
-    },
+    mutationFn: async (id: number) => { await api.delete(`${ENDPOINTS.STUDENTS}/${id}`); },
     onSuccess: () => qc.invalidateQueries({ queryKey: studentKeys.list() }),
   });
 }
 
-export const guardianKeys = {
-  all: ['guardians'] as const,
-  list: () => ['guardians', 'list'] as const,
-};
-
-export function useGuardians() {
+export function useGuardianList() {
   return useQuery<Guardian[]>({
-    queryKey: guardianKeys.list(),
-    queryFn: async () => {
-      const { data } = await api.get(ENDPOINTS.GUARDIANS);
-      return data.data ?? data;
-    },
+    queryKey: ['guardians', 'list'],
+    queryFn: async () => { const { data } = await api.get(ENDPOINTS.GUARDIANS); return data.data ?? data; },
   });
 }
 
-export function useCreateGuardian() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: async (payload: Partial<Guardian>) => {
-      const { data } = await api.post(ENDPOINTS.GUARDIANS, payload);
-      return data.data ?? data;
-    },
-    onSuccess: () => qc.invalidateQueries({ queryKey: guardianKeys.list() }),
-  });
-}
-
-export const enrollmentKeys = {
-  all: ['enrollments'] as const,
-  list: () => ['enrollments', 'list'] as const,
-};
-
-export function useEnrollments() {
+export function useEnrollmentList() {
   return useQuery<Enrollment[]>({
-    queryKey: enrollmentKeys.list(),
-    queryFn: async () => {
-      const { data } = await api.get(ENDPOINTS.ENROLLMENTS);
-      return data.data ?? data;
-    },
-  });
-}
-
-export function useCreateEnrollment() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: async (payload: Partial<Enrollment>) => {
-      const { data } = await api.post(ENDPOINTS.ENROLLMENTS, payload);
-      return data.data ?? data;
-    },
-    onSuccess: () => qc.invalidateQueries({ queryKey: enrollmentKeys.list() }),
+    queryKey: ['enrollments', 'list'],
+    queryFn: async () => { const { data } = await api.get(ENDPOINTS.ENROLLMENTS); return data.data ?? data; },
   });
 }

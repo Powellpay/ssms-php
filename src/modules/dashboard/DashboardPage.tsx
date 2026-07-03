@@ -1,6 +1,6 @@
 import { useAppSelector } from '../../app/store/hooks';
 import { useClassLevels, useStreams } from '../../shared/api/academic/academicQueries';
-import { useStudents } from '../../shared/api/students/studentQueries';
+import { useStudentList } from '../../shared/api/students/studentQueries';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../app/routes/constants';
 import { BookOpen, Users, School, GraduationCap, ArrowRight } from 'lucide-react';
@@ -8,7 +8,7 @@ import { BookOpen, Users, School, GraduationCap, ArrowRight } from 'lucide-react
 export default function DashboardPage() {
   const user = useAppSelector((s) => s.auth.user);
   const navigate = useNavigate();
-  const { data: students } = useStudents();
+  const { data: students } = useStudentList();
   const { data: streams } = useStreams();
   const { data: classLevels } = useClassLevels();
 
