@@ -1,17 +1,31 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
-import DashboardModule from './modules/dashboard/ui/DashboardModule';
-import AuthModule from './modules/auth/ui/AuthModule';
 import { ROUTES } from './app/routes/constants';
+import LandingLayout from './modules/landing/LandingLayout';
+import LandingPage from './modules/landing/LandingPage';
+import LoginPage from './modules/auth/LoginPage';
+import RegisterPage from './modules/auth/RegisterPage';
+import ForgotPasswordPage from './modules/auth/ForgotPasswordPage';
+import DashboardModule from './modules/dashboard/ui/DashboardModule';
 
 function App() {
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Routes>
-        <Route path={ROUTES.AUTH.LOGIN} element={<AuthModule />} />
-        <Route path={ROUTES.DASHBOARD} element={<DashboardModule />} />
-        <Route path="*" element={<Navigate to={ROUTES.DASHBOARD} replace />} />
-      </Routes>
-    </div>
+    <Routes>
+      {/* Public landing pages */}
+      <Route element={<LandingLayout />}>
+        <Route path={ROUTES.HOME} element={<LandingPage />} />
+      </Route>
+
+      {/* Auth pages (standalone) */}
+      <Route path={ROUTES.AUTH.LOGIN} element={<LoginPage />} />
+      <Route path={ROUTES.AUTH.REGISTER} element={<RegisterPage />} />
+      <Route path={ROUTES.AUTH.FORGOT_PASSWORD} element={<ForgotPasswordPage />} />
+
+      {/* Authenticated pages */}
+      <Route path={ROUTES.DASHBOARD} element={<DashboardModule />} />
+
+      {/* Catch-all */}
+      <Route path="*" element={<Navigate to={ROUTES.HOME} replace />} />
+    </Routes>
   );
 }
 

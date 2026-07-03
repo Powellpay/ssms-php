@@ -1,22 +1,25 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #1E3A8A;
-  --color-primary-hover: #1E40AF;
-  --color-primary-light: #DBEAFE;
-  --color-success: #10B981;
-  --color-success-light: #D1FAE5;
-  --color-critical: #EF4444;
-  --color-critical-light: #FEE2E2;
-  --color-warning: #F59E0B;
-  --color-warning-light: #FEF3C7;
-  --color-neutral-black: #111827;
-  --color-neutral-gray-dark: #374151;
-  --color-neutral-gray-medium: #6B7280;
-  --color-neutral-gray-light: #D1D5DB;
-  --color-neutral-gray-bg: #F3F4F6;
-  --color-neutral-white: #FFFFFF;
+  --color-primary: #1f6f43;
+  --color-primary-dark: #154d2e;
+  --color-primary-light: #e8f5e9;
+  --color-bg: #f4f6f5;
+  --color-muted: #6b7280;
+  --color-border: #e2e5e3;
 
-  --font-sans: 'Inter', sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
+  --color-grade-a: #1f6f43;
+  --color-grade-b: #2f7d32;
+  --color-grade-c: #b8860b;
+  --color-grade-d: #c2410c;
+  --color-grade-e: #b3261e;
+
+  --color-alert-error-bg: #fdecea;
+  --color-alert-error-border: #f5c2bf;
+  --color-alert-error-text: #b3261e;
+  --color-alert-success-bg: #e8f5e9;
+  --color-alert-success-border: #bfe3c8;
+  --color-alert-success-text: #1f6f43;
+
+  --font-sans: -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
 }
