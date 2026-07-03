@@ -5,24 +5,25 @@ import { logout } from '../../../app/store/slices/authSlice';
 import { ROUTES } from '../../../app/routes/constants';
 import { useLogout } from '../../api/auth/authQueries';
 import {
-  GraduationCap, LayoutDashboard, BookOpen, Users, ClipboardCheck,
-  BarChart3, CalendarCheck, Timer, Wallet, ShieldCheck, Library,
+  GraduationCap, LayoutDashboard, Users, ClipboardCheck,
+  BarChart3, CalendarCheck, Timer, Wallet, Library,
   Megaphone, Menu, X, ChevronDown, LogOut, School,
+  UserCircle, BookMarked, Scale,
 } from 'lucide-react';
 import { cn } from '../../utils/cn';
 
 const navItems = [
   { icon: LayoutDashboard, label: 'Dashboard', path: ROUTES.DASHBOARD },
-  { icon: School, label: 'Academic', path: ROUTES.ACADEMIC.YEARS },
-  { icon: Users, label: 'Staff', path: ROUTES.STAFF.LIST },
+  { icon: School, label: 'Academic', path: '/academic' },
+  { icon: UserCircle, label: 'Staff', path: ROUTES.STAFF.LIST },
   { icon: Users, label: 'Students', path: ROUTES.STUDENTS.LIST },
-  { icon: BookOpen, label: 'Curriculum', path: ROUTES.CURRICULUM.SUBJECTS },
+  { icon: BookMarked, label: 'Curriculum', path: ROUTES.CURRICULUM.SUBJECTS },
   { icon: ClipboardCheck, label: 'Assessment', path: ROUTES.ASSESSMENT.RECORDS },
   { icon: BarChart3, label: 'Reports', path: ROUTES.REPORTS.LIST },
   { icon: CalendarCheck, label: 'Attendance', path: ROUTES.ATTENDANCE.REGISTER },
   { icon: Timer, label: 'Timetable', path: ROUTES.TIMETABLE.VIEW },
   { icon: Wallet, label: 'Finance', path: ROUTES.FINANCE.INVOICES },
-  { icon: ShieldCheck, label: 'Discipline', path: ROUTES.DISCIPLINE.LIST },
+  { icon: Scale, label: 'Discipline', path: ROUTES.DISCIPLINE.LIST },
   { icon: Library, label: 'Library', path: ROUTES.LIBRARY.BOOKS },
   { icon: Megaphone, label: 'Announcements', path: ROUTES.ANNOUNCEMENTS.LIST },
 ];
