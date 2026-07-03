@@ -7,7 +7,7 @@ import RegisterPage from './modules/auth/RegisterPage';
 import ForgotPasswordPage from './modules/auth/ForgotPasswordPage';
 import AppLayout from './shared/components/layout/AppLayout';
 import DashboardPage from './modules/dashboard/DashboardPage';
-import AcademicModule from './modules/academic/AcademicModule';
+import AcademicLayout from './modules/academic/AcademicLayout';
 import AcademicYearsPage from './modules/academic/ui/AcademicYearsPage';
 import TermsPage from './modules/academic/ui/TermsPage';
 import ClassLevelsPage from './modules/academic/ui/ClassLevelsPage';
@@ -37,11 +37,13 @@ function App() {
 
       <Route element={<AppLayout />}>
         <Route path={ROUTES.DASHBOARD} element={<DashboardPage />} />
-        <Route path="/academic" element={<AcademicModule />} />
-        <Route path={ROUTES.ACADEMIC.YEARS} element={<AcademicYearsPage />} />
-        <Route path={ROUTES.ACADEMIC.TERMS} element={<TermsPage />} />
-        <Route path={ROUTES.ACADEMIC.CLASSES} element={<ClassLevelsPage />} />
-        <Route path={ROUTES.ACADEMIC.STREAMS} element={<StreamsPage />} />
+        <Route path="/academic" element={<AcademicLayout />}>
+          <Route index element={<AcademicYearsPage />} />
+          <Route path={ROUTES.ACADEMIC.YEARS} element={<AcademicYearsPage />} />
+          <Route path={ROUTES.ACADEMIC.TERMS} element={<TermsPage />} />
+          <Route path={ROUTES.ACADEMIC.CLASSES} element={<ClassLevelsPage />} />
+          <Route path={ROUTES.ACADEMIC.STREAMS} element={<StreamsPage />} />
+        </Route>
         <Route path={ROUTES.STAFF.LIST} element={<StaffListPage />} />
         <Route path={ROUTES.STUDENTS.LIST} element={<StudentsListPage />} />
         <Route path={ROUTES.CURRICULUM.SUBJECTS} element={<SubjectsPage />} />
