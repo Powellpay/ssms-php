@@ -5,10 +5,14 @@ namespace App\Domain\Staff\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Domain\Shared\Traits\BelongsToSchool;
 
 class Staff extends Model
 {
+    use BelongsToSchool;
+
     protected $fillable = [
+        'school_id',
         'user_id',
         'staff_no',
         'first_name',
