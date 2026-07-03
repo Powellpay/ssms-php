@@ -5,10 +5,14 @@ namespace App\Domain\Students\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Domain\Shared\Traits\BelongsToSchool;
 
 class Student extends Model
 {
+    use BelongsToSchool;
+
     protected $fillable = [
+        'school_id',
         'user_id',
         'admission_no',
         'lin',

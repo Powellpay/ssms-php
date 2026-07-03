@@ -4,10 +4,14 @@ namespace App\Domain\Students\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Domain\Shared\Traits\BelongsToSchool;
 
 class Enrollment extends Model
 {
+    use BelongsToSchool;
+
     protected $fillable = [
+        'school_id',
         'student_id',
         'stream_id',
         'academic_year_id',
