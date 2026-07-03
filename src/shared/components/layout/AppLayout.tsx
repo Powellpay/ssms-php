@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Outlet, Link, useNavigate } from 'react-router-dom';
+import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from '../../../app/store/hooks';
 import { logout } from '../../../app/store/slices/authSlice';
 import { ROUTES } from '../../../app/routes/constants';
@@ -31,10 +31,16 @@ const navItems = [
 export default function AppLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const location = useLocation();
   const user = useAppSelector((s) => s.auth.user);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const logoutMutation = useLogout();
+
+  const isActive = (path: string) => {
+    if (path === ROUTES.DASHBOARD) return location.pathname === path;
+    return location.pathname.startsWith(path);
+  };
 
   const handleLogout = () => {
     logoutMutation.mutate(undefined, {
@@ -75,7 +81,10 @@ export default function AppLayout() {
               key={item.path}
               to={item.path}
               className={cn(
-                'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-600 hover:bg-primary-light hover:text-primary transition-colors',
+                'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors',
+                isActive(item.path)
+                  ? 'bg-primary-light text-primary font-semibold'
+                  : 'text-gray-600 hover:bg-primary-light hover:text-primary',
                 !sidebarOpen && 'lg:justify-center lg:px-2',
               )}
               title={item.label}
