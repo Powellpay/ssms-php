@@ -3,7 +3,7 @@ import { useClassLevels, useCreateClassLevel, useUpdateClassLevel, useDeleteClas
 import { Layers, Plus, Pencil, Trash2, X } from 'lucide-react';
 import type { ClassLevel } from '../../../shared/types';
 
-const df: Partial<ClassLevel> = { level_name: '', numeric_level: 0, description: '' };
+const df: Partial<ClassLevel> = { level_name: '', numeric_level: 1, description: '' };
 
 export default function ClassLevelsPage() {
   const { data: list, isLoading } = useClassLevels();
@@ -67,7 +67,7 @@ export default function ClassLevelsPage() {
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div><label className="block text-sm font-medium text-gray-700 mb-1">Level Name *</label><input value={form.level_name || ''} onChange={setF('level_name')} required className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary outline-none" /></div>
-                <div><label className="block text-sm font-medium text-gray-700 mb-1">Numeric Level *</label><input type="number" value={form.numeric_level ?? 0} onChange={setF('numeric_level')} required className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary outline-none" /></div>
+                <div><label className="block text-sm font-medium text-gray-700 mb-1">Numeric Level *</label><input type="number" min="1" max="6" value={form.numeric_level ?? 1} onChange={(e) => setForm(p => ({ ...p, numeric_level: Number(e.target.value) }))} required className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary outline-none" /></div>
               </div>
               <div><label className="block text-sm font-medium text-gray-700 mb-1">Description</label><input value={form.description || ''} onChange={setF('description')} className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary outline-none" /></div>
               <div className="flex justify-end gap-3 pt-2">

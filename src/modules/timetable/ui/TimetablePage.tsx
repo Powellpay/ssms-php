@@ -1,5 +1,8 @@
 import { useState } from 'react';
 import { useTimetableList, useCreateTimetable, useUpdateTimetable, useDeleteTimetable } from '../../../shared/api/timetable/timetableQueries';
+import { useStreams, useAcademicYears } from '../../../shared/api/academic/academicQueries';
+import { useSubjects } from '../../../shared/api/curriculum/curriculumQueries';
+import { useStaffList } from '../../../shared/api/staff/staffQueries';
 import { Timer, Plus, Pencil, Trash2, X } from 'lucide-react';
 import type { Timetable } from '../../../shared/types';
 
@@ -8,6 +11,10 @@ const df: Partial<Timetable> = { stream_id: 0, subject_id: 0, staff_id: 0, acade
 
 export default function TimetablePage() {
   const { data: list, isLoading } = useTimetableList();
+  const { data: streams } = useStreams();
+  const { data: subjects } = useSubjects();
+  const { data: staff } = useStaffList();
+  const { data: academicYears } = useAcademicYears();
   const create = useCreateTimetable();
   const update = useUpdateTimetable();
   const del = useDeleteTimetable();
@@ -27,6 +34,11 @@ export default function TimetablePage() {
 
   const handleDelete = (id: number) => del.mutate(id, { onSuccess: () => setDeleteId(null) });
 
+  const streamMap = new Map(streams?.map(s => [s.id, s]));
+  const subjectMap = new Map(subjects?.map(s => [s.id, s]));
+  const staffMap = new Map(staff?.map(s => [s.id, s]));
+  const yearMap = new Map(academicYears?.map(y => [y.id, y]));
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -41,22 +53,27 @@ export default function TimetablePage() {
         : !list?.length ? <div className="p-8 text-center text-muted">No timetable entries found.</div>
         : <div className="overflow-x-auto"><table className="w-full">
             <thead><tr className="bg-gray-50">
-              <th className="text-left p-3 text-sm font-semibold text-gray-600">Stream ID</th>
-              <th className="text-left p-3 text-sm font-semibold text-gray-600">Subject ID</th>
-              <th className="text-left p-3 text-sm font-semibold text-gray-600">Staff ID</th>
-              <th className="text-left p-3 text-sm font-semibold text-gray-600">Year ID</th>
+              <th className="text-left p-3 text-sm font-semibold text-gray-600">Stream</th>
+              <th className="text-left p-3 text-sm font-semibold text-gray-600">Subject</th>
+              <th className="text-left p-3 text-sm font-semibold text-gray-600">Staff</th>
+              <th className="text-left p-3 text-sm font-semibold text-gray-600">Year</th>
               <th className="text-left p-3 text-sm font-semibold text-gray-600">Day</th>
               <th className="text-left p-3 text-sm font-semibold text-gray-600">Period</th>
               <th className="text-left p-3 text-sm font-semibold text-gray-600">Start</th>
               <th className="text-left p-3 text-sm font-semibold text-gray-600">End</th>
               <th className="text-right p-3 text-sm font-semibold text-gray-600">Actions</th>
             </tr></thead>
-            <tbody>{list.map((item: Timetable) => (
+            <tbody>{list.map((item: Timetable) => {
+              const st = streamMap.get(item.stream_id);
+              const sub = subjectMap.get(item.subject_id);
+              const sf = staffMap.get(item.staff_id);
+              const y = yearMap.get(item.academic_year_id);
+              return (
               <tr key={item.id} className="border-t border-border hover:bg-gray-50/50">
-                <td className="p-3 text-sm text-gray-600">{item.stream_id}</td>
-                <td className="p-3 text-sm text-gray-600">{item.subject_id}</td>
-                <td className="p-3 text-sm text-gray-600">{item.staff_id}</td>
-                <td className="p-3 text-sm text-gray-600">{item.academic_year_id}</td>
+                <td className="p-3 text-sm text-gray-600">{st?.stream_name ?? item.stream_id}</td>
+                <td className="p-3 text-sm text-gray-600">{sub?.subject_name ?? item.subject_id}</td>
+                <td className="p-3 text-sm text-gray-600">{sf ? `${sf.first_name} ${sf.last_name}` : item.staff_id}</td>
+                <td className="p-3 text-sm text-gray-600">{y?.year_name ?? item.academic_year_id}</td>
                 <td className="p-3 text-sm text-gray-600">{item.day_of_week}</td>
                 <td className="p-3 text-sm text-gray-600">{item.period_no}</td>
                 <td className="p-3 text-sm text-gray-600">{item.start_time}</td>
@@ -66,7 +83,8 @@ export default function TimetablePage() {
                   <button onClick={() => setDeleteId(item.id)} className="p-1.5 text-muted hover:text-red-600 rounded cursor-pointer"><Trash2 className="w-4 h-4" /></button>
                 </td>
               </tr>
-            ))}</tbody></table></div>}
+              );
+            })}</tbody></table></div>}
       </div>
       {modal.open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={() => setModal({ open: false })}>
@@ -77,12 +95,12 @@ export default function TimetablePage() {
             </div>
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
               <div className="grid grid-cols-2 gap-4">
-                <div><label className="block text-sm font-medium text-gray-700 mb-1">Stream ID *</label><input type="number" value={form.stream_id || 0} onChange={setF('stream_id')} required className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary outline-none" /></div>
-                <div><label className="block text-sm font-medium text-gray-700 mb-1">Subject ID *</label><input type="number" value={form.subject_id || 0} onChange={setF('subject_id')} required className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary outline-none" /></div>
+                <div><label className="block text-sm font-medium text-gray-700 mb-1">Stream *</label><select value={form.stream_id || ''} onChange={(e) => setForm(p => ({ ...p, stream_id: Number(e.target.value) }))} required className="w-full px-3 py-2 border border-border rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary"><option value="">Select stream</option>{streams?.map((s) => <option key={s.id} value={s.id}>{s.stream_name}</option>)}</select></div>
+                <div><label className="block text-sm font-medium text-gray-700 mb-1">Subject *</label><select value={form.subject_id || ''} onChange={(e) => setForm(p => ({ ...p, subject_id: Number(e.target.value) }))} required className="w-full px-3 py-2 border border-border rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary"><option value="">Select subject</option>{subjects?.map((s) => <option key={s.id} value={s.id}>{s.subject_name}</option>)}</select></div>
               </div>
               <div className="grid grid-cols-2 gap-4">
-                <div><label className="block text-sm font-medium text-gray-700 mb-1">Staff ID *</label><input type="number" value={form.staff_id || 0} onChange={setF('staff_id')} required className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary outline-none" /></div>
-                <div><label className="block text-sm font-medium text-gray-700 mb-1">Academic Year ID *</label><input type="number" value={form.academic_year_id || 0} onChange={setF('academic_year_id')} required className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary outline-none" /></div>
+                <div><label className="block text-sm font-medium text-gray-700 mb-1">Staff *</label><select value={form.staff_id || ''} onChange={(e) => setForm(p => ({ ...p, staff_id: Number(e.target.value) }))} required className="w-full px-3 py-2 border border-border rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary"><option value="">Select staff</option>{staff?.map((s) => <option key={s.id} value={s.id}>{s.first_name} {s.last_name}</option>)}</select></div>
+                <div><label className="block text-sm font-medium text-gray-700 mb-1">Academic Year *</label><select value={form.academic_year_id || ''} onChange={(e) => setForm(p => ({ ...p, academic_year_id: Number(e.target.value) }))} required className="w-full px-3 py-2 border border-border rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary"><option value="">Select year</option>{academicYears?.map((y) => <option key={y.id} value={y.id}>{y.year_name}</option>)}</select></div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div><label className="block text-sm font-medium text-gray-700 mb-1">Day *</label><select value={form.day_of_week || 'Monday'} onChange={setF('day_of_week')} required className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary outline-none">{days.map(d => <option key={d} value={d}>{d}</option>)}</select></div>

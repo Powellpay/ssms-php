@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { useAttendanceList, useCreateAttendance, useUpdateAttendance, useDeleteAttendance } from '../../../shared/api/attendance/attendanceQueries';
+import { useStudentList } from '../../../shared/api/students/studentQueries';
+import { useTerms } from '../../../shared/api/academic/academicQueries';
 import { CalendarCheck, Plus, Pencil, Trash2, X } from 'lucide-react';
 import type { Attendance } from '../../../shared/types';
 
@@ -8,6 +10,8 @@ const df: Partial<Attendance> = { student_id: 0, term_id: 0, attendance_date: ''
 
 export default function AttendancePage() {
   const { data: list, isLoading } = useAttendanceList();
+  const { data: students } = useStudentList();
+  const { data: terms } = useTerms();
   const create = useCreateAttendance();
   const update = useUpdateAttendance();
   const del = useDeleteAttendance();
@@ -27,6 +31,9 @@ export default function AttendancePage() {
 
   const handleDelete = (id: number) => del.mutate(id, { onSuccess: () => setDeleteId(null) });
 
+  const studentMap = new Map(students?.map(s => [s.id, s]));
+  const termMap = new Map(terms?.map(t => [t.id, t]));
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -41,16 +48,19 @@ export default function AttendancePage() {
         : !list?.length ? <div className="p-8 text-center text-muted">No attendance records found.</div>
         : <div className="overflow-x-auto"><table className="w-full">
             <thead><tr className="bg-gray-50">
-              <th className="text-left p-3 text-sm font-semibold text-gray-600">Student ID</th>
-              <th className="text-left p-3 text-sm font-semibold text-gray-600">Term ID</th>
+              <th className="text-left p-3 text-sm font-semibold text-gray-600">Student</th>
+              <th className="text-left p-3 text-sm font-semibold text-gray-600">Term</th>
               <th className="text-left p-3 text-sm font-semibold text-gray-600">Date</th>
               <th className="text-left p-3 text-sm font-semibold text-gray-600">Status</th>
               <th className="text-right p-3 text-sm font-semibold text-gray-600">Actions</th>
             </tr></thead>
-            <tbody>{list.map((item: Attendance) => (
+            <tbody>{list.map((item: Attendance) => {
+              const st = studentMap.get(item.student_id);
+              const t = termMap.get(item.term_id);
+              return (
               <tr key={item.id} className="border-t border-border hover:bg-gray-50/50">
-                <td className="p-3 text-sm text-gray-600">{item.student_id}</td>
-                <td className="p-3 text-sm text-gray-600">{item.term_id}</td>
+                <td className="p-3 text-sm text-gray-600">{st ? `${st.first_name} ${st.last_name}` : item.student_id}</td>
+                <td className="p-3 text-sm text-gray-600">{t?.term_name ?? item.term_id}</td>
                 <td className="p-3 text-sm text-gray-600">{item.attendance_date}</td>
                 <td className="p-3 text-sm"><span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${item.status === 'Present' ? 'bg-success-light text-success' : item.status === 'Late' ? 'bg-warning-light text-warning' : item.status === 'Excused' ? 'bg-primary-light text-primary' : 'bg-alert-error-bg text-alert-error-text'}`}>{item.status}</span></td>
                 <td className="p-3 text-right">
@@ -58,7 +68,8 @@ export default function AttendancePage() {
                   <button onClick={() => setDeleteId(item.id)} className="p-1.5 text-muted hover:text-red-600 rounded cursor-pointer"><Trash2 className="w-4 h-4" /></button>
                 </td>
               </tr>
-            ))}</tbody></table></div>}
+              );
+            })}</tbody></table></div>}
       </div>
       {modal.open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={() => setModal({ open: false })}>
@@ -69,8 +80,8 @@ export default function AttendancePage() {
             </div>
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
               <div className="grid grid-cols-2 gap-4">
-                <div><label className="block text-sm font-medium text-gray-700 mb-1">Student ID *</label><input type="number" value={form.student_id || 0} onChange={setF('student_id')} required className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary outline-none" /></div>
-                <div><label className="block text-sm font-medium text-gray-700 mb-1">Term ID *</label><input type="number" value={form.term_id || 0} onChange={setF('term_id')} required className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary outline-none" /></div>
+                <div><label className="block text-sm font-medium text-gray-700 mb-1">Student *</label><select value={form.student_id || ''} onChange={(e) => setForm(p => ({ ...p, student_id: Number(e.target.value) }))} required className="w-full px-3 py-2 border border-border rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary"><option value="">Select student</option>{students?.map((s) => <option key={s.id} value={s.id}>{s.first_name} {s.last_name}</option>)}</select></div>
+                <div><label className="block text-sm font-medium text-gray-700 mb-1">Term *</label><select value={form.term_id || ''} onChange={(e) => setForm(p => ({ ...p, term_id: Number(e.target.value) }))} required className="w-full px-3 py-2 border border-border rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary"><option value="">Select term</option>{terms?.map((t) => <option key={t.id} value={t.id}>{t.term_name}</option>)}</select></div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div><label className="block text-sm font-medium text-gray-700 mb-1">Date *</label><input type="date" value={form.attendance_date || ''} onChange={setF('attendance_date')} required className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary outline-none" /></div>
