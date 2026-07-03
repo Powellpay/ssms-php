@@ -7,13 +7,6 @@ import {
   UserPlus, LogIn, Sparkles, CheckCircle, type LucideIcon
 } from 'lucide-react';
 
-const stats = [
-  { value: '13', label: 'Modules' },
-  { value: '31', label: 'Database Tables' },
-  { value: '168', label: 'Passing Tests' },
-  { value: 'Free', label: 'To Get Started' },
-];
-
 interface Benefit {
   icon: LucideIcon;
   title: string;
@@ -34,16 +27,6 @@ const benefits: Benefit[] = [
   { icon: Megaphone, title: 'Announcements', description: 'School-wide or role-targeted notices surfaced on the dashboard.', color: 'from-pink-500 to-pink-600' },
   { icon: GraduationCap, title: 'Staff Management', description: 'Teacher and non-teaching staff records linked to user accounts and class assignments.', color: 'from-orange-500 to-orange-600' },
   { icon: Users, title: 'Roles & Permissions', description: 'Role-based access for Admin, Head Teacher, DOS, Teacher, Bursar, Librarian, Parent, and Student.', color: 'from-violet-500 to-violet-600' },
-];
-
-const businessTypes = [
-  { icon: GraduationCap, name: 'Secondary Schools', color: 'text-primary' },
-  { icon: BookOpen, name: 'Primary Schools', color: 'text-blue-600' },
-  { icon: Users, name: 'International Schools', color: 'text-purple-600' },
-  { icon: BarChart3, name: 'Examination Centers', color: 'text-amber-600' },
-  { icon: ClipboardCheck, name: 'Vocational Schools', color: 'text-cyan-600' },
-  { icon: Library, name: 'Education Boards', color: 'text-emerald-600' },
-  { icon: ShieldCheck, name: 'Special Needs', color: 'text-red-500' },
 ];
 
 export default function LandingPage() {
@@ -130,17 +113,14 @@ export default function LandingPage() {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.2 }}
-            className="hidden lg:block"
+            className="hidden lg:flex items-center justify-center"
           >
-            <div className="rounded-2xl bg-gradient-to-br from-primary/5 to-primary-light border border-border p-8 shadow-xl">
-              <div className="grid grid-cols-2 gap-4">
-                {stats.map((s) => (
-                  <div key={s.label} className="text-center p-6 rounded-xl bg-white border border-border">
-                    <div className="text-3xl font-bold text-primary">{s.value}</div>
-                    <div className="text-sm text-muted mt-1">{s.label}</div>
-                  </div>
-                ))}
-              </div>
+            <div className="rounded-2xl bg-gradient-to-br from-primary/5 to-primary-light border border-border p-8 shadow-xl w-full">
+              <img
+                src="https://placehold.co/600x400/1f6f43/ffffff?text=SSMS+Dashboard"
+                alt="SSMS Dashboard Preview"
+                className="w-full h-auto rounded-lg shadow-md"
+              />
             </div>
           </motion.div>
         </div>
@@ -180,46 +160,9 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Built For */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-10"
-        >
-          <h2 className="text-3xl font-bold text-gray-900 mb-3">Built for Ugandan Schools</h2>
-          <p className="text-muted max-w-2xl mx-auto">Designed for the Uganda Lower Secondary Curriculum (S1–S4)</p>
-        </motion.div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-3 max-w-5xl mx-auto">
-          {businessTypes.map((type) => (
-            <motion.div
-              key={type.name}
-              whileHover={{ y: -2 }}
-              className="flex flex-col items-center gap-1.5 p-4 rounded-xl border border-border bg-white hover:border-primary/40 hover:shadow-md transition-all duration-200 cursor-pointer"
-            >
-              <type.icon className={`w-5 h-5 ${type.color}`} />
-              <span className="text-xs font-medium text-gray-700 text-center leading-tight">{type.name}</span>
-            </motion.div>
-          ))}
-        </div>
-      </section>
 
-      {/* Stats */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {stats.map((stat) => (
-            <motion.div
-              key={stat.label}
-              whileHover={{ y: -2 }}
-              className="relative overflow-hidden text-center p-6 rounded-xl border-2 border-primary bg-gradient-to-br from-white to-primary-light/50 hover:shadow-lg hover:shadow-primary/20 transition-all duration-300 cursor-pointer"
-            >
-              <div className="relative text-2xl sm:text-3xl font-bold text-primary">{stat.value}</div>
-              <div className="relative text-sm text-muted mt-1">{stat.label}</div>
-            </motion.div>
-          ))}
-        </div>
-      </section>
+
+
 
       {/* CTA */}
       <section className="relative py-16">

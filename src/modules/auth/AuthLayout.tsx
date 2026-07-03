@@ -34,21 +34,6 @@ export default function AuthLayout({ title, subtitle, children }: PropsWithChild
                 aligned to Uganda's Competency-Based Curriculum.
               </p>
             </div>
-            <div className="flex flex-wrap gap-3">
-              {[
-                { value: '13', label: 'Modules' },
-                { value: 'CBC', label: 'Aligned' },
-                { value: 'Free', label: 'To Start' },
-              ].map((stat) => (
-                <div
-                  key={stat.label}
-                  className="bg-white/10 backdrop-blur-md rounded-xl px-4 py-3 text-white min-w-[100px] text-center border border-white/10"
-                >
-                  <div className="text-lg font-bold">{stat.value}</div>
-                  <div className="text-green-200/90 text-xs mt-0.5">{stat.label}</div>
-                </div>
-              ))}
-            </div>
             <p className="text-green-200/80 text-sm flex items-center gap-1">
               <Sparkles className="w-3.5 h-3.5" /> Uganda NCDC Competency-Based Curriculum
             </p>
