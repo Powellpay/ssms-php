@@ -25,3 +25,9 @@ logbook.md
 *.njsproj
 *.sln
 *.sw?
+
+# Agent instructions (not project code)
+/AGENTS.md
+
+# Intern screenshots guide
+/SCREENSHOTS_GUIDE.md
