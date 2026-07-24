@@ -1,30 +1,44 @@
 import { useAppSelector } from '../../app/store/hooks';
 import { useClassLevels, useStreams } from '../../shared/api/academic/academicQueries';
 import { useStudentList } from '../../shared/api/students/studentQueries';
-import { useNavigate } from 'react-router-dom';
+import { useStaffList } from '../../shared/api/staff/staffQueries';
 import { ROUTES } from '../../app/routes/constants';
-import { BookOpen, Users, School, GraduationCap, ArrowRight } from 'lucide-react';
+import { Users, GraduationCap, School, Briefcase, CalendarDays, ArrowRight, BookOpen } from 'lucide-react';
+import StatCard from '../../shared/components/ui/StatCard';
+import LoadingSpinner from '../../shared/components/ui/LoadingSpinner';
+import { GenderChart, StatusChart } from './DashboardCharts';
+import { useActiveTerm } from './useDashboardQueries';
 
 export default function DashboardPage() {
   const user = useAppSelector((s) => s.auth.user);
-  const navigate = useNavigate();
-  const { data: students } = useStudentList();
-  const { data: streams } = useStreams();
-  const { data: classLevels } = useClassLevels();
+  const { data: students, isLoading: studentsLoading } = useStudentList();
+  const { data: streams, isLoading: streamsLoading } = useStreams();
+  const { data: classLevels, isLoading: classLoading } = useClassLevels();
+  const { data: staff, isLoading: staffLoading } = useStaffList();
+  const { term, year } = useActiveTerm();
 
-  const stats = [
-    { icon: Users, label: 'Students', value: students?.length ?? 0, color: 'from-blue-500 to-blue-600', path: ROUTES.STUDENTS.LIST },
-    { icon: School, label: 'Streams', value: streams?.length ?? 0, color: 'from-amber-500 to-amber-600', path: ROUTES.ACADEMIC.STREAMS },
-    { icon: GraduationCap, label: 'Classes', value: classLevels?.length ?? 0, color: 'from-purple-500 to-purple-600', path: ROUTES.ACADEMIC.CLASSES },
-    { icon: BookOpen, label: 'Active Term', value: 1, color: 'from-green-500 to-green-600', path: ROUTES.ACADEMIC.TERMS },
-  ];
+  const loading = studentsLoading || streamsLoading || classLoading || staffLoading;
 
   const quickLinks = [
     { label: 'Manage Students', path: ROUTES.STUDENTS.LIST },
-    { label: 'View Reports', path: ROUTES.REPORTS.LIST },
     { label: 'Record Attendance', path: ROUTES.ATTENDANCE.REGISTER },
+    { label: 'Assessment Records', path: ROUTES.ASSESSMENT.RECORDS },
+    { label: 'View Reports', path: ROUTES.REPORTS.LIST },
+    { label: 'Fee Invoices', path: ROUTES.FINANCE.INVOICES },
     { label: 'Academic Setup', path: ROUTES.ACADEMIC.YEARS },
   ];
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Welcome, {user?.name || 'User'}</h1>
+          <p className="text-muted mt-1">School Management System — Uganda CBC</p>
+        </div>
+        <LoadingSpinner />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -32,48 +46,91 @@ export default function DashboardPage() {
         <h1 className="text-2xl font-bold text-gray-900">
           Welcome, {user?.name || 'User'}
         </h1>
-        <p className="text-muted mt-1">School Management System &mdash; Uganda CBC</p>
+        <p className="text-muted mt-1">School Management System — Uganda CBC</p>
       </div>
 
-      {/* Stats cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {stats.map((stat) => (
-          <button
-            key={stat.label}
-            onClick={() => navigate(stat.path)}
-            className="relative overflow-hidden p-5 rounded-xl bg-white border border-border hover:shadow-md transition-all text-left cursor-pointer group"
-          >
-            <div className={`inline-flex p-3 rounded-lg bg-gradient-to-br ${stat.color} shadow-sm mb-3`}>
-              <stat.icon className="w-5 h-5 text-white" />
-            </div>
-            <div className="text-2xl font-bold text-gray-900">{stat.value}</div>
-            <div className="text-sm text-muted">{stat.label}</div>
-          </button>
-        ))}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        <StatCard
+          icon={Users}
+          label="Total Students"
+          value={students?.length ?? 0}
+          badge="Enrolled"
+          color="primary"
+          path={ROUTES.STUDENTS.LIST}
+        />
+        <StatCard
+          icon={Briefcase}
+          label="Staff"
+          value={staff?.length ?? 0}
+          badge="Employees"
+          color="blue"
+          path={ROUTES.STAFF.LIST}
+        />
+        <StatCard
+          icon={School}
+          label="Streams"
+          value={streams?.length ?? 0}
+          badge="Active"
+          color="amber"
+          path={ROUTES.ACADEMIC.STREAMS}
+        />
+        <StatCard
+          icon={GraduationCap}
+          label="Class Levels"
+          value={classLevels?.length ?? 0}
+          badge="S1–S4"
+          color="purple"
+          path={ROUTES.ACADEMIC.CLASSES}
+        />
+        <StatCard
+          icon={CalendarDays}
+          label="Current Term"
+          value={term?.term_name ?? '—'}
+          badge={year?.year_name ?? ''}
+          color="rose"
+          path={ROUTES.ACADEMIC.TERMS}
+        />
       </div>
 
-      {/* Quick links */}
-      <div className="rounded-xl bg-white border border-border p-5">
-        <h2 className="text-lg font-bold text-gray-900 mb-4">Quick Links</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {quickLinks.map((link) => (
-            <button
-              key={link.label}
-              onClick={() => navigate(link.path)}
-              className="flex items-center justify-between px-4 py-3 rounded-lg border border-border hover:bg-primary-light hover:border-primary/30 transition-colors text-left cursor-pointer group"
-            >
-              <span className="text-sm font-medium text-gray-700">{link.label}</span>
-              <ArrowRight className="w-4 h-4 text-muted group-hover:text-primary transition-colors" />
-            </button>
-          ))}
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+        <div className="lg:col-span-3 space-y-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <GenderChart />
+            <StatusChart />
+          </div>
         </div>
-      </div>
 
-      {/* Current period info */}
-      <div className="rounded-xl bg-gradient-to-br from-primary to-primary-dark p-6 text-white">
-        <h2 className="text-lg font-semibold mb-1">Current Period</h2>
-        <p className="text-white/80">Term 1, 2026 &mdash; S1 to S4</p>
-        <p className="text-white/60 text-sm mt-2">Uganda Lower Secondary Curriculum (Competency-Based)</p>
+        <div className="lg:col-span-2 space-y-6">
+          <div className="rounded-xl bg-white border border-border p-5">
+            <h3 className="text-sm font-semibold text-gray-900 mb-4">Quick Links</h3>
+            <div className="space-y-2">
+              {quickLinks.map((link) => (
+                <a
+                  key={link.label}
+                  href={link.path}
+                  className="flex items-center justify-between px-4 py-3 rounded-lg border border-border hover:bg-primary-light hover:border-primary/30 transition-colors group"
+                >
+                  <span className="text-sm font-medium text-gray-700">{link.label}</span>
+                  <ArrowRight className="w-4 h-4 text-muted group-hover:text-primary transition-colors" />
+                </a>
+              ))}
+            </div>
+          </div>
+
+          <div className="rounded-xl bg-gradient-to-br from-primary to-primary-dark p-6 text-white">
+            <div className="flex items-center gap-2 mb-2">
+              <BookOpen className="w-5 h-5 text-white/80" />
+              <h3 className="text-sm font-semibold text-white/90">Current Period</h3>
+            </div>
+            <p className="text-lg font-bold">
+              {term?.term_name ? `${term.term_name}${year ? `, ${year.year_name}` : ''}` : 'No active term'}
+            </p>
+            {term?.next_term_begins && (
+              <p className="text-white/60 text-xs mt-1">Next term begins: {term.next_term_begins}</p>
+            )}
+            <p className="text-white/50 text-xs mt-2">Uganda Lower Secondary Curriculum (Competency-Based)</p>
+          </div>
+        </div>
       </div>
     </div>
   );
