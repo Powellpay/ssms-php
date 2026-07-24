@@ -4,6 +4,7 @@ import { useStudentList } from '../../../shared/api/students/studentQueries';
 import { useTerms, useStreams } from '../../../shared/api/academic/academicQueries';
 import { Plus, Pencil, Trash2, X, BarChart3 } from 'lucide-react';
 import type { ReportCard } from '../../../shared/types';
+import { formatDate } from '../../../shared/utils/formatDate';
 
 const df: Partial<ReportCard> = { student_id: undefined, term_id: undefined, stream_id: undefined, days_present: 0, days_absent: 0 };
 
@@ -66,7 +67,7 @@ export default function ReportsListPage() {
                 <td className="p-3 text-sm">{str?.stream_name ?? r.stream_id}</td>
                 <td className="p-3 text-sm text-center">{r.days_present}</td>
                 <td className="p-3 text-sm text-center">{r.days_absent}</td>
-                <td className="p-3 text-sm">{r.date_issued || '-'}</td>
+                <td className="p-3 text-sm">{formatDate(r.date_issued)}</td>
                 <td className="p-3 text-right">
                   <button onClick={() => openEdit(r)} className="p-1.5 text-muted hover:text-primary rounded cursor-pointer"><Pencil className="w-4 h-4" /></button>
                   <button onClick={() => setDeleteId(r.id)} className="p-1.5 text-muted hover:text-red-600 rounded cursor-pointer"><Trash2 className="w-4 h-4" /></button>

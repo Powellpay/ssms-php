@@ -4,6 +4,7 @@ import { useStudentList } from '../../../shared/api/students/studentQueries';
 import { useTerms } from '../../../shared/api/academic/academicQueries';
 import { CalendarCheck, Plus, Pencil, Trash2, X } from 'lucide-react';
 import type { Attendance } from '../../../shared/types';
+import { formatDate } from '../../../shared/utils/formatDate';
 
 const statuses = ['Present', 'Absent', 'Late', 'Excused'] as const;
 const df: Partial<Attendance> = { student_id: 0, term_id: 0, attendance_date: '', status: 'Present' };
@@ -61,7 +62,7 @@ export default function AttendancePage() {
               <tr key={item.id} className="border-t border-border hover:bg-gray-50/50">
                 <td className="p-3 text-sm text-gray-600">{st ? `${st.first_name} ${st.last_name}` : item.student_id}</td>
                 <td className="p-3 text-sm text-gray-600">{t?.term_name ?? item.term_id}</td>
-                <td className="p-3 text-sm text-gray-600">{item.attendance_date}</td>
+                <td className="p-3 text-sm text-gray-600">{formatDate(item.attendance_date)}</td>
                 <td className="p-3 text-sm"><span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${item.status === 'Present' ? 'bg-success-light text-success' : item.status === 'Late' ? 'bg-warning-light text-warning' : item.status === 'Excused' ? 'bg-primary-light text-primary' : 'bg-alert-error-bg text-alert-error-text'}`}>{item.status}</span></td>
                 <td className="p-3 text-right">
                   <button onClick={() => openEdit(item)} className="p-1.5 text-muted hover:text-primary rounded cursor-pointer"><Pencil className="w-4 h-4" /></button>

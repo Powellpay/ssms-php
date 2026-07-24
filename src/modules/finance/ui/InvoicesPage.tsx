@@ -4,6 +4,7 @@ import { useStudentList } from '../../../shared/api/students/studentQueries';
 import { useTerms } from '../../../shared/api/academic/academicQueries';
 import { Plus, Pencil, Trash2, X, Wallet } from 'lucide-react';
 import type { Invoice } from '../../../shared/types';
+import { formatDate } from '../../../shared/utils/formatDate';
 
 const df: Partial<Invoice> = { student_id: undefined, term_id: undefined, total_amount: undefined, amount_paid: 0, issue_date: '', status: 'unpaid' };
 
@@ -67,7 +68,7 @@ export default function InvoicesPage() {
                 <td className="p-3 text-sm text-right">{Number(s.amount_paid).toLocaleString()}</td>
                 <td className="p-3 text-sm text-right font-semibold">{Number(s.balance).toLocaleString()}</td>
                 <td className="p-3 text-sm"><span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${statusCls(s.status)}`}>{s.status}</span></td>
-                <td className="p-3 text-sm">{s.issue_date}</td>
+                <td className="p-3 text-sm">{formatDate(s.issue_date)}</td>
                 <td className="p-3 text-right">
                   <button onClick={() => openEdit(s)} className="p-1.5 text-muted hover:text-primary rounded cursor-pointer"><Pencil className="w-4 h-4" /></button>
                   <button onClick={() => setDeleteId(s.id)} className="p-1.5 text-muted hover:text-red-600 rounded cursor-pointer"><Trash2 className="w-4 h-4" /></button>

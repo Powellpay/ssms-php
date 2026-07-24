@@ -4,6 +4,7 @@ import { Users, Plus, Pencil, Trash2, X, Eye } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../../app/routes/constants';
 import type { Student } from '../../../shared/types';
+import { formatDate } from '../../../shared/utils/formatDate';
 
 const genders = ['Male', 'Female'] as const;
 const statuses = ['active', 'transferred', 'graduated', 'dropped'] as const;
@@ -60,7 +61,7 @@ export default function StudentsListPage() {
                     <td className="p-3 text-sm font-medium text-gray-900">{s.admission_no}</td>
                     <td className="p-3 text-sm text-gray-700">{s.first_name} {s.last_name}</td>
                     <td className="p-3 text-sm text-gray-600">{s.gender}</td>
-                    <td className="p-3 text-sm text-gray-600">{s.dob || '-'}</td>
+                    <td className="p-3 text-sm text-gray-600">{formatDate(s.dob)}</td>
                     <td className="p-3 text-sm"><span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${s.status === 'active' ? 'bg-success-light text-success' : s.status === 'graduated' ? 'bg-primary-light text-primary' : 'bg-alert-error-bg text-alert-error-text'}`}>{s.status}</span></td>
                     <td className="p-3 text-right">
                       <button onClick={() => navigate(`${ROUTES.STUDENTS.VIEW.replace(':id', String(s.id))}`)} className="p-1.5 text-muted hover:text-primary rounded cursor-pointer" title="View"><Eye className="w-4 h-4" /></button>

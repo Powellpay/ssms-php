@@ -3,6 +3,7 @@ import { useTerms, useCreateTerm, useUpdateTerm, useDeleteTerm } from '../../../
 import { useAcademicYears } from '../../../shared/api/academic/academicQueries';
 import { GraduationCap, Plus, Pencil, Trash2, X } from 'lucide-react';
 import type { Term } from '../../../shared/types';
+import { formatDate } from '../../../shared/utils/formatDate';
 
 const df: Partial<Term> = { academic_year_id: undefined, term_name: 'Term 1', start_date: '', end_date: '', is_current: false };
 
@@ -52,8 +53,8 @@ export default function TermsPage() {
               return <tr key={item.id} className="border-t border-border hover:bg-gray-50/50">
                 <td className="p-3 text-sm font-medium text-gray-900">{item.term_name}</td>
                 <td className="p-3 text-sm text-gray-600">{y?.year_name || `Year #${item.academic_year_id}`}</td>
-                <td className="p-3 text-sm text-gray-600">{item.start_date}</td>
-                <td className="p-3 text-sm text-gray-600">{item.end_date}</td>
+                <td className="p-3 text-sm text-gray-600">{formatDate(item.start_date)}</td>
+                <td className="p-3 text-sm text-gray-600">{formatDate(item.end_date)}</td>
                 <td className="p-3 text-sm"><span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${item.is_current ? 'bg-success-light text-success' : 'bg-gray-100 text-gray-500'}`}>{item.is_current ? 'Yes' : 'No'}</span></td>
                 <td className="p-3 text-right">
                   <button onClick={() => openEdit(item)} className="p-1.5 text-muted hover:text-primary rounded cursor-pointer"><Pencil className="w-4 h-4" /></button>

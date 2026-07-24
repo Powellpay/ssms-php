@@ -1,5 +1,4 @@
 import { execSync } from 'child_process';
-import { readFileSync } from 'fs';
 
 const root = new URL('..', import.meta.url).pathname;
 const { stdout } = execSync('git diff --name-only --diff-filter=ACMRTUXB HEAD && git diff --cached --name-only --diff-filter=ACMRTUXB', { cwd: root });
@@ -8,15 +7,20 @@ const files = stdout.toString().split('\n').filter(Boolean).filter(f => f.endsWi
 
 if (files.length === 0) {
   console.log(' Vera fast: no changed TS/TSX files — skipped.');
-  process.exit(0);
+} else {
+  console.log(` Vera fast: oxlint —fix on ${files.length} file(s)`);
+
+  try {
+    execSync(`npx oxlint --fix ${files.join(' ')}`, { cwd: root, stdio: 'inherit' });
+    console.log(' Vera fast: pass');
+  } catch {
+    console.log(' Vera fast: fail');
+    process.exit(1);
+  }
 }
 
-console.log(` Vera fast: eslint —fix on ${files.length} file(s)`);
-
 try {
-  execSync(`npx oxlint --fix ${files.join(' ')}`, { cwd: root, stdio: 'inherit' });
-  console.log(' Vera fast: pass');
+  execSync('node scripts/vera-logic.mjs', { cwd: root, stdio: 'inherit', shell: true });
 } catch {
-  console.log(' Vera fast: fail');
   process.exit(1);
 }

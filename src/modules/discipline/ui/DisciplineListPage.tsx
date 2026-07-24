@@ -4,6 +4,7 @@ import { useStudentList } from '../../../shared/api/students/studentQueries';
 import { useTerms } from '../../../shared/api/academic/academicQueries';
 import { Plus, Pencil, Trash2, X, Scale } from 'lucide-react';
 import type { DisciplineRecord } from '../../../shared/types';
+import { formatDate } from '../../../shared/utils/formatDate';
 
 const df: Partial<DisciplineRecord> = { student_id: undefined, term_id: undefined, incident_date: '', description: '', action_taken: '' };
 
@@ -59,7 +60,7 @@ export default function DisciplineListPage() {
               <tr key={s.id} className="border-t border-border hover:bg-gray-50/50">
                 <td className="p-3 text-sm">{st ? `${st.first_name} ${st.last_name}` : s.student_id}</td>
                 <td className="p-3 text-sm">{t?.term_name ?? s.term_id}</td>
-                <td className="p-3 text-sm">{s.incident_date}</td>
+                <td className="p-3 text-sm">{formatDate(s.incident_date)}</td>
                 <td className="p-3 text-sm max-w-[200px] truncate">{s.description}</td>
                 <td className="p-3 text-sm">{s.action_taken || '-'}</td>
                 <td className="p-3 text-right">

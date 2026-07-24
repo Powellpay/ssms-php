@@ -6,13 +6,14 @@ import PageHeader from '../../../shared/components/ui/PageHeader';
 import DataTable from '../../../shared/components/ui/DataTable';
 import Modal from '../../../shared/components/ui/Modal';
 import ConfirmDialog from '../../../shared/components/ui/ConfirmDialog';
+import { formatDate } from '../../../shared/utils/formatDate';
 
 const df: Partial<AcademicYear> = { year_name: '', start_date: '', end_date: '', is_current: false };
 
 const columns = [
   { key: 'year_name', label: 'Year Name', className: 'font-medium text-gray-900' },
-  { key: 'start_date', label: 'Start Date' },
-  { key: 'end_date', label: 'End Date' },
+  { key: 'start_date', label: 'Start Date', render: (item: AcademicYear) => formatDate(item.start_date) },
+  { key: 'end_date', label: 'End Date', render: (item: AcademicYear) => formatDate(item.end_date) },
   {
     key: 'is_current', label: 'Current',
     render: (item: AcademicYear) => (

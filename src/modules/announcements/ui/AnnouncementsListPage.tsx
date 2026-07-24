@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useAnnouncements, useCreateAnnouncement, useUpdateAnnouncement, useDeleteAnnouncement } from '../../../shared/api/announcements/announcementQueries';
 import { Megaphone, Plus, Pencil, Trash2, X } from 'lucide-react';
 import type { Announcement } from '../../../shared/types';
+import { formatDateTime } from '../../../shared/utils/formatDate';
 
 const df: Partial<Announcement> = { title: '', message: '', target_role: '' };
 
@@ -51,7 +52,7 @@ export default function AnnouncementsListPage() {
                 <td className="p-3 text-sm font-medium text-gray-900">{item.title}</td>
                 <td className="p-3 text-sm text-gray-700 max-w-xs truncate">{item.message}</td>
                 <td className="p-3 text-sm text-gray-600">{item.target_role}</td>
-                <td className="p-3 text-sm text-gray-600">{item.created_at}</td>
+                <td className="p-3 text-sm text-gray-600">{formatDateTime(item.created_at)}</td>
                 <td className="p-3 text-right">
                   <button onClick={() => openEdit(item)} className="p-1.5 text-muted hover:text-primary rounded cursor-pointer"><Pencil className="w-4 h-4" /></button>
                   <button onClick={() => setDeleteId(item.id)} className="p-1.5 text-muted hover:text-red-600 rounded cursor-pointer"><Trash2 className="w-4 h-4" /></button>

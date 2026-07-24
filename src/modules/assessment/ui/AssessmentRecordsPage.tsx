@@ -6,6 +6,7 @@ import { useTerms } from '../../../shared/api/academic/academicQueries';
 import { useAssessmentTypes } from '../../../shared/api/assessment/assessmentQueries';
 import { ClipboardCheck, Plus, Pencil, Trash2, X } from 'lucide-react';
 import type { AssessmentRecord } from '../../../shared/types';
+import { formatDate } from '../../../shared/utils/formatDate';
 
 const df: Partial<AssessmentRecord> = { student_id: 0, subject_id: 0, assessment_type_id: 0, term_id: 0, score: 0, max_score: 100, date_recorded: '' };
 
@@ -75,7 +76,7 @@ export default function AssessmentRecordsPage() {
                 <td className="p-3 text-sm text-gray-600">{t?.term_name ?? item.term_id}</td>
                 <td className="p-3 text-sm text-gray-900 font-medium">{item.score ?? '-'}</td>
                 <td className="p-3 text-sm text-gray-600">{item.max_score}</td>
-                <td className="p-3 text-sm text-gray-600">{item.date_recorded}</td>
+                <td className="p-3 text-sm text-gray-600">{formatDate(item.date_recorded)}</td>
                 <td className="p-3 text-right">
                   <button onClick={() => openEdit(item)} className="p-1.5 text-muted hover:text-primary rounded cursor-pointer"><Pencil className="w-4 h-4" /></button>
                   <button onClick={() => setDeleteId(item.id)} className="p-1.5 text-muted hover:text-red-600 rounded cursor-pointer"><Trash2 className="w-4 h-4" /></button>
