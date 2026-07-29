@@ -11,7 +11,7 @@ interface AuthLayoutProps {
   heroImage?: string;
 }
 
-export default function AuthLayout({ title, subtitle, children, heroImage = 'https://images.unsplash.com/photo-1523050854058-8df90110c7f1?w=1200&q=80' }: PropsWithChildren<AuthLayoutProps>) {
+export default function AuthLayout({ title, subtitle, children, heroImage = '/images/school_classroom.jpg' }: PropsWithChildren<AuthLayoutProps>) {
   return (
     <div className="min-h-screen flex bg-gray-50">
       {/* Left hero panel */}
