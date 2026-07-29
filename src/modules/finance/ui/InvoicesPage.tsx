@@ -2,12 +2,19 @@ import { useState } from 'react';
 import { useInvoices as useList, useCreateInvoice as useCreate, useUpdateInvoice as useUpdate, useDeleteInvoice as useDelete } from '../../../shared/api/finance/financeQueries';
 import { useStudentList } from '../../../shared/api/students/studentQueries';
 import { useTerms } from '../../../shared/api/academic/academicQueries';
-import { Plus, Pencil, Trash2, X, Wallet } from 'lucide-react';
+import { Plus, Pencil, Trash2, Wallet, User, BookOpen, DollarSign, CalendarDays } from 'lucide-react';
 import SSMSLoader from '../../../shared/components/SSMSLoader';
 import type { Invoice } from '../../../shared/types';
 import { formatDate } from '../../../shared/utils/formatDate';
+import Modal from '../../../shared/components/ui/Modal';
+import ConfirmDialog from '../../../shared/components/ui/ConfirmDialog';
+import FormSection from '../../../shared/components/ui/FormSection';
+import IconField, { inputClass, selectClass } from '../../../shared/components/ui/IconField';
+import ModalFooter from '../../../shared/components/ui/ModalFooter';
+import PageHeader from '../../../shared/components/ui/PageHeader';
 
 const df: Partial<Invoice> = { student_id: undefined, term_id: undefined, total_amount: undefined, amount_paid: 0, issue_date: '', status: 'unpaid' };
+const statuses = ['unpaid', 'partial', 'paid'] as const;
 
 export default function InvoicesPage() {
   const { data: list, isLoading } = useList();
@@ -31,19 +38,17 @@ export default function InvoicesPage() {
   };
 
   const statusCls = (s: string) => s === 'paid' ? 'bg-success-light text-success' : s === 'partial' ? 'bg-warning-light text-warning' : 'bg-alert-error-bg text-alert-error-text';
-
   const studentMap = new Map(students?.map(s => [s.id, s]));
   const termMap = new Map(terms?.map(t => [t.id, t]));
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <div className="p-3 rounded-xl bg-primary-light"><Wallet className="w-8 h-8 text-primary" /></div>
-          <div><h1 className="text-2xl font-bold text-gray-900">Finance</h1><p className="text-muted text-sm mt-1">Invoices and fee tracking</p></div>
-        </div>
-        <button onClick={openAdd} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary-dark cursor-pointer"><Plus className="w-4 h-4" /> Add Invoice</button>
-      </div>
+      <PageHeader
+        icon={<Wallet className="w-8 h-8 text-primary" />}
+        title="Finance"
+        description="Invoices and fee tracking"
+        action={<button onClick={openAdd} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary-dark cursor-pointer"><Plus className="w-4 h-4" /> Add Invoice</button>}
+      />
       <div className="rounded-xl border border-border bg-white overflow-hidden">
         {isLoading ? <SSMSLoader />
         : !list?.length ? <div className="p-8 text-center text-muted">No invoices found.</div>
@@ -78,46 +83,40 @@ export default function InvoicesPage() {
               );
             })}</tbody></table></div>}
       </div>
-      {modal.open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={() => setModal({ open: false })}>
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-lg mx-4" onClick={e => e.stopPropagation()}>
-            <div className="flex items-center justify-between px-6 py-4 border-b border-border">
-              <h2 className="text-lg font-bold">{modal.edit ? 'Edit Invoice' : 'Add Invoice'}</h2>
-              <button onClick={() => setModal({ open: false })} className="p-1 text-muted hover:text-gray-900 cursor-pointer"><X className="w-5 h-5" /></button>
-            </div>
-            <form onSubmit={handleSubmit} className="p-6 space-y-4">
+      <Modal open={modal.open} onClose={() => setModal({ open: false })} title={modal.edit ? 'Edit Invoice' : 'Add Invoice'} subtitle="Create a fee invoice for a student" maxWidth="md">
+        <form onSubmit={handleSubmit}>
+          <div className="space-y-5 p-6">
+            <FormSection title="Billing Info" icon={Wallet} description="Student, term, and dates">
               <div className="grid grid-cols-2 gap-4">
-                <div><label className="block text-sm font-medium text-gray-700 mb-1">Student *</label><select value={form.student_id || ''} onChange={(e) => setForm(p => ({ ...p, student_id: Number(e.target.value) }))} required className="w-full px-3 py-2 border border-border rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary"><option value="">Select student</option>{students?.map((s) => <option key={s.id} value={s.id}>{s.first_name} {s.last_name}</option>)}</select></div>
-                <div><label className="block text-sm font-medium text-gray-700 mb-1">Term *</label><select value={form.term_id || ''} onChange={(e) => setForm(p => ({ ...p, term_id: Number(e.target.value) }))} required className="w-full px-3 py-2 border border-border rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary"><option value="">Select term</option>{terms?.map((t) => <option key={t.id} value={t.id}>{t.term_name}</option>)}</select></div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div><label className="block text-sm font-medium text-gray-700 mb-1">Total Amount *</label><input type="number" step="0.01" value={form.total_amount || ''} onChange={setF('total_amount')} required className="w-full px-3 py-2 border border-border rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary" /></div>
-                <div><label className="block text-sm font-medium text-gray-700 mb-1">Amount Paid</label><input type="number" step="0.01" value={form.amount_paid ?? 0} onChange={setF('amount_paid')} className="w-full px-3 py-2 border border-border rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary" /></div>
+                <IconField label="Student" icon={User} required>
+                  <select value={form.student_id || ''} onChange={(e) => setForm(p => ({ ...p, student_id: Number(e.target.value) }))} required className={selectClass}><option value="">Select student</option>{students?.map((s) => <option key={s.id} value={s.id}>{s.first_name} {s.last_name}</option>)}</select>
+                </IconField>
+                <IconField label="Term" icon={BookOpen} required>
+                  <select value={form.term_id || ''} onChange={(e) => setForm(p => ({ ...p, term_id: Number(e.target.value) }))} required className={selectClass}><option value="">Select term</option>{terms?.map((t) => <option key={t.id} value={t.id}>{t.term_name}</option>)}</select>
+                </IconField>
               </div>
               <div className="grid grid-cols-2 gap-4">
-                <div><label className="block text-sm font-medium text-gray-700 mb-1">Issue Date *</label><input type="date" value={form.issue_date || ''} onChange={setF('issue_date')} required className="w-full px-3 py-2 border border-border rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary" /></div>
-                <div><label className="block text-sm font-medium text-gray-700 mb-1">Status</label><select value={form.status || 'unpaid'} onChange={setF('status')} className="w-full px-3 py-2 border border-border rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary"><option value="unpaid">Unpaid</option><option value="partial">Partial</option><option value="paid">Paid</option></select></div>
+                <IconField label="Total Amount" icon={DollarSign} required>
+                  <input type="number" step="0.01" value={form.total_amount || ''} onChange={setF('total_amount')} required className={inputClass} />
+                </IconField>
+                <IconField label="Amount Paid" icon={DollarSign}>
+                  <input type="number" step="0.01" value={form.amount_paid ?? 0} onChange={setF('amount_paid')} className={inputClass} />
+                </IconField>
               </div>
-              <div className="flex justify-end gap-3 pt-2">
-                <button type="button" onClick={() => setModal({ open: false })} className="px-4 py-2 border border-border rounded-lg text-sm text-gray-600 hover:bg-gray-50 cursor-pointer">Cancel</button>
-                <button type="submit" disabled={create.isPending || update.isPending} className="px-4 py-2 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary-dark disabled:opacity-50 cursor-pointer">{modal.edit ? 'Update' : 'Save'}</button>
+              <div className="grid grid-cols-2 gap-4">
+                <IconField label="Issue Date" icon={CalendarDays} required>
+                  <input type="date" value={form.issue_date || ''} onChange={setF('issue_date')} required className={inputClass} />
+                </IconField>
+                <IconField label="Status" icon={Wallet}>
+                  <select value={form.status || 'unpaid'} onChange={setF('status')} className={selectClass}>{statuses.map(s => <option key={s} value={s}>{s}</option>)}</select>
+                </IconField>
               </div>
-            </form>
+            </FormSection>
           </div>
-        </div>
-      )}
-      {deleteId && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={() => setDeleteId(null)}>
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-sm mx-4 p-6" onClick={e => e.stopPropagation()}>
-            <h3 className="text-lg font-bold text-gray-900 mb-2">Delete Invoice?</h3>
-            <p className="text-sm text-muted mb-6">This cannot be undone.</p>
-            <div className="flex justify-end gap-3">
-              <button onClick={() => setDeleteId(null)} className="px-4 py-2 border border-border rounded-lg text-sm text-gray-600 hover:bg-gray-50 cursor-pointer">Cancel</button>
-              <button onClick={() => del.mutate(deleteId)} className="px-4 py-2 rounded-lg bg-red-600 text-white text-sm font-medium hover:bg-red-700 cursor-pointer">Delete</button>
-            </div>
-          </div>
-        </div>
-      )}
+          <ModalFooter onCancel={() => setModal({ open: false })} submitLabel={modal.edit ? 'Update' : 'Save'} submitting={create.isPending || update.isPending} />
+        </form>
+      </Modal>
+      <ConfirmDialog open={deleteId !== null} onClose={() => setDeleteId(null)} onConfirm={() => del.mutate(deleteId!, { onSuccess: () => setDeleteId(null) })} title="Delete Invoice?" message="This cannot be undone." />
     </div>
   );
 }

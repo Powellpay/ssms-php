@@ -1,8 +1,14 @@
 import { useState } from 'react';
 import { useLibraryBooks as useList, useCreateLibraryBook as useCreate, useUpdateLibraryBook as useUpdate, useDeleteLibraryBook as useDelete } from '../../../shared/api/library/libraryQueries';
-import { Plus, Pencil, Trash2, X, Library } from 'lucide-react';
+import { Plus, Pencil, Trash2, Library, BookOpen, User, Hash, Bookmark, Layers } from 'lucide-react';
 import SSMSLoader from '../../../shared/components/SSMSLoader';
 import type { LibraryBook } from '../../../shared/types';
+import Modal from '../../../shared/components/ui/Modal';
+import ConfirmDialog from '../../../shared/components/ui/ConfirmDialog';
+import FormSection from '../../../shared/components/ui/FormSection';
+import IconField, { inputClass } from '../../../shared/components/ui/IconField';
+import ModalFooter from '../../../shared/components/ui/ModalFooter';
+import PageHeader from '../../../shared/components/ui/PageHeader';
 
 const df: Partial<LibraryBook> = { title: '', author: '', isbn: '', category: '', total_copies: 1, available_copies: 1 };
 
@@ -27,13 +33,12 @@ export default function BooksPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <div className="p-3 rounded-xl bg-primary-light"><Library className="w-8 h-8 text-primary" /></div>
-          <div><h1 className="text-2xl font-bold text-gray-900">Library</h1><p className="text-muted text-sm mt-1">Book catalogue and management</p></div>
-        </div>
-        <button onClick={openAdd} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary-dark cursor-pointer"><Plus className="w-4 h-4" /> Add Book</button>
-      </div>
+      <PageHeader
+        icon={<Library className="w-8 h-8 text-primary" />}
+        title="Library"
+        description="Book catalogue and management"
+        action={<button onClick={openAdd} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary-dark cursor-pointer"><Plus className="w-4 h-4" /> Add Book</button>}
+      />
       <div className="rounded-xl border border-border bg-white overflow-hidden">
         {isLoading ? <SSMSLoader />
         : !list?.length ? <div className="p-8 text-center text-muted">No books in catalogue.</div>
@@ -62,44 +67,40 @@ export default function BooksPage() {
               </tr>
             ))}</tbody></table></div>}
       </div>
-      {modal.open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={() => setModal({ open: false })}>
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-lg mx-4" onClick={e => e.stopPropagation()}>
-            <div className="flex items-center justify-between px-6 py-4 border-b border-border">
-              <h2 className="text-lg font-bold">{modal.edit ? 'Edit Book' : 'Add Book'}</h2>
-              <button onClick={() => setModal({ open: false })} className="p-1 text-muted hover:text-gray-900 cursor-pointer"><X className="w-5 h-5" /></button>
-            </div>
-            <form onSubmit={handleSubmit} className="p-6 space-y-4">
-              <div><label className="block text-sm font-medium text-gray-700 mb-1">Title *</label><input value={form.title || ''} onChange={setF('title')} required className="w-full px-3 py-2 border border-border rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary" /></div>
+      <Modal open={modal.open} onClose={() => setModal({ open: false })} title={modal.edit ? 'Edit Book' : 'Add Book'} subtitle="Add a book to the library catalogue" maxWidth="md">
+        <form onSubmit={handleSubmit}>
+          <div className="p-6 space-y-5">
+            <FormSection title="Book Details" icon={BookOpen} description="Title, author, ISBN, and category">
+              <IconField label="Title" icon={BookOpen} required>
+                <input value={form.title || ''} onChange={setF('title')} required className={inputClass} placeholder="Book title" />
+              </IconField>
               <div className="grid grid-cols-2 gap-4">
-                <div><label className="block text-sm font-medium text-gray-700 mb-1">Author</label><input value={form.author || ''} onChange={setF('author')} className="w-full px-3 py-2 border border-border rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary" /></div>
-                <div><label className="block text-sm font-medium text-gray-700 mb-1">ISBN</label><input value={form.isbn || ''} onChange={setF('isbn')} className="w-full px-3 py-2 border border-border rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary" /></div>
+                <IconField label="Author" icon={User}>
+                  <input value={form.author || ''} onChange={setF('author')} className={inputClass} placeholder="Author name" />
+                </IconField>
+                <IconField label="ISBN" icon={Hash}>
+                  <input value={form.isbn || ''} onChange={setF('isbn')} className={inputClass} placeholder="ISBN number" />
+                </IconField>
               </div>
-              <div className="grid grid-cols-3 gap-4">
-                <div><label className="block text-sm font-medium text-gray-700 mb-1">Category</label><input value={form.category || ''} onChange={setF('category')} className="w-full px-3 py-2 border border-border rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary" /></div>
-                <div><label className="block text-sm font-medium text-gray-700 mb-1">Total Copies *</label><input type="number" min="1" value={form.total_copies || 1} onChange={setF('total_copies')} required className="w-full px-3 py-2 border border-border rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary" /></div>
-                <div><label className="block text-sm font-medium text-gray-700 mb-1">Available</label><input type="number" min="0" value={form.available_copies ?? form.total_copies} onChange={setF('available_copies')} className="w-full px-3 py-2 border border-border rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary" /></div>
+              <IconField label="Category" icon={Bookmark}>
+                <input value={form.category || ''} onChange={setF('category')} className={inputClass} placeholder="e.g. Fiction, Textbook" />
+              </IconField>
+            </FormSection>
+            <FormSection title="Inventory" icon={Layers} description="Total and available copies">
+              <div className="grid grid-cols-2 gap-4">
+                <IconField label="Total Copies" icon={Layers} required>
+                  <input type="number" min="1" value={form.total_copies || 1} onChange={setF('total_copies')} required className={inputClass} />
+                </IconField>
+                <IconField label="Available" icon={Layers}>
+                  <input type="number" min="0" value={form.available_copies ?? form.total_copies} onChange={setF('available_copies')} className={inputClass} />
+                </IconField>
               </div>
-              <div className="flex justify-end gap-3 pt-2">
-                <button type="button" onClick={() => setModal({ open: false })} className="px-4 py-2 border border-border rounded-lg text-sm text-gray-600 hover:bg-gray-50 cursor-pointer">Cancel</button>
-                <button type="submit" disabled={create.isPending || update.isPending} className="px-4 py-2 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary-dark disabled:opacity-50 cursor-pointer">{modal.edit ? 'Update' : 'Save'}</button>
-              </div>
-            </form>
+            </FormSection>
           </div>
-        </div>
-      )}
-      {deleteId && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={() => setDeleteId(null)}>
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-sm mx-4 p-6" onClick={e => e.stopPropagation()}>
-            <h3 className="text-lg font-bold text-gray-900 mb-2">Delete Book?</h3>
-            <p className="text-sm text-muted mb-6">This cannot be undone.</p>
-            <div className="flex justify-end gap-3">
-              <button onClick={() => setDeleteId(null)} className="px-4 py-2 border border-border rounded-lg text-sm text-gray-600 hover:bg-gray-50 cursor-pointer">Cancel</button>
-              <button onClick={() => del.mutate(deleteId)} className="px-4 py-2 rounded-lg bg-red-600 text-white text-sm font-medium hover:bg-red-700 cursor-pointer">Delete</button>
-            </div>
-          </div>
-        </div>
-      )}
+          <ModalFooter onCancel={() => setModal({ open: false })} submitLabel={modal.edit ? 'Update' : 'Save'} submitting={create.isPending || update.isPending} />
+        </form>
+      </Modal>
+      <ConfirmDialog open={deleteId !== null} onClose={() => setDeleteId(null)} onConfirm={() => del.mutate(deleteId!, { onSuccess: () => setDeleteId(null) })} title="Delete Book?" message="This cannot be undone." />
     </div>
   );
 }

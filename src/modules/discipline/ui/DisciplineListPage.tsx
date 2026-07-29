@@ -2,10 +2,16 @@ import { useState } from 'react';
 import { useDisciplineRecords as useList, useCreateDisciplineRecord as useCreate, useUpdateDisciplineRecord as useUpdate, useDeleteDisciplineRecord as useDelete } from '../../../shared/api/discipline/disciplineQueries';
 import { useStudentList } from '../../../shared/api/students/studentQueries';
 import { useTerms } from '../../../shared/api/academic/academicQueries';
-import { Plus, Pencil, Trash2, X, Scale } from 'lucide-react';
+import { Plus, Pencil, Trash2, Scale, User, BookOpen, CalendarDays, FileText, AlertTriangle } from 'lucide-react';
 import SSMSLoader from '../../../shared/components/SSMSLoader';
 import type { DisciplineRecord } from '../../../shared/types';
 import { formatDate } from '../../../shared/utils/formatDate';
+import Modal from '../../../shared/components/ui/Modal';
+import ConfirmDialog from '../../../shared/components/ui/ConfirmDialog';
+import FormSection from '../../../shared/components/ui/FormSection';
+import IconField, { inputClass, selectClass, textareaClass } from '../../../shared/components/ui/IconField';
+import ModalFooter from '../../../shared/components/ui/ModalFooter';
+import PageHeader from '../../../shared/components/ui/PageHeader';
 
 const df: Partial<DisciplineRecord> = { student_id: undefined, term_id: undefined, incident_date: '', description: '', action_taken: '' };
 
@@ -35,13 +41,12 @@ export default function DisciplineListPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <div className="p-3 rounded-xl bg-primary-light"><Scale className="w-8 h-8 text-primary" /></div>
-          <div><h1 className="text-2xl font-bold text-gray-900">Discipline</h1><p className="text-muted text-sm mt-1">Learner conduct and incident records</p></div>
-        </div>
-        <button onClick={openAdd} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary-dark cursor-pointer"><Plus className="w-4 h-4" /> Add Record</button>
-      </div>
+      <PageHeader
+        icon={<Scale className="w-8 h-8 text-primary" />}
+        title="Discipline"
+        description="Learner conduct and incident records"
+        action={<button onClick={openAdd} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary-dark cursor-pointer"><Plus className="w-4 h-4" /> Add Record</button>}
+      />
       <div className="rounded-xl border border-border bg-white overflow-hidden">
         {isLoading ? <SSMSLoader />
         : !list?.length ? <div className="p-8 text-center text-muted">No discipline records found.</div>
@@ -72,41 +77,35 @@ export default function DisciplineListPage() {
               );
             })}</tbody></table></div>}
       </div>
-      {modal.open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={() => setModal({ open: false })}>
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
-            <div className="flex items-center justify-between px-6 py-4 border-b border-border">
-              <h2 className="text-lg font-bold">{modal.edit ? 'Edit Record' : 'Add Record'}</h2>
-              <button onClick={() => setModal({ open: false })} className="p-1 text-muted hover:text-gray-900 cursor-pointer"><X className="w-5 h-5" /></button>
-            </div>
-            <form onSubmit={handleSubmit} className="p-6 space-y-4">
+      <Modal open={modal.open} onClose={() => setModal({ open: false })} title={modal.edit ? 'Edit Record' : 'Add Record'} subtitle="Record a discipline incident" maxWidth="md">
+        <form onSubmit={handleSubmit}>
+          <div className="space-y-5 p-6">
+            <FormSection title="Incident Info" icon={AlertTriangle} description="Student, term, and date">
               <div className="grid grid-cols-3 gap-4">
-                <div><label className="block text-sm font-medium text-gray-700 mb-1">Student *</label><select value={form.student_id || ''} onChange={(e) => setForm(p => ({ ...p, student_id: Number(e.target.value) }))} required className="w-full px-3 py-2 border border-border rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary"><option value="">Select student</option>{students?.map((s) => <option key={s.id} value={s.id}>{s.first_name} {s.last_name}</option>)}</select></div>
-                <div><label className="block text-sm font-medium text-gray-700 mb-1">Term *</label><select value={form.term_id || ''} onChange={(e) => setForm(p => ({ ...p, term_id: Number(e.target.value) }))} required className="w-full px-3 py-2 border border-border rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary"><option value="">Select term</option>{terms?.map((t) => <option key={t.id} value={t.id}>{t.term_name}</option>)}</select></div>
-                <div><label className="block text-sm font-medium text-gray-700 mb-1">Date *</label><input type="date" value={form.incident_date || ''} onChange={setF('incident_date')} required className="w-full px-3 py-2 border border-border rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary" /></div>
+                <IconField label="Student" icon={User} required>
+                  <select value={form.student_id || ''} onChange={(e) => setForm(p => ({ ...p, student_id: Number(e.target.value) }))} required className={selectClass}><option value="">Select student</option>{students?.map((s) => <option key={s.id} value={s.id}>{s.first_name} {s.last_name}</option>)}</select>
+                </IconField>
+                <IconField label="Term" icon={BookOpen} required>
+                  <select value={form.term_id || ''} onChange={(e) => setForm(p => ({ ...p, term_id: Number(e.target.value) }))} required className={selectClass}><option value="">Select term</option>{terms?.map((t) => <option key={t.id} value={t.id}>{t.term_name}</option>)}</select>
+                </IconField>
+                <IconField label="Date" icon={CalendarDays} required>
+                  <input type="date" value={form.incident_date || ''} onChange={setF('incident_date')} required className={inputClass} />
+                </IconField>
               </div>
-              <div><label className="block text-sm font-medium text-gray-700 mb-1">Description *</label><textarea value={form.description || ''} onChange={setF('description')} required rows={3} className="w-full px-3 py-2 border border-border rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary" /></div>
-              <div><label className="block text-sm font-medium text-gray-700 mb-1">Action Taken</label><input value={form.action_taken || ''} onChange={setF('action_taken')} className="w-full px-3 py-2 border border-border rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary" /></div>
-              <div className="flex justify-end gap-3 pt-2">
-                <button type="button" onClick={() => setModal({ open: false })} className="px-4 py-2 border border-border rounded-lg text-sm text-gray-600 hover:bg-gray-50 cursor-pointer">Cancel</button>
-                <button type="submit" disabled={create.isPending || update.isPending} className="px-4 py-2 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary-dark disabled:opacity-50 cursor-pointer">{modal.edit ? 'Update' : 'Save'}</button>
-              </div>
-            </form>
+            </FormSection>
+            <FormSection title="Details" icon={FileText} description="Description and action taken">
+              <IconField label="Description" icon={FileText} required>
+                <textarea value={form.description || ''} onChange={setF('description')} required rows={3} className={textareaClass} />
+              </IconField>
+              <IconField label="Action Taken" icon={AlertTriangle}>
+                <input value={form.action_taken || ''} onChange={setF('action_taken')} className={inputClass} placeholder="e.g. Verbal warning" />
+              </IconField>
+            </FormSection>
           </div>
-        </div>
-      )}
-      {deleteId && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={() => setDeleteId(null)}>
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-sm mx-4 p-6" onClick={e => e.stopPropagation()}>
-            <h3 className="text-lg font-bold text-gray-900 mb-2">Delete Record?</h3>
-            <p className="text-sm text-muted mb-6">This cannot be undone.</p>
-            <div className="flex justify-end gap-3">
-              <button onClick={() => setDeleteId(null)} className="px-4 py-2 border border-border rounded-lg text-sm text-gray-600 hover:bg-gray-50 cursor-pointer">Cancel</button>
-              <button onClick={() => del.mutate(deleteId)} className="px-4 py-2 rounded-lg bg-red-600 text-white text-sm font-medium hover:bg-red-700 cursor-pointer">Delete</button>
-            </div>
-          </div>
-        </div>
-      )}
+          <ModalFooter onCancel={() => setModal({ open: false })} submitLabel={modal.edit ? 'Update' : 'Save'} submitting={create.isPending || update.isPending} />
+        </form>
+      </Modal>
+      <ConfirmDialog open={deleteId !== null} onClose={() => setDeleteId(null)} onConfirm={() => del.mutate(deleteId!, { onSuccess: () => setDeleteId(null) })} title="Delete Record?" message="This cannot be undone." />
     </div>
   );
 }

@@ -1,10 +1,15 @@
 import { useState } from 'react';
-import { useTerms, useCreateTerm, useUpdateTerm, useDeleteTerm } from '../../../shared/api/academic/academicQueries';
-import { useAcademicYears } from '../../../shared/api/academic/academicQueries';
-import { GraduationCap, Plus, Pencil, Trash2, X } from 'lucide-react';
+import { useTerms, useCreateTerm, useUpdateTerm, useDeleteTerm, useAcademicYears } from '../../../shared/api/academic/academicQueries';
+import { GraduationCap, Plus, Pencil, Trash2, BookOpen, CalendarDays, CheckCircle } from 'lucide-react';
 import SSMSLoader from '../../../shared/components/SSMSLoader';
 import type { Term } from '../../../shared/types';
 import { formatDate } from '../../../shared/utils/formatDate';
+import Modal from '../../../shared/components/ui/Modal';
+import ConfirmDialog from '../../../shared/components/ui/ConfirmDialog';
+import FormSection from '../../../shared/components/ui/FormSection';
+import IconField, { inputClass, selectClass } from '../../../shared/components/ui/IconField';
+import ModalFooter from '../../../shared/components/ui/ModalFooter';
+import PageHeader from '../../../shared/components/ui/PageHeader';
 
 const df: Partial<Term> = { academic_year_id: undefined, term_name: 'Term 1', start_date: '', end_date: '', is_current: false };
 
@@ -30,13 +35,12 @@ export default function TermsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <div className="p-3 rounded-xl bg-primary-light"><GraduationCap className="w-8 h-8 text-primary" /></div>
-          <div><h1 className="text-2xl font-bold text-gray-900">Terms</h1><p className="text-muted text-sm mt-1">Configure terms within each academic year.</p></div>
-        </div>
-        <button onClick={openAdd} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary-dark cursor-pointer"><Plus className="w-4 h-4" /> Add Term</button>
-      </div>
+      <PageHeader
+        icon={<GraduationCap className="w-8 h-8 text-primary" />}
+        title="Terms"
+        description="Configure terms within each academic year."
+        action={<button onClick={openAdd} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary-dark cursor-pointer"><Plus className="w-4 h-4" /> Add Term</button>}
+      />
       <div className="rounded-xl border border-border bg-white overflow-hidden">
         {isLoading ? <SSMSLoader />
         : !list?.length ? <div className="p-8 text-center text-muted">No terms found.</div>
@@ -64,43 +68,35 @@ export default function TermsPage() {
               </tr>;
             })}</tbody></table></div>}
       </div>
-      {modal.open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={() => setModal({ open: false })}>
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-lg mx-4" onClick={e => e.stopPropagation()}>
-            <div className="flex items-center justify-between px-6 py-4 border-b border-border">
-              <h2 className="text-lg font-bold">{modal.edit ? 'Edit Term' : 'Add Term'}</h2>
-              <button onClick={() => setModal({ open: false })} className="p-1 text-muted hover:text-gray-900 cursor-pointer"><X className="w-5 h-5" /></button>
-            </div>
-            <form onSubmit={handleSubmit} className="p-6 space-y-4">
+      <Modal open={modal.open} onClose={() => setModal({ open: false })} title={modal.edit ? 'Edit Term' : 'Add Term'} subtitle="Set academic term dates and status" maxWidth="md">
+        <form onSubmit={handleSubmit}>
+          <div className="space-y-5 p-6">
+            <FormSection title="Term Details" icon={BookOpen} description="Name, year, and date range">
               <div className="grid grid-cols-2 gap-4">
-                <div><label className="block text-sm font-medium text-gray-700 mb-1">Term Name *</label><select value={form.term_name || 'Term 1'} onChange={setF('term_name')} className="w-full px-3 py-2 border border-border rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary"><option value="Term 1">Term 1</option><option value="Term 2">Term 2</option><option value="Term 3">Term 3</option></select></div>
-                <div><label className="block text-sm font-medium text-gray-700 mb-1">Academic Year *</label><select value={form.academic_year_id || ''} onChange={(e) => setForm(p => ({ ...p, academic_year_id: Number(e.target.value) }))} required className="w-full px-3 py-2 border border-border rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary"><option value="">Select year</option>{years?.map((y) => <option key={y.id} value={y.id}>{y.year_name}</option>)}</select></div>
+                <IconField label="Term Name" icon={BookOpen} required>
+                  <select value={form.term_name || 'Term 1'} onChange={setF('term_name')} className={selectClass}><option value="Term 1">Term 1</option><option value="Term 2">Term 2</option><option value="Term 3">Term 3</option></select>
+                </IconField>
+                <IconField label="Academic Year" icon={GraduationCap} required>
+                  <select value={form.academic_year_id || ''} onChange={(e) => setForm(p => ({ ...p, academic_year_id: Number(e.target.value) }))} required className={selectClass}><option value="">Select year</option>{years?.map((y) => <option key={y.id} value={y.id}>{y.year_name}</option>)}</select>
+                </IconField>
               </div>
               <div className="grid grid-cols-2 gap-4">
-                <div><label className="block text-sm font-medium text-gray-700 mb-1">Start Date *</label><input type="date" value={form.start_date || ''} onChange={setF('start_date')} required className="w-full px-3 py-2 border border-border rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary" /></div>
-                <div><label className="block text-sm font-medium text-gray-700 mb-1">End Date *</label><input type="date" value={form.end_date || ''} onChange={setF('end_date')} required className="w-full px-3 py-2 border border-border rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary" /></div>
+                <IconField label="Start Date" icon={CalendarDays} required>
+                  <input type="date" value={form.start_date || ''} onChange={setF('start_date')} required className={inputClass} />
+                </IconField>
+                <IconField label="End Date" icon={CalendarDays} required>
+                  <input type="date" value={form.end_date || ''} onChange={setF('end_date')} required className={inputClass} />
+                </IconField>
               </div>
-              <div><select value={String(form.is_current ?? false)} onChange={e => setForm(p => ({ ...p, is_current: e.target.value === 'true' }))} className="w-full px-3 py-2 border border-border rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary"><option value="false">Not current</option><option value="true">Current term</option></select></div>
-              <div className="flex justify-end gap-3 pt-2">
-                <button type="button" onClick={() => setModal({ open: false })} className="px-4 py-2 border border-border rounded-lg text-sm text-gray-600 hover:bg-gray-50 cursor-pointer">Cancel</button>
-                <button type="submit" disabled={create.isPending || update.isPending} className="px-4 py-2 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary-dark disabled:opacity-50 cursor-pointer">{modal.edit ? 'Update' : 'Save'}</button>
-              </div>
-            </form>
+            </FormSection>
+            <FormSection title="Status" icon={CheckCircle} description="Mark as current term">
+              <select value={String(form.is_current ?? false)} onChange={e => setForm(p => ({ ...p, is_current: e.target.value === 'true' }))} className={selectClass}><option value="false">Not current</option><option value="true">Current term</option></select>
+            </FormSection>
           </div>
-        </div>
-      )}
-      {deleteId && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={() => setDeleteId(null)}>
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-sm mx-4 p-6" onClick={e => e.stopPropagation()}>
-            <h3 className="text-lg font-bold text-gray-900 mb-2">Delete Term?</h3>
-            <p className="text-sm text-muted mb-6">This cannot be undone.</p>
-            <div className="flex justify-end gap-3">
-              <button onClick={() => setDeleteId(null)} className="px-4 py-2 border border-border rounded-lg text-sm text-gray-600 hover:bg-gray-50 cursor-pointer">Cancel</button>
-              <button onClick={() => del.mutate(deleteId)} className="px-4 py-2 rounded-lg bg-red-600 text-white text-sm font-medium hover:bg-red-700 cursor-pointer">Delete</button>
-            </div>
-          </div>
-        </div>
-      )}
+          <ModalFooter onCancel={() => setModal({ open: false })} submitLabel={modal.edit ? 'Update' : 'Save'} submitting={create.isPending || update.isPending} />
+        </form>
+      </Modal>
+      <ConfirmDialog open={deleteId !== null} onClose={() => setDeleteId(null)} onConfirm={() => del.mutate(deleteId!, { onSuccess: () => setDeleteId(null) })} title="Delete Term?" message="This cannot be undone." />
     </div>
   );
 }

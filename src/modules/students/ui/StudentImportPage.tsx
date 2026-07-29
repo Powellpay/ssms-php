@@ -2,10 +2,11 @@ import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Upload, Download, FileSpreadsheet, AlertCircle, CheckCircle2, ArrowLeft, Loader2 } from 'lucide-react';
 import api from '../../../shared/api/axiosConfig';
-import { API_VERSIONED_URL } from '../../../shared/api/apiConfig';
 import { ENDPOINTS } from '../../../shared/api/endpoints';
 import { ROUTES } from '../../../app/routes/constants';
 import PageHeader from '../../../shared/components/ui/PageHeader';
+import FormSection from '../../../shared/components/ui/FormSection';
+import IconField, { inputClass } from '../../../shared/components/ui/IconField';
 
 interface ImportResult {
   imported: number;
@@ -49,8 +50,20 @@ export default function StudentImportPage() {
     }
   };
 
-  const downloadTemplate = () => {
-    window.open(`${API_VERSIONED_URL}${ENDPOINTS.STUDENTS_IMPORT_TEMPLATE}`, '_blank');
+  const downloadTemplate = async () => {
+    try {
+      const { data } = await api.get(ENDPOINTS.STUDENTS_IMPORT_TEMPLATE, { responseType: 'blob' });
+      const url = window.URL.createObjectURL(new Blob([data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'student-import-template.csv');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch {
+      alert('Failed to download template. Please try again.');
+    }
   };
 
   return (
@@ -62,25 +75,22 @@ export default function StudentImportPage() {
       />
 
       <div className="max-w-2xl mx-auto space-y-6">
-        {/* Template download */}
-        <div className="bg-white rounded-xl border border-border p-6">
+        <FormSection title="Download Template" icon={Download} description="Use our CSV template to format your data correctly">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <FileSpreadsheet className="w-8 h-8 text-primary" />
               <div>
-                <h3 className="font-medium text-gray-900">Download Template</h3>
-                <p className="text-sm text-muted">Use our CSV template to format your data correctly</p>
+                <h3 className="font-medium text-gray-900">Template File</h3>
+                <p className="text-sm text-muted">Contains the required columns and a sample row</p>
               </div>
             </div>
             <button onClick={downloadTemplate} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border text-sm text-gray-600 hover:bg-gray-50 cursor-pointer">
-              <Download className="w-4 h-4" /> Template
+              <Download className="w-4 h-4" /> Download
             </button>
           </div>
-        </div>
+        </FormSection>
 
-        {/* File upload */}
-        <div className="bg-white rounded-xl border border-border p-6">
-          <h3 className="font-medium text-gray-900 mb-4">Upload CSV</h3>
+        <FormSection title="Upload CSV" icon={Upload} description="Select the completed CSV file to import">
           <div
             onClick={() => fileRef.current?.click()}
             className="border-2 border-dashed border-border rounded-xl p-8 text-center hover:border-primary hover:bg-primary-light/20 cursor-pointer transition-colors"
@@ -92,7 +102,7 @@ export default function StudentImportPage() {
           </div>
 
           {file && (
-            <div className="mt-4 flex items-center justify-between bg-gray-50 rounded-lg px-4 py-3">
+            <div className="flex items-center justify-between bg-gray-50 rounded-lg px-4 py-3">
               <span className="text-sm text-gray-700">{file.name} ({(file.size / 1024).toFixed(1)} KB)</span>
               <button
                 onClick={handleUpload}
@@ -104,15 +114,14 @@ export default function StudentImportPage() {
               </button>
             </div>
           )}
-        </div>
+        </FormSection>
 
-        {/* Results */}
         {result && (
           <div className="bg-white rounded-xl border border-border p-6 space-y-3">
             <div className="flex items-center gap-3">
               {result.errors.length === 0
-                ? <CheckCircle2 className="w-6 h-6 text-success" />
-                : <AlertCircle className="w-6 h-6 text-warning" />
+                ? <CheckCircle2 className="w-6 h-6 text-alert-success-text" />
+                : <AlertCircle className="w-6 h-6 text-alert-error-text" />
               }
               <div>
                 <h3 className="font-medium text-gray-900">
@@ -131,7 +140,6 @@ export default function StudentImportPage() {
           </div>
         )}
 
-        {/* Back button */}
         <div className="text-center">
           <button onClick={() => navigate(ROUTES.STUDENTS.LIST)} className="text-sm text-primary hover:text-primary-dark cursor-pointer">
             &larr; Back to Students

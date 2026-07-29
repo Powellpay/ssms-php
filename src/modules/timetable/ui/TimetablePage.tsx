@@ -3,9 +3,15 @@ import { useTimetableList, useCreateTimetable, useUpdateTimetable, useDeleteTime
 import { useStreams, useAcademicYears } from '../../../shared/api/academic/academicQueries';
 import { useSubjects } from '../../../shared/api/curriculum/curriculumQueries';
 import { useStaffList } from '../../../shared/api/staff/staffQueries';
-import { Timer, Plus, Pencil, Trash2, X } from 'lucide-react';
+import { Timer, Plus, Pencil, Trash2, GitBranch, BookOpen, User, CalendarDays, Hash, Clock } from 'lucide-react';
 import SSMSLoader from '../../../shared/components/SSMSLoader';
 import type { Timetable } from '../../../shared/types';
+import Modal from '../../../shared/components/ui/Modal';
+import ConfirmDialog from '../../../shared/components/ui/ConfirmDialog';
+import FormSection from '../../../shared/components/ui/FormSection';
+import IconField, { inputClass, selectClass } from '../../../shared/components/ui/IconField';
+import ModalFooter from '../../../shared/components/ui/ModalFooter';
+import PageHeader from '../../../shared/components/ui/PageHeader';
 
 const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'] as const;
 const df: Partial<Timetable> = { stream_id: 0, subject_id: 0, staff_id: 0, academic_year_id: 0, day_of_week: 'Monday', period_no: 1, start_time: '', end_time: '' };
@@ -33,8 +39,6 @@ export default function TimetablePage() {
     else create.mutate(form, { onSuccess: () => setModal({ open: false }) });
   };
 
-  const handleDelete = (id: number) => del.mutate(id, { onSuccess: () => setDeleteId(null) });
-
   const streamMap = new Map(streams?.map(s => [s.id, s]));
   const subjectMap = new Map(subjects?.map(s => [s.id, s]));
   const staffMap = new Map(staff?.map(s => [s.id, s]));
@@ -42,13 +46,12 @@ export default function TimetablePage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <div className="p-3 rounded-xl bg-primary-light"><Timer className="w-8 h-8 text-primary" /></div>
-          <div><h1 className="text-2xl font-bold text-gray-900">Timetable</h1><p className="text-muted text-sm mt-1">Build and view weekly timetables per stream with period slots.</p></div>
-        </div>
-        <button onClick={openAdd} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary-dark cursor-pointer"><Plus className="w-4 h-4" /> Add Entry</button>
-      </div>
+      <PageHeader
+        icon={<Timer className="w-8 h-8 text-primary" />}
+        title="Timetable"
+        description="Build and view weekly timetables per stream with period slots."
+        action={<button onClick={openAdd} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary-dark cursor-pointer"><Plus className="w-4 h-4" /> Add Entry</button>}
+      />
       <div className="rounded-xl border border-border bg-white overflow-hidden">
         {isLoading ? <SSMSLoader />
         : !list?.length ? <div className="p-8 text-center text-muted">No timetable entries found.</div>
@@ -87,50 +90,50 @@ export default function TimetablePage() {
               );
             })}</tbody></table></div>}
       </div>
-      {modal.open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={() => setModal({ open: false })}>
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
-            <div className="flex items-center justify-between px-6 py-4 border-b border-border">
-              <h2 className="text-lg font-bold">{modal.edit ? 'Edit Timetable Entry' : 'Add Timetable Entry'}</h2>
-              <button onClick={() => setModal({ open: false })} className="p-1 text-muted hover:text-gray-900 cursor-pointer"><X className="w-5 h-5" /></button>
-            </div>
-            <form onSubmit={handleSubmit} className="p-6 space-y-4">
+      <Modal open={modal.open} onClose={() => setModal({ open: false })} title={modal.edit ? 'Edit Timetable Entry' : 'Add Timetable Entry'} subtitle="Schedule a subject period in the weekly timetable" maxWidth="md">
+        <form onSubmit={handleSubmit}>
+          <div className="space-y-5 p-6">
+            <FormSection title="Assignment" icon={Timer} description="Stream, subject, staff, and year">
               <div className="grid grid-cols-2 gap-4">
-                <div><label className="block text-sm font-medium text-gray-700 mb-1">Stream *</label><select value={form.stream_id || ''} onChange={(e) => setForm(p => ({ ...p, stream_id: Number(e.target.value) }))} required className="w-full px-3 py-2 border border-border rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary"><option value="">Select stream</option>{streams?.map((s) => <option key={s.id} value={s.id}>{s.stream_name}</option>)}</select></div>
-                <div><label className="block text-sm font-medium text-gray-700 mb-1">Subject *</label><select value={form.subject_id || ''} onChange={(e) => setForm(p => ({ ...p, subject_id: Number(e.target.value) }))} required className="w-full px-3 py-2 border border-border rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary"><option value="">Select subject</option>{subjects?.map((s) => <option key={s.id} value={s.id}>{s.subject_name}</option>)}</select></div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div><label className="block text-sm font-medium text-gray-700 mb-1">Staff *</label><select value={form.staff_id || ''} onChange={(e) => setForm(p => ({ ...p, staff_id: Number(e.target.value) }))} required className="w-full px-3 py-2 border border-border rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary"><option value="">Select staff</option>{staff?.map((s) => <option key={s.id} value={s.id}>{s.first_name} {s.last_name}</option>)}</select></div>
-                <div><label className="block text-sm font-medium text-gray-700 mb-1">Academic Year *</label><select value={form.academic_year_id || ''} onChange={(e) => setForm(p => ({ ...p, academic_year_id: Number(e.target.value) }))} required className="w-full px-3 py-2 border border-border rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary"><option value="">Select year</option>{academicYears?.map((y) => <option key={y.id} value={y.id}>{y.year_name}</option>)}</select></div>
+                <IconField label="Stream" icon={GitBranch} required>
+                  <select value={form.stream_id || ''} onChange={(e) => setForm(p => ({ ...p, stream_id: Number(e.target.value) }))} required className={selectClass}><option value="">Select stream</option>{streams?.map((s) => <option key={s.id} value={s.id}>{s.stream_name}</option>)}</select>
+                </IconField>
+                <IconField label="Subject" icon={BookOpen} required>
+                  <select value={form.subject_id || ''} onChange={(e) => setForm(p => ({ ...p, subject_id: Number(e.target.value) }))} required className={selectClass}><option value="">Select subject</option>{subjects?.map((s) => <option key={s.id} value={s.id}>{s.subject_name}</option>)}</select>
+                </IconField>
               </div>
               <div className="grid grid-cols-2 gap-4">
-                <div><label className="block text-sm font-medium text-gray-700 mb-1">Day *</label><select value={form.day_of_week || 'Monday'} onChange={setF('day_of_week')} required className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary outline-none">{days.map(d => <option key={d} value={d}>{d}</option>)}</select></div>
-                <div><label className="block text-sm font-medium text-gray-700 mb-1">Period No *</label><input type="number" value={form.period_no || 1} onChange={setF('period_no')} required className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary outline-none" /></div>
+                <IconField label="Staff" icon={User} required>
+                  <select value={form.staff_id || ''} onChange={(e) => setForm(p => ({ ...p, staff_id: Number(e.target.value) }))} required className={selectClass}><option value="">Select staff</option>{staff?.map((s) => <option key={s.id} value={s.id}>{s.first_name} {s.last_name}</option>)}</select>
+                </IconField>
+                <IconField label="Academic Year" icon={CalendarDays} required>
+                  <select value={form.academic_year_id || ''} onChange={(e) => setForm(p => ({ ...p, academic_year_id: Number(e.target.value) }))} required className={selectClass}><option value="">Select year</option>{academicYears?.map((y) => <option key={y.id} value={y.id}>{y.year_name}</option>)}</select>
+                </IconField>
+              </div>
+            </FormSection>
+            <FormSection title="Schedule" icon={Clock} description="Day, period, and time slot">
+              <div className="grid grid-cols-2 gap-4">
+                <IconField label="Day" icon={CalendarDays} required>
+                  <select value={form.day_of_week || 'Monday'} onChange={setF('day_of_week')} required className={selectClass}>{days.map(d => <option key={d} value={d}>{d}</option>)}</select>
+                </IconField>
+                <IconField label="Period No" icon={Hash} required>
+                  <input type="number" value={form.period_no || 1} onChange={setF('period_no')} required className={inputClass} />
+                </IconField>
               </div>
               <div className="grid grid-cols-2 gap-4">
-                <div><label className="block text-sm font-medium text-gray-700 mb-1">Start Time *</label><input type="time" value={form.start_time || ''} onChange={setF('start_time')} required className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary outline-none" /></div>
-                <div><label className="block text-sm font-medium text-gray-700 mb-1">End Time *</label><input type="time" value={form.end_time || ''} onChange={setF('end_time')} required className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary outline-none" /></div>
+                <IconField label="Start Time" icon={Clock} required>
+                  <input type="time" value={form.start_time || ''} onChange={setF('start_time')} required className={inputClass} />
+                </IconField>
+                <IconField label="End Time" icon={Clock} required>
+                  <input type="time" value={form.end_time || ''} onChange={setF('end_time')} required className={inputClass} />
+                </IconField>
               </div>
-              <div className="flex justify-end gap-3 pt-2">
-                <button type="button" onClick={() => setModal({ open: false })} className="px-4 py-2 border border-border rounded-lg text-sm text-gray-600 hover:bg-gray-50 cursor-pointer">Cancel</button>
-                <button type="submit" disabled={create.isPending || update.isPending} className="px-4 py-2 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary-dark disabled:opacity-50 cursor-pointer">{modal.edit ? 'Update' : 'Save'}</button>
-              </div>
-            </form>
+            </FormSection>
           </div>
-        </div>
-      )}
-      {deleteId && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={() => setDeleteId(null)}>
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-sm mx-4 p-6" onClick={e => e.stopPropagation()}>
-            <h3 className="text-lg font-bold text-gray-900 mb-2">Delete Timetable Entry?</h3>
-            <p className="text-sm text-muted mb-6">This action cannot be undone.</p>
-            <div className="flex justify-end gap-3">
-              <button onClick={() => setDeleteId(null)} className="px-4 py-2 border border-border rounded-lg text-sm text-gray-600 hover:bg-gray-50 cursor-pointer">Cancel</button>
-              <button onClick={() => handleDelete(deleteId)} className="px-4 py-2 rounded-lg bg-alert-error-text text-white text-sm font-medium hover:bg-red-700 cursor-pointer">Delete</button>
-            </div>
-          </div>
-        </div>
-      )}
+          <ModalFooter onCancel={() => setModal({ open: false })} submitLabel={modal.edit ? 'Update' : 'Save'} submitting={create.isPending || update.isPending} />
+        </form>
+      </Modal>
+      <ConfirmDialog open={deleteId !== null} onClose={() => setDeleteId(null)} onConfirm={() => del.mutate(deleteId!, { onSuccess: () => setDeleteId(null) })} title="Delete Timetable Entry?" message="This action cannot be undone." />
     </div>
   );
 }
