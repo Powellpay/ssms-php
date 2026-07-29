@@ -86,13 +86,13 @@ export default function AppLayout() {
         )}
       >
         {/* Logo */}
-        <div className={cn('flex items-center h-16 px-4 border-b border-border', !sidebarOpen && 'lg:justify-center')}>
-          <LogoImage size="sm" />
+        <div className={cn('flex items-center justify-between h-16 px-4 border-b border-border', !sidebarOpen && 'lg:justify-center')}>
+          <div className="flex items-center gap-2.5">
+            <LogoImage size="sm" />
+            {sidebarOpen && <span className="text-lg font-bold text-primary">SSMS</span>}
+          </div>
           {sidebarOpen && (
-            <div className="ml-2.5 flex items-baseline gap-1.5">
-              <span className="text-lg font-bold text-primary">SSMS</span>
-              <span className="text-[10px] text-muted/50 font-mono">v{APP_VERSION}</span>
-            </div>
+            <span className="text-[10px] text-muted/40 font-mono tracking-tight">v{APP_VERSION}</span>
           )}
         </div>
 
