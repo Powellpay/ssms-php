@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAppDispatch } from '../../app/store/hooks';
+import { setVerificationContext } from '../../app/store/slices/authSlice';
 import { useRegister } from '../../shared/api/auth/authQueries';
 import { ROUTES } from '../../app/routes/constants';
 import { Mail, Lock, User, Phone, Eye, EyeOff, Building2, UserPlus } from 'lucide-react';
@@ -7,6 +9,7 @@ import AuthLayout from './AuthLayout';
 
 export default function RegisterPage() {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const registerMutation = useRegister();
   const [form, setForm] = useState({
     first_name: '', last_name: '', school_name: '',
@@ -29,7 +32,17 @@ export default function RegisterPage() {
       username: form.email.split('@')[0],
       role_id: 1,
     }, {
-      onSuccess: () => navigate(ROUTES.AUTH.LOGIN),
+      onSuccess: (data) => {
+        if (data.user?.id) {
+          dispatch(setVerificationContext({
+            type: 'email',
+            flow: 'registration',
+            userId: data.user.id,
+            email: form.email,
+          }));
+        }
+        navigate(ROUTES.AUTH.VERIFY_EMAIL);
+      },
     });
   };
 

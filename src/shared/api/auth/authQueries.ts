@@ -2,7 +2,12 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import type { AxiosError } from 'axios';
 import api from '../axiosConfig';
 import { ENDPOINTS } from '../endpoints';
-import type { LoginRequest, RegisterRequest, AuthResponse, ForgotPasswordRequest, ResetPasswordRequest, ApiError } from './authTypes';
+import type {
+  LoginRequest, RegisterRequest,
+  ForgotPasswordRequest, ResetPasswordRequest,
+  VerifyEmailRequest, ResendVerificationRequest,
+  AuthApiResponse, ApiError,
+} from './authTypes';
 import type { User } from '../../types';
 
 export const authKeys = {
@@ -11,20 +16,42 @@ export const authKeys = {
 };
 
 export function useLogin() {
-  return useMutation<AuthResponse, AxiosError<ApiError>, LoginRequest>({
+  return useMutation<AuthApiResponse, AxiosError<ApiError>, LoginRequest>({
     mutationFn: async (credentials) => {
-      const { data } = await api.post<AuthResponse>(ENDPOINTS.AUTH.LOGIN, credentials);
-      localStorage.setItem('token', data.token);
+      const { data } = await api.post<AuthApiResponse>(ENDPOINTS.AUTH.LOGIN, credentials);
+      if (data.token) {
+        localStorage.setItem('token', data.token);
+      }
       return data;
     },
   });
 }
 
 export function useRegister() {
-  return useMutation<AuthResponse, AxiosError<ApiError>, RegisterRequest>({
+  return useMutation<AuthApiResponse, AxiosError<ApiError>, RegisterRequest>({
     mutationFn: async (payload) => {
-      const { data } = await api.post<AuthResponse>(ENDPOINTS.AUTH.REGISTER, payload);
-      localStorage.setItem('token', data.token);
+      const { data } = await api.post<AuthApiResponse>(ENDPOINTS.AUTH.REGISTER, payload);
+      return data;
+    },
+  });
+}
+
+export function useVerifyEmail() {
+  return useMutation<AuthApiResponse, AxiosError<ApiError>, VerifyEmailRequest>({
+    mutationFn: async (payload) => {
+      const { data } = await api.post<AuthApiResponse>(ENDPOINTS.AUTH.VERIFY_EMAIL, payload);
+      if (data.token) {
+        localStorage.setItem('token', data.token);
+      }
+      return data;
+    },
+  });
+}
+
+export function useResendVerification() {
+  return useMutation<AuthApiResponse, AxiosError<ApiError>, ResendVerificationRequest>({
+    mutationFn: async (payload) => {
+      const { data } = await api.post<AuthApiResponse>(ENDPOINTS.AUTH.RESEND_VERIFICATION, payload);
       return data;
     },
   });

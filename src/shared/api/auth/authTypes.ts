@@ -29,6 +29,25 @@ export interface ResetPasswordRequest {
   password_confirmation: string;
 }
 
+export interface VerifyEmailRequest {
+  user_id: number;
+  code: string;
+}
+
+export interface ResendVerificationRequest {
+  email: string;
+}
+
+export interface AuthApiResponse {
+  success: boolean;
+  code: string;
+  message: string;
+  user?: User;
+  token?: string | null;
+  user_id?: number;
+  school?: unknown;
+}
+
 export interface ApiError {
   message: string;
   errors?: Record<string, string[]>;

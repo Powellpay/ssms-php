@@ -5,6 +5,8 @@ import LandingPage from './modules/landing/LandingPage';
 import LoginPage from './modules/auth/LoginPage';
 import RegisterPage from './modules/auth/RegisterPage';
 import ForgotPasswordPage from './modules/auth/ForgotPasswordPage';
+import VerifyEmailPage from './modules/auth/VerifyEmailPage';
+import ResetPasswordPage from './modules/auth/ResetPasswordPage';
 import AppLayout from './shared/components/layout/AppLayout';
 import DashboardPage from './modules/dashboard/DashboardPage';
 import AcademicLayout from './modules/academic/AcademicLayout';
@@ -34,6 +36,8 @@ function App() {
       <Route path={ROUTES.AUTH.LOGIN} element={<LoginPage />} />
       <Route path={ROUTES.AUTH.REGISTER} element={<RegisterPage />} />
       <Route path={ROUTES.AUTH.FORGOT_PASSWORD} element={<ForgotPasswordPage />} />
+      <Route path={ROUTES.AUTH.VERIFY_EMAIL} element={<VerifyEmailPage />} />
+      <Route path={ROUTES.AUTH.RESET_PASSWORD} element={<ResetPasswordPage />} />
 
       <Route element={<AppLayout />}>
         <Route path={ROUTES.DASHBOARD} element={<DashboardPage />} />

@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAppDispatch } from '../../app/store/hooks';
-import { setCredentials } from '../../app/store/slices/authSlice';
+import { setCredentials, setVerificationContext } from '../../app/store/slices/authSlice';
 import { ROUTES } from '../../app/routes/constants';
 import { useLogin } from '../../shared/api/auth/authQueries';
 import { Mail, Lock, Eye, EyeOff, LogIn } from 'lucide-react';
@@ -19,8 +19,20 @@ export default function LoginPage() {
     e.preventDefault();
     loginMutation.mutate({ email, password }, {
       onSuccess: (data) => {
-        dispatch(setCredentials({ user: data.user, token: data.token }));
-        navigate(ROUTES.DASHBOARD);
+        if (data.code === 'EMAIL_NOT_VERIFIED' && data.user_id) {
+          dispatch(setVerificationContext({
+            type: 'email',
+            flow: 'login',
+            userId: data.user_id,
+            email,
+          }));
+          navigate(ROUTES.AUTH.VERIFY_EMAIL);
+          return;
+        }
+        if (data.user && data.token) {
+          dispatch(setCredentials({ user: data.user, token: data.token }));
+          navigate(ROUTES.DASHBOARD);
+        }
       },
     });
   };
