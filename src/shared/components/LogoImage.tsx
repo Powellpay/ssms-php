@@ -16,7 +16,7 @@ export default function LogoImage({ className, size = 'md' }: LogoImageProps) {
     <img
       src="/logo.png"
       alt="SSMS"
-      className={cn(SIZE_MAP[size], className)}
+      className={cn('rounded-lg', SIZE_MAP[size], className)}
     />
   );
 }
