@@ -1,21 +1,40 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import type { AxiosError } from 'axios';
 import type { ApiError } from '../../shared/api/auth/authTypes';
 import { useForgotPassword } from '../../shared/api/auth/authQueries';
 import { ROUTES } from '../../app/routes/constants';
-import { Mail, ArrowLeft, Send } from 'lucide-react';
+import { Mail, ArrowLeft, Send, RefreshCw } from 'lucide-react';
 import AuthLayout from './AuthLayout';
+
+const RESEND_COOLDOWN = 60;
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
   const [sent, setSent] = useState(false);
+  const [cooldown, setCooldown] = useState(0);
   const forgotMutation = useForgotPassword();
+
+  useEffect(() => {
+    if (cooldown > 0) {
+      const t = setTimeout(() => setCooldown((c) => c - 1), 1000);
+      return () => clearTimeout(t);
+    }
+  }, [cooldown]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     forgotMutation.mutate({ email }, {
       onSuccess: () => setSent(true),
+    });
+  };
+
+  const handleResend = () => {
+    if (cooldown > 0 || forgotMutation.isPending) return;
+    forgotMutation.mutate({ email }, {
+      onSuccess: () => {
+        setCooldown(RESEND_COOLDOWN);
+      },
     });
   };
 
@@ -34,6 +53,25 @@ export default function ForgotPasswordPage() {
           <p className="text-sm text-gray-600">
             If an account exists for <strong>{email}</strong>, you'll receive a password reset link shortly.
           </p>
+
+          {forgotMutation.error && (
+            <p className="text-sm text-alert-error-text bg-alert-error-bg border border-alert-error-border rounded-lg px-4 py-3">
+              {(forgotMutation.error as AxiosError<ApiError>)?.response?.data?.message || (forgotMutation.error as AxiosError<ApiError>)?.message}
+            </p>
+          )}
+
+          <button
+            type="button"
+            onClick={handleResend}
+            disabled={cooldown > 0 || forgotMutation.isPending}
+            className="group inline-flex items-center gap-1.5 text-sm text-primary hover:underline font-medium disabled:text-gray-400 disabled:no-underline cursor-pointer"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 transition-transform duration-500 ${forgotMutation.isPending ? 'animate-spin' : ''} ${cooldown === 0 && !forgotMutation.isPending ? 'group-hover:rotate-180' : ''}`} />
+            {cooldown > 0
+              ? `Resend link in ${cooldown}s`
+              : 'Resend link'}
+          </button>
+
           <Link to={ROUTES.AUTH.LOGIN} className="inline-flex items-center gap-2 text-sm text-primary hover:underline font-medium">
             <ArrowLeft className="w-4 h-4" /> Back to sign in
           </Link>
