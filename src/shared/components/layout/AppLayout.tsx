@@ -4,6 +4,7 @@ import { useAppSelector, useAppDispatch } from '../../../app/store/hooks';
 import { logout } from '../../../app/store/slices/authSlice';
 import { ROUTES } from '../../../app/routes/constants';
 import { useLogout } from '../../api/auth/authQueries';
+import type { ModuleSlug } from '../../types';
 import {
   GraduationCap, LayoutDashboard, Users, ClipboardCheck,
   BarChart3, CalendarCheck, Timer, Wallet, Library,
@@ -12,20 +13,27 @@ import {
 } from 'lucide-react';
 import { cn } from '../../utils/cn';
 
-const navItems = [
-  { icon: LayoutDashboard, label: 'Dashboard', path: ROUTES.DASHBOARD },
-  { icon: School, label: 'Academic', path: '/academic' },
-  { icon: UserCircle, label: 'Staff', path: ROUTES.STAFF.LIST },
-  { icon: Users, label: 'Students', path: ROUTES.STUDENTS.LIST },
-  { icon: BookMarked, label: 'Curriculum', path: ROUTES.CURRICULUM.SUBJECTS },
-  { icon: ClipboardCheck, label: 'Assessment', path: ROUTES.ASSESSMENT.RECORDS },
-  { icon: BarChart3, label: 'Reports', path: ROUTES.REPORTS.LIST },
-  { icon: CalendarCheck, label: 'Attendance', path: ROUTES.ATTENDANCE.REGISTER },
-  { icon: Timer, label: 'Timetable', path: ROUTES.TIMETABLE.VIEW },
-  { icon: Wallet, label: 'Finance', path: ROUTES.FINANCE.INVOICES },
-  { icon: Scale, label: 'Discipline', path: ROUTES.DISCIPLINE.LIST },
-  { icon: Library, label: 'Library', path: ROUTES.LIBRARY.BOOKS },
-  { icon: Megaphone, label: 'Announcements', path: ROUTES.ANNOUNCEMENTS.LIST },
+interface NavItem {
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  path: string;
+  module: ModuleSlug;
+}
+
+const ALL_NAV_ITEMS: NavItem[] = [
+  { icon: LayoutDashboard, label: 'Dashboard', path: ROUTES.DASHBOARD, module: 'dashboard' },
+  { icon: School, label: 'Academic', path: '/academic', module: 'academic' },
+  { icon: UserCircle, label: 'Staff', path: ROUTES.STAFF.LIST, module: 'staff' },
+  { icon: Users, label: 'Students', path: ROUTES.STUDENTS.LIST, module: 'students' },
+  { icon: BookMarked, label: 'Curriculum', path: ROUTES.CURRICULUM.SUBJECTS, module: 'curriculum' },
+  { icon: ClipboardCheck, label: 'Assessment', path: ROUTES.ASSESSMENT.RECORDS, module: 'assessment' },
+  { icon: BarChart3, label: 'Reports', path: ROUTES.REPORTS.LIST, module: 'reports' },
+  { icon: CalendarCheck, label: 'Attendance', path: ROUTES.ATTENDANCE.REGISTER, module: 'attendance' },
+  { icon: Timer, label: 'Timetable', path: ROUTES.TIMETABLE.VIEW, module: 'timetable' },
+  { icon: Wallet, label: 'Finance', path: ROUTES.FINANCE.INVOICES, module: 'finance' },
+  { icon: Scale, label: 'Discipline', path: ROUTES.DISCIPLINE.LIST, module: 'discipline' },
+  { icon: Library, label: 'Library', path: ROUTES.LIBRARY.BOOKS, module: 'library' },
+  { icon: Megaphone, label: 'Announcements', path: ROUTES.ANNOUNCEMENTS.LIST, module: 'announcements' },
 ];
 
 export default function AppLayout() {
@@ -37,16 +45,23 @@ export default function AppLayout() {
   const navigate = useNavigate();
   const logoutMutation = useLogout();
 
+  const allowedModules = user?.is_school_admin || !user?.modules
+    ? ALL_NAV_ITEMS.map(i => i.module)
+    : user.modules;
+
+  const moduleSet = new Set(allowedModules);
+  const navItems = ALL_NAV_ITEMS.filter(i => moduleSet.has(i.module));
+
   const isActive = (path: string) => {
     if (path === ROUTES.DASHBOARD) return location.pathname === path;
     return location.pathname.startsWith(path);
   };
 
   const handleLogout = () => {
+    dispatch(logout());
     logoutMutation.mutate(undefined, {
-      onSuccess: () => {
-        dispatch(logout());
-        navigate(ROUTES.AUTH.LOGIN);
+      onSettled: () => {
+        navigate(ROUTES.AUTH.LOGIN, { replace: true });
       },
     });
   };

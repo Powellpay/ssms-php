@@ -1,11 +1,27 @@
 import { useState } from 'react';
 import { useStaffList, useCreateStaff, useUpdateStaff, useDeleteStaff } from '../../../shared/api/staff/staffQueries';
 import { Plus, Pencil, Trash2, UserCircle } from 'lucide-react';
-import type { Staff } from '../../../shared/types';
+import type { ModuleSlug, Staff } from '../../../shared/types';
 import PageHeader from '../../../shared/components/ui/PageHeader';
 import DataTable from '../../../shared/components/ui/DataTable';
 import Modal from '../../../shared/components/ui/Modal';
 import ConfirmDialog from '../../../shared/components/ui/ConfirmDialog';
+
+const MODULES: { slug: ModuleSlug; label: string }[] = [
+  { slug: 'dashboard', label: 'Dashboard' },
+  { slug: 'academic', label: 'Academic' },
+  { slug: 'staff', label: 'Staff' },
+  { slug: 'students', label: 'Students' },
+  { slug: 'curriculum', label: 'Curriculum' },
+  { slug: 'assessment', label: 'Assessment' },
+  { slug: 'reports', label: 'Reports' },
+  { slug: 'attendance', label: 'Attendance' },
+  { slug: 'timetable', label: 'Timetable' },
+  { slug: 'finance', label: 'Finance' },
+  { slug: 'discipline', label: 'Discipline' },
+  { slug: 'library', label: 'Library' },
+  { slug: 'announcements', label: 'Announcements' },
+];
 
 const defaultForm: Partial<Staff> = { staff_no: '', first_name: '', last_name: '', gender: 'Male', email: '', phone: '', designation: '', status: 'active', dob: '' };
 
@@ -31,17 +47,30 @@ export default function StaffListPage() {
   const deleteStaff = useDeleteStaff();
   const [modal, setModal] = useState<{ open: boolean; edit?: Staff }>({ open: false });
   const [form, setForm] = useState(defaultForm);
+  const [selectedModules, setSelectedModules] = useState<ModuleSlug[]>([]);
   const [deleteId, setDeleteId] = useState<number | null>(null);
 
-  const openAdd = () => { setForm(defaultForm); setModal({ open: true }); };
-  const openEdit = (s: Staff) => { setForm({ staff_no: s.staff_no, first_name: s.first_name, last_name: s.last_name, gender: s.gender, email: s.email || '', phone: s.phone || '', designation: s.designation || '', status: s.status, dob: s.dob || '' }); setModal({ open: true, edit: s }); };
+  const openAdd = () => { setForm(defaultForm); setSelectedModules([]); setModal({ open: true }); };
+  const openEdit = (s: Staff) => {
+    setForm({ staff_no: s.staff_no, first_name: s.first_name, last_name: s.last_name, gender: s.gender, email: s.email || '', phone: s.phone || '', designation: s.designation || '', status: s.status, dob: s.dob || '' });
+    setSelectedModules([]);
+    setModal({ open: true, edit: s });
+  };
+
+  const toggleModule = (slug: ModuleSlug) => {
+    setSelectedModules(prev =>
+      prev.includes(slug) ? prev.filter(m => m !== slug) : [...prev, slug],
+    );
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const payload: any = { ...form, modules: selectedModules.length > 0 ? selectedModules : undefined };
     if (modal.edit) {
-      updateStaff.mutate({ ...form, id: modal.edit.id } as Partial<Staff> & { id: number }, { onSuccess: () => setModal({ open: false }) });
+      payload.id = modal.edit.id;
+      updateStaff.mutate(payload, { onSuccess: () => setModal({ open: false }) });
     } else {
-      createStaff.mutate(form, { onSuccess: () => setModal({ open: false }) });
+      createStaff.mutate(payload, { onSuccess: () => setModal({ open: false }) });
     }
   };
 
@@ -89,6 +118,22 @@ export default function StaffListPage() {
           <div className="grid grid-cols-2 gap-4">
             <div><label className="block text-sm font-medium text-gray-700 mb-1">Email</label><input type="email" value={form.email} onChange={set('email')} className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary outline-none" /></div>
             <div><label className="block text-sm font-medium text-gray-700 mb-1">Phone</label><input value={form.phone} onChange={set('phone')} className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary outline-none" /></div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Module Access</label>
+            <div className="grid grid-cols-3 gap-2">
+              {MODULES.map(mod => (
+                <label key={mod.slug} className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={selectedModules.includes(mod.slug)}
+                    onChange={() => toggleModule(mod.slug)}
+                    className="rounded border-border text-primary focus:ring-primary"
+                  />
+                  {mod.label}
+                </label>
+              ))}
+            </div>
           </div>
           <div className="flex justify-end gap-3 pt-2">
             <button type="button" onClick={() => setModal({ open: false })} className="px-4 py-2 border border-border rounded-lg text-sm text-gray-600 hover:bg-gray-50 cursor-pointer">Cancel</button>

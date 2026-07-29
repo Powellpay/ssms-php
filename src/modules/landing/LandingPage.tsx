@@ -116,7 +116,7 @@ export default function LandingPage() {
           >
             <div className="rounded-2xl bg-gradient-to-br from-primary/5 to-primary-light border border-border p-8 shadow-xl w-full">
               <img
-                src="https://placehold.co/600x400/1f6f43/ffffff?text=SSMS+Dashboard"
+                src="/dashboard-preview.svg"
                 alt="SSMS Dashboard Preview"
                 className="w-full h-auto rounded-lg shadow-md"
               />

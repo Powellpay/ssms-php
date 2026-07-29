@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400">
+  <defs>
+    <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#059669;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#047857;stop-opacity:1"/>
+    </linearGradient>
+    <linearGradient id="g2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#e2e8f0;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#cbd5e1;stop-opacity:1"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="400" rx="8" fill="#f8fafc"/>
+  <!-- Sidebar -->
+  <rect x="0" y="0" width="140" height="400" fill="#ffffff" rx="0"/>
+  <rect x="0" y="0" width="140" height="400" fill="#f1f5f9" rx="0"/>
+  <rect x="12" y="14" width="28" height="28" rx="6" fill="url(#g1)"/>
+  <text x="46" y="33" font-family="system-ui" font-size="13" font-weight="700" fill="#059669" dx="0" dy="0">SSMS</text>
+  <!-- Nav items -->
+  <rect x="10" y="58" width="120" height="28" rx="6" fill="#059669" opacity="0.12"/>
+  <text x="36" y="76" font-family="system-ui" font-size="11" fill="#059669" font-weight="600">Dashboard</text>
+  <rect x="10" y="92" width="120" height="28" rx="6" fill="transparent"/>
+  <text x="36" y="110" font-family="system-ui" font-size="11" fill="#64748b" font-weight="500">Academic</text>
+  <rect x="10" y="126" width="120" height="28" rx="6" fill="transparent"/>
+  <text x="36" y="144" font-family="system-ui" font-size="11" fill="#64748b" font-weight="500">Students</text>
+  <rect x="10" y="160" width="120" height="28" rx="6" fill="transparent"/>
+  <text x="36" y="178" font-family="system-ui" font-size="11" fill="#64748b" font-weight="500">Curriculum</text>
+  <rect x="10" y="194" width="120" height="28" rx="6" fill="transparent"/>
+  <text x="36" y="212" font-family="system-ui" font-size="11" fill="#64748b" font-weight="500">Assessment</text>
+  <rect x="10" y="228" width="120" height="28" rx="6" fill="transparent"/>
+  <text x="36" y="246" font-family="system-ui" font-size="11" fill="#64748b" font-weight="500">Finance</text>
+  <!-- User avatar at bottom -->
+  <circle cx="30" cy="370" r="12" fill="url(#g1)"/>
+  <text x="48" y="374" font-family="system-ui" font-size="11" fill="#334155" font-weight="500">Admin</text>
+
+  <!-- Main content area -->
+  <!-- Top bar -->
+  <rect x="140" y="0" width="460" height="52" fill="#ffffff"/>
+  <!-- Search bar -->
+  <rect x="155" y="14" width="200" height="24" rx="12" fill="#f1f5f9"/>
+  <text x="170" y="31" font-family="system-ui" font-size="10" fill="#94a3b8">Search...</text>
+  <!-- User avatar top right -->
+  <circle cx="555" cy="26" r="14" fill="url(#g1)"/>
+
+  <!-- Dashboard cards -->
+  <rect x="155" y="68" width="130" height="72" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="168" y="90" font-family="system-ui" font-size="10" fill="#94a3b8">Students</text>
+  <text x="168" y="118" font-family="system-ui" font-size="20" font-weight="700" fill="#0f172a">248</text>
+
+  <rect x="298" y="68" width="130" height="72" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="311" y="90" font-family="system-ui" font-size="10" fill="#94a3b8">Staff</text>
+  <text x="311" y="118" font-family="system-ui" font-size="20" font-weight="700" fill="#0f172a">32</text>
+
+  <rect x="441" y="68" width="145" height="72" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="454" y="90" font-family="system-ui" font-size="10" fill="#94a3b8">This Term</text>
+  <text x="454" y="118" font-family="system-ui" font-size="20" font-weight="700" fill="#0f172a">Term 1, 2026</text>
+
+  <!-- Table section -->
+  <rect x="155" y="155" width="430" height="230" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="168" y="180" font-family="system-ui" font-size="13" font-weight="600" fill="#0f172a">Recent Activity</text>
+  <!-- Table header -->
+  <rect x="168" y="190" width="404" height="24" rx="4" fill="#f8fafc"/>
+  <text x="180" y="206" font-family="system-ui" font-size="10" font-weight="600" fill="#64748b">Student</text>
+  <text x="310" y="206" font-family="system-ui" font-size="10" font-weight="600" fill="#64748b">Class</text>
+  <text x="420" y="206" font-family="system-ui" font-size="10" font-weight="600" fill="#64748b">Status</text>
+  <!-- Rows -->
+  <rect x="168" y="218" width="404" height="20" rx="0" fill="transparent"/>
+  <text x="180" y="233" font-family="system-ui" font-size="11" fill="#334155">Faith Achieng</text>
+  <text x="310" y="233" font-family="system-ui" font-size="11" fill="#64748b">S1</text>
+  <rect x="420" y="224" width="40" height="14" rx="7" fill="#dcfce7"/>
+  <text x="426" y="234" font-family="system-ui" font-size="9" fill="#16a34a" font-weight="500">Active</text>
+
+  <rect x="168" y="242" width="404" height="20" rx="0" fill="transparent"/>
+  <text x="180" y="257" font-family="system-ui" font-size="11" fill="#334155">Daniel Wasswa</text>
+  <text x="310" y="257" font-family="system-ui" font-size="11" fill="#64748b">S1</text>
+  <rect x="420" y="248" width="40" height="14" rx="7" fill="#fee2e2"/>
+  <text x="426" y="258" font-family="system-ui" font-size="9" fill="#dc2626" font-weight="500">Fees</text>
+
+  <rect x="168" y="266" width="404" height="20" rx="0" fill="transparent"/>
+  <text x="180" y="281" font-family="system-ui" font-size="11" fill="#334155">Sarah Nakato</text>
+  <text x="310" y="281" font-family="system-ui" font-size="11" fill="#64748b">Staff</text>
+  <rect x="420" y="272" width="50" height="14" rx="7" fill="#fef9c3"/>
+  <text x="425" y="282" font-family="system-ui" font-size="9" fill="#a16207" font-weight="500">On Leave</text>
+
+  <!-- Bottom watermark -->
+  <text x="320" y="380" font-family="system-ui" font-size="9" fill="#94a3b8" text-anchor="middle" opacity="0.5">SSMS — School Management System</text>
+</svg>

@@ -4,6 +4,21 @@ export interface Role {
   description?: string;
 }
 
+export type ModuleSlug =
+  | 'dashboard'
+  | 'academic'
+  | 'staff'
+  | 'students'
+  | 'curriculum'
+  | 'assessment'
+  | 'reports'
+  | 'attendance'
+  | 'timetable'
+  | 'finance'
+  | 'discipline'
+  | 'library'
+  | 'announcements';
+
 export interface User {
   id: number;
   role_id: number;
@@ -15,6 +30,8 @@ export interface User {
   created_at: string;
   updated_at: string;
   role?: Role;
+  is_school_admin?: boolean;
+  modules?: ModuleSlug[];
 }
 
 export interface AcademicYear {
