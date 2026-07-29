@@ -199,7 +199,7 @@
                 <strong>{{ config('brand.name') }}</strong> &mdash; {{ config('brand.tagline') }}.
             </div>
             <div class="copyright">
-                &copy; {{ now()->year }} {{ config('brand.company_name') }}. All rights reserved.
+                &copy; {{ now()->year }} {{ config('brand.name') }}. All rights reserved.
             </div>
         </div>
 
