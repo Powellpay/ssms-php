@@ -80,8 +80,9 @@ export default function VerifyEmailPage() {
       {
         onSuccess: () => {
           setCooldown(RESEND_COOLDOWN);
-          setResendMsg('Verification code resent!');
-          setTimeout(() => setResendMsg(''), 3000);
+          setCode(['', '', '', '', '', '']);
+          setResendMsg('');
+          inputRefs.current[0]?.focus();
         },
         onError: (err) => {
           const axiosErr = err as AxiosError<ApiError>;
@@ -150,9 +151,9 @@ export default function VerifyEmailPage() {
                 type="button"
                 onClick={handleResend}
                 disabled={cooldown > 0 || resendMutation.isPending}
-                className="inline-flex items-center gap-1.5 text-sm text-primary hover:underline font-medium disabled:text-gray-400 disabled:no-underline cursor-pointer"
+                className="group inline-flex items-center gap-1.5 text-sm text-primary hover:underline font-medium disabled:text-gray-400 disabled:no-underline cursor-pointer"
               >
-                <RefreshCw className={`w-3.5 h-3.5 ${resendMutation.isPending ? 'animate-spin' : ''}`} />
+                <RefreshCw className={`w-3.5 h-3.5 transition-transform duration-500 ${resendMutation.isPending ? 'animate-spin' : ''} ${cooldown === 0 && !resendMutation.isPending ? 'group-hover:rotate-180' : ''}`} />
                 {cooldown > 0
                   ? `Resend code in ${cooldown}s`
                   : 'Resend code'}
