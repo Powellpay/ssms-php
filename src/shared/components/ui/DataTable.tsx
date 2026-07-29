@@ -20,7 +20,7 @@ interface DataTableProps<T> {
   actions?: (item: T) => ReactNode;
 }
 
-export default function DataTable<T extends Record<string, unknown>>({ columns, data, isLoading, emptyMessage, emptyIcon, keyExtractor, actions }: DataTableProps<T>) {
+export default function DataTable<T>({ columns, data, isLoading, emptyMessage, emptyIcon, keyExtractor, actions }: DataTableProps<T>) {
   if (isLoading) {
     return <div className="rounded-xl border border-border bg-white overflow-hidden"><LoadingSpinner /></div>;
   }
@@ -46,7 +46,7 @@ export default function DataTable<T extends Record<string, unknown>>({ columns, 
               <tr key={keyExtractor(item)} className="border-t border-border hover:bg-gray-50/50">
                 {columns.map(col => (
                   <td key={col.key} className={`p-3 text-sm ${col.className || 'text-gray-600'}`}>
-                    {col.render ? col.render(item) : String(item[col.key] ?? '-')}
+                    {col.render ? col.render(item) : String((item as Record<string, unknown>)[col.key] ?? '-')}
                   </td>
                 ))}
                 {actions && <td className="p-3 text-right">{actions(item)}</td>}

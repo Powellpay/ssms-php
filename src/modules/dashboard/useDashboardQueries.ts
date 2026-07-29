@@ -1,7 +1,6 @@
 import { useMemo } from 'react';
 import { useStudentList } from '../../shared/api/students/studentQueries';
-import { useStaffList } from '../../shared/api/staff/staffQueries';
-import { useStreams, useClassLevels, useTerms, useAcademicYears } from '../../shared/api/academic/academicQueries';
+import { useTerms, useAcademicYears } from '../../shared/api/academic/academicQueries';
 
 export interface GenderChartData {
   name: string;
