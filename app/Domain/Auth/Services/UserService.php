@@ -10,6 +10,7 @@ use App\Domain\Auth\Repositories\Contracts\UserRepositoryInterface;
 use App\Domain\Auth\Services\Contracts\UserServiceInterface;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class UserService implements UserServiceInterface
@@ -90,7 +91,11 @@ class UserService implements UserServiceInterface
             'expires_at' => $expiresAt,
         ]);
 
-        $user->notify(new VerifyEmail($otp, 30));
+        try {
+            $user->notify(new VerifyEmail($otp, 30));
+        } catch (\Throwable $e) {
+            Log::warning('Verification email failed to send for user ' . $user->id . ': ' . $e->getMessage());
+        }
 
         return $otp;
     }
@@ -167,7 +172,11 @@ class UserService implements UserServiceInterface
             'expires_at' => $expiresAt,
         ]);
 
-        $user->notify(new ResetPassword($token, 60));
+        try {
+            $user->notify(new ResetPassword($token, 60));
+        } catch (\Throwable $e) {
+            Log::warning('Password reset email failed to send for user ' . $user->id . ': ' . $e->getMessage());
+        }
 
         return ['message' => 'If the email exists, a reset link has been sent.'];
     }

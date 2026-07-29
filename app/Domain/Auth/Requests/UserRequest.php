@@ -17,7 +17,7 @@ class UserRequest extends FormRequest
 
         return [
             'school_id' => 'nullable|exists:schools,id',
-            'role_slug' => 'nullable|string|exists:roles,slug',
+            'role_slug' => 'nullable|string',
             'school_name' => 'nullable|string|max:255',
             'username' => 'nullable|string|max:50|unique:users,username,' . $userId,
             'name' => 'nullable|string',
