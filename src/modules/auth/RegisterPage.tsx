@@ -30,7 +30,7 @@ export default function RegisterPage() {
       email: form.email,
       password: form.password,
       username: form.email.split('@')[0],
-      role_id: 1,
+      role_slug: 'administrator',
     }, {
       onSuccess: (data) => {
         if (data.user?.id) {

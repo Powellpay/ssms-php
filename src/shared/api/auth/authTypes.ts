@@ -9,7 +9,7 @@ export interface RegisterRequest {
   name: string;
   email: string;
   password: string;
-  role_id?: number;
+  role_slug?: string;
   username?: string;
 }
 

@@ -22,6 +22,7 @@ export type ModuleSlug =
 export interface User {
   id: number;
   role_id: number;
+  role_slug?: string;
   username: string;
   name: string;
   email: string;
