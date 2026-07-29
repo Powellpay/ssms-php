@@ -26,6 +26,7 @@ import InvoicesPage from './modules/finance/ui/InvoicesPage';
 import DisciplineListPage from './modules/discipline/ui/DisciplineListPage';
 import BooksPage from './modules/library/ui/BooksPage';
 import AnnouncementsListPage from './modules/announcements/ui/AnnouncementsListPage';
+import ModuleGuard from './shared/components/guard/ModuleGuard';
 
 function App() {
   return (
@@ -41,26 +42,26 @@ function App() {
       <Route path={ROUTES.AUTH.RESET_PASSWORD} element={<ResetPasswordPage />} />
 
       <Route element={<AppLayout />}>
-        <Route path={ROUTES.DASHBOARD} element={<DashboardPage />} />
-        <Route path="/academic" element={<AcademicLayout />}>
+        <Route path={ROUTES.DASHBOARD} element={<ModuleGuard module="dashboard"><DashboardPage /></ModuleGuard>} />
+        <Route path="/academic" element={<ModuleGuard module="academic"><AcademicLayout /></ModuleGuard>}>
           <Route index element={<AcademicYearsPage />} />
           <Route path={ROUTES.ACADEMIC.YEARS} element={<AcademicYearsPage />} />
           <Route path={ROUTES.ACADEMIC.TERMS} element={<TermsPage />} />
           <Route path={ROUTES.ACADEMIC.CLASSES} element={<ClassLevelsPage />} />
           <Route path={ROUTES.ACADEMIC.STREAMS} element={<StreamsPage />} />
         </Route>
-        <Route path={ROUTES.STAFF.LIST} element={<StaffListPage />} />
-        <Route path={ROUTES.STUDENTS.LIST} element={<StudentsListPage />} />
-        <Route path={ROUTES.STUDENTS.IMPORT} element={<StudentImportPage />} />
-        <Route path={ROUTES.CURRICULUM.SUBJECTS} element={<SubjectsPage />} />
-        <Route path={ROUTES.ASSESSMENT.RECORDS} element={<AssessmentRecordsPage />} />
-        <Route path={ROUTES.REPORTS.LIST} element={<ReportsListPage />} />
-        <Route path={ROUTES.ATTENDANCE.REGISTER} element={<AttendancePage />} />
-        <Route path={ROUTES.TIMETABLE.VIEW} element={<TimetablePage />} />
-        <Route path={ROUTES.FINANCE.INVOICES} element={<InvoicesPage />} />
-        <Route path={ROUTES.DISCIPLINE.LIST} element={<DisciplineListPage />} />
-        <Route path={ROUTES.LIBRARY.BOOKS} element={<BooksPage />} />
-        <Route path={ROUTES.ANNOUNCEMENTS.LIST} element={<AnnouncementsListPage />} />
+        <Route path={ROUTES.STAFF.LIST} element={<ModuleGuard module="staff"><StaffListPage /></ModuleGuard>} />
+        <Route path={ROUTES.STUDENTS.LIST} element={<ModuleGuard module="students"><StudentsListPage /></ModuleGuard>} />
+        <Route path={ROUTES.STUDENTS.IMPORT} element={<ModuleGuard module="students"><StudentImportPage /></ModuleGuard>} />
+        <Route path={ROUTES.CURRICULUM.SUBJECTS} element={<ModuleGuard module="curriculum"><SubjectsPage /></ModuleGuard>} />
+        <Route path={ROUTES.ASSESSMENT.RECORDS} element={<ModuleGuard module="assessment"><AssessmentRecordsPage /></ModuleGuard>} />
+        <Route path={ROUTES.REPORTS.LIST} element={<ModuleGuard module="reports"><ReportsListPage /></ModuleGuard>} />
+        <Route path={ROUTES.ATTENDANCE.REGISTER} element={<ModuleGuard module="attendance"><AttendancePage /></ModuleGuard>} />
+        <Route path={ROUTES.TIMETABLE.VIEW} element={<ModuleGuard module="timetable"><TimetablePage /></ModuleGuard>} />
+        <Route path={ROUTES.FINANCE.INVOICES} element={<ModuleGuard module="finance"><InvoicesPage /></ModuleGuard>} />
+        <Route path={ROUTES.DISCIPLINE.LIST} element={<ModuleGuard module="discipline"><DisciplineListPage /></ModuleGuard>} />
+        <Route path={ROUTES.LIBRARY.BOOKS} element={<ModuleGuard module="library"><BooksPage /></ModuleGuard>} />
+        <Route path={ROUTES.ANNOUNCEMENTS.LIST} element={<ModuleGuard module="announcements"><AnnouncementsListPage /></ModuleGuard>} />
       </Route>
 
       <Route path="*" element={<Navigate to={ROUTES.HOME} replace />} />

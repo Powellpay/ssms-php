@@ -12,6 +12,7 @@ import {
   UserCircle, BookMarked, Scale,
 } from 'lucide-react';
 import { cn } from '../../utils/cn';
+import { APP_VERSION } from '../../config/version';
 
 interface NavItem {
   icon: React.ComponentType<{ className?: string }>;
@@ -128,7 +129,7 @@ export default function AppLayout() {
         {/* Version */}
         {sidebarOpen && (
           <div className="px-4 py-2 border-t border-border">
-            <p className="text-[10px] text-muted/60 text-center">v1.0.0</p>
+            <p className="text-[10px] text-muted/60 text-center">v{APP_VERSION}</p>
           </div>
         )}
       </aside>

@@ -1,10 +1,10 @@
 import './axiosTypes';
 import axios, { AxiosHeaders, type AxiosInstance, type AxiosError } from 'axios';
 import { QueryClient } from '@tanstack/react-query';
-import { API_BASE_URL, API_TIMEOUT } from './apiConfig';
+import { API_VERSIONED_URL, API_TIMEOUT } from './apiConfig';
 
 const api: AxiosInstance = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: API_VERSIONED_URL,
   timeout: API_TIMEOUT,
   headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
 });

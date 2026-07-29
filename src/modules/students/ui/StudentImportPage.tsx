@@ -2,6 +2,7 @@ import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Upload, Download, FileSpreadsheet, AlertCircle, CheckCircle2, ArrowLeft, Loader2 } from 'lucide-react';
 import api from '../../../shared/api/axiosConfig';
+import { API_VERSIONED_URL } from '../../../shared/api/apiConfig';
 import { ENDPOINTS } from '../../../shared/api/endpoints';
 import { ROUTES } from '../../../app/routes/constants';
 import PageHeader from '../../../shared/components/ui/PageHeader';
@@ -49,8 +50,7 @@ export default function StudentImportPage() {
   };
 
   const downloadTemplate = () => {
-    const baseUrl = import.meta.env.VITE_API_BASE_URL?.replace(/\/api$/, '') || '';
-    window.open(`${baseUrl}${ENDPOINTS.STUDENTS_IMPORT_TEMPLATE}`, '_blank');
+    window.open(`${API_VERSIONED_URL}${ENDPOINTS.STUDENTS_IMPORT_TEMPLATE}`, '_blank');
   };
 
   return (
