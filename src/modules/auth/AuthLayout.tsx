@@ -8,13 +8,22 @@ interface AuthLayoutProps {
   title: string;
   subtitle?: string;
   children: ReactNode;
+  heroImage?: string;
 }
 
-export default function AuthLayout({ title, subtitle, children }: PropsWithChildren<AuthLayoutProps>) {
+export default function AuthLayout({ title, subtitle, children, heroImage = 'https://images.unsplash.com/photo-1523050854058-8df90110c7f1?w=1200&q=80' }: PropsWithChildren<AuthLayoutProps>) {
   return (
     <div className="min-h-screen flex bg-gray-50">
       {/* Left hero panel */}
-      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-gradient-to-br from-primary-dark via-primary to-primary/80">
+      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
+        {heroImage && (
+          <img
+            src={heroImage}
+            alt="School"
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+        )}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary-dark/95 via-primary/90 to-primary/80" />
         <div className="relative z-10 flex flex-col justify-between p-10 xl:p-12 w-full">
           <div />
           <div className="max-w-md space-y-5">
