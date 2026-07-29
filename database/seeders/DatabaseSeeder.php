@@ -24,6 +24,7 @@ use App\Domain\Curriculum\Models\Subject;
 use App\Domain\Assessment\Models\SubjectTermResult;
 use App\Domain\Academic\Models\Term;
 use App\Domain\Auth\Models\User;
+use App\Domain\Auth\Models\School;
 use App\Domain\Curriculum\Models\ClassSubject;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -32,6 +33,17 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        // School
+        $school = School::create([
+            'name' => 'Oscar Demonstration School',
+            'email' => 'oscar@gmail.com',
+            'phone' => '+256700000000',
+            'address' => 'Kampala, Uganda',
+            'motto' => 'Excellence in Education',
+            'status' => 'active',
+        ]);
+        $sid = $school->id;
+
         // Roles
         Role::insert([
             ['role_name' => 'Administrator', 'description' => 'Full system access'],
@@ -45,16 +57,18 @@ class DatabaseSeeder extends Seeder
         ]);
 
         User::create([
+            'school_id' => $sid,
             'role_id' => 1,
             'username' => 'admin',
-            'name' => 'Admin',
-            'email' => 'admin@school.ug',
+            'name' => 'Oscar Opiyo',
+            'email' => 'oscar@gmail.com',
             'password' => Hash::make('ChangeMe123!'),
             'status' => 'active',
         ]);
 
         // Academic Years
         AcademicYear::create([
+            'school_id' => $sid,
             'year_name' => '2026',
             'start_date' => '2026-02-03',
             'end_date' => '2026-12-04',
@@ -63,50 +77,50 @@ class DatabaseSeeder extends Seeder
 
         // Terms
         Term::insert([
-            ['academic_year_id' => 1, 'term_name' => 'Term 1', 'start_date' => '2026-02-03', 'end_date' => '2026-05-08', 'next_term_begins' => '2026-05-25', 'is_current' => true],
-            ['academic_year_id' => 1, 'term_name' => 'Term 2', 'start_date' => '2026-05-25', 'end_date' => '2026-08-21', 'next_term_begins' => '2026-09-07', 'is_current' => false],
-            ['academic_year_id' => 1, 'term_name' => 'Term 3', 'start_date' => '2026-09-07', 'end_date' => '2026-12-04', 'next_term_begins' => null, 'is_current' => false],
+            ['school_id' => $sid, 'academic_year_id' => 1, 'term_name' => 'Term 1', 'start_date' => '2026-02-03', 'end_date' => '2026-05-08', 'next_term_begins' => '2026-05-25', 'is_current' => true],
+            ['school_id' => $sid, 'academic_year_id' => 1, 'term_name' => 'Term 2', 'start_date' => '2026-05-25', 'end_date' => '2026-08-21', 'next_term_begins' => '2026-09-07', 'is_current' => false],
+            ['school_id' => $sid, 'academic_year_id' => 1, 'term_name' => 'Term 3', 'start_date' => '2026-09-07', 'end_date' => '2026-12-04', 'next_term_begins' => null, 'is_current' => false],
         ]);
 
         // Class Levels
         ClassLevel::insert([
-            ['level_name' => 'S1', 'numeric_level' => 1, 'description' => 'Senior One'],
-            ['level_name' => 'S2', 'numeric_level' => 2, 'description' => 'Senior Two'],
-            ['level_name' => 'S3', 'numeric_level' => 3, 'description' => 'Senior Three'],
-            ['level_name' => 'S4', 'numeric_level' => 4, 'description' => 'Senior Four'],
+            ['school_id' => $sid, 'level_name' => 'S1', 'numeric_level' => 1, 'description' => 'Senior One'],
+            ['school_id' => $sid, 'level_name' => 'S2', 'numeric_level' => 2, 'description' => 'Senior Two'],
+            ['school_id' => $sid, 'level_name' => 'S3', 'numeric_level' => 3, 'description' => 'Senior Three'],
+            ['school_id' => $sid, 'level_name' => 'S4', 'numeric_level' => 4, 'description' => 'Senior Four'],
         ]);
 
         // Staff
         Staff::insert([
-            ['staff_no' => 'STF-0001', 'first_name' => 'Brian', 'last_name' => 'Mutebi', 'gender' => 'Male', 'designation' => 'Director of Studies', 'date_joined' => '2022-01-10', 'status' => 'active'],
-            ['staff_no' => 'STF-0002', 'first_name' => 'Grace', 'last_name' => 'Namutebi', 'gender' => 'Female', 'designation' => 'Teacher', 'date_joined' => '2023-02-01', 'status' => 'active'],
-            ['staff_no' => 'STF-0003', 'first_name' => 'Samuel', 'last_name' => 'Okello', 'gender' => 'Male', 'designation' => 'Teacher', 'date_joined' => '2021-08-15', 'status' => 'active'],
+            ['school_id' => $sid, 'staff_no' => 'STF-0001', 'first_name' => 'Brian', 'last_name' => 'Mutebi', 'gender' => 'Male', 'designation' => 'Director of Studies', 'date_joined' => '2022-01-10', 'status' => 'active'],
+            ['school_id' => $sid, 'staff_no' => 'STF-0002', 'first_name' => 'Grace', 'last_name' => 'Namutebi', 'gender' => 'Female', 'designation' => 'Teacher', 'date_joined' => '2023-02-01', 'status' => 'active'],
+            ['school_id' => $sid, 'staff_no' => 'STF-0003', 'first_name' => 'Samuel', 'last_name' => 'Okello', 'gender' => 'Male', 'designation' => 'Teacher', 'date_joined' => '2021-08-15', 'status' => 'active'],
         ]);
 
         // Streams
         Stream::insert([
-            ['class_level_id' => 1, 'academic_year_id' => 1, 'stream_name' => 'A', 'class_teacher_id' => 2],
-            ['class_level_id' => 1, 'academic_year_id' => 1, 'stream_name' => 'B', 'class_teacher_id' => 3],
-            ['class_level_id' => 2, 'academic_year_id' => 1, 'stream_name' => 'A', 'class_teacher_id' => null],
-            ['class_level_id' => 3, 'academic_year_id' => 1, 'stream_name' => 'A', 'class_teacher_id' => null],
-            ['class_level_id' => 4, 'academic_year_id' => 1, 'stream_name' => 'A', 'class_teacher_id' => null],
+            ['school_id' => $sid, 'class_level_id' => 1, 'academic_year_id' => 1, 'stream_name' => 'A', 'class_teacher_id' => 2],
+            ['school_id' => $sid, 'class_level_id' => 1, 'academic_year_id' => 1, 'stream_name' => 'B', 'class_teacher_id' => 3],
+            ['school_id' => $sid, 'class_level_id' => 2, 'academic_year_id' => 1, 'stream_name' => 'A', 'class_teacher_id' => null],
+            ['school_id' => $sid, 'class_level_id' => 3, 'academic_year_id' => 1, 'stream_name' => 'A', 'class_teacher_id' => null],
+            ['school_id' => $sid, 'class_level_id' => 4, 'academic_year_id' => 1, 'stream_name' => 'A', 'class_teacher_id' => null],
         ]);
 
         // Subjects
         Subject::insert([
-            ['subject_code' => 'ENG', 'subject_name' => 'English Language', 'category' => 'Core'],
-            ['subject_code' => 'MTC', 'subject_name' => 'Mathematics', 'category' => 'Core'],
-            ['subject_code' => 'BIO', 'subject_name' => 'Biology', 'category' => 'Core'],
-            ['subject_code' => 'CHE', 'subject_name' => 'Chemistry', 'category' => 'Core'],
-            ['subject_code' => 'PHY', 'subject_name' => 'Physics', 'category' => 'Core'],
-            ['subject_code' => 'GEO', 'subject_name' => 'Geography', 'category' => 'Core'],
-            ['subject_code' => 'HIS', 'subject_name' => 'History and Political Education', 'category' => 'Core'],
-            ['subject_code' => 'CRE', 'subject_name' => 'Christian Religious Education', 'category' => 'Elective'],
-            ['subject_code' => 'ICT', 'subject_name' => 'Information & Communications Technology', 'category' => 'Core'],
-            ['subject_code' => 'AGR', 'subject_name' => 'Agriculture', 'category' => 'Elective'],
-            ['subject_code' => 'ENT', 'subject_name' => 'Entrepreneurship Education', 'category' => 'Core'],
-            ['subject_code' => 'PE', 'subject_name' => 'Physical Education', 'category' => 'Core'],
-            ['subject_code' => 'KIS', 'subject_name' => 'Kiswahili', 'category' => 'Core'],
+            ['school_id' => $sid, 'subject_code' => 'ENG', 'subject_name' => 'English Language', 'category' => 'Core'],
+            ['school_id' => $sid, 'subject_code' => 'MTC', 'subject_name' => 'Mathematics', 'category' => 'Core'],
+            ['school_id' => $sid, 'subject_code' => 'BIO', 'subject_name' => 'Biology', 'category' => 'Core'],
+            ['school_id' => $sid, 'subject_code' => 'CHE', 'subject_name' => 'Chemistry', 'category' => 'Core'],
+            ['school_id' => $sid, 'subject_code' => 'PHY', 'subject_name' => 'Physics', 'category' => 'Core'],
+            ['school_id' => $sid, 'subject_code' => 'GEO', 'subject_name' => 'Geography', 'category' => 'Core'],
+            ['school_id' => $sid, 'subject_code' => 'HIS', 'subject_name' => 'History and Political Education', 'category' => 'Core'],
+            ['school_id' => $sid, 'subject_code' => 'CRE', 'subject_name' => 'Christian Religious Education', 'category' => 'Elective'],
+            ['school_id' => $sid, 'subject_code' => 'ICT', 'subject_name' => 'Information & Communications Technology', 'category' => 'Core'],
+            ['school_id' => $sid, 'subject_code' => 'AGR', 'subject_name' => 'Agriculture', 'category' => 'Elective'],
+            ['school_id' => $sid, 'subject_code' => 'ENT', 'subject_name' => 'Entrepreneurship Education', 'category' => 'Core'],
+            ['school_id' => $sid, 'subject_code' => 'PE', 'subject_name' => 'Physical Education', 'category' => 'Core'],
+            ['school_id' => $sid, 'subject_code' => 'KIS', 'subject_name' => 'Kiswahili', 'category' => 'Core'],
         ]);
 
         // Class Subjects (S1 gets all Core)

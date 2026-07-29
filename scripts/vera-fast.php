@@ -34,19 +34,25 @@ $files = veraCollectChangedPhpFiles($root);
 
 if ($files === []) {
     echo " Vera fast: no changed PHP files — skipped.\n";
-    exit(0);
-}
+} else {
+    echo ' Vera fast: php -l on ' . count($files) . " file(s)\n";
 
-echo ' Vera fast: php -l on ' . count($files) . " file(s)\n";
+    $failed = false;
 
-$failed = false;
+    foreach ($files as $file) {
+        $cmd = 'php -l ' . escapeshellarg($file);
+        passthru($cmd, $exitCode);
+        if ($exitCode !== 0) {
+            $failed = true;
+        }
+    }
 
-foreach ($files as $file) {
-    $cmd = 'php -l ' . escapeshellarg($file);
-    passthru($cmd, $exitCode);
-    if ($exitCode !== 0) {
-        $failed = true;
+    if ($failed) {
+        exit(1);
     }
 }
 
-exit($failed ? 1 : 0);
+passthru('php scripts/vera-logic.php', $logicExit);
+if ($logicExit !== 0) {
+    exit(1);
+}
