@@ -16,10 +16,7 @@ export default function AuthLayout({ title, subtitle, children }: PropsWithChild
       {/* Left hero panel */}
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-gradient-to-br from-primary-dark via-primary to-primary/80">
         <div className="relative z-10 flex flex-col justify-between p-10 xl:p-12 w-full">
-          <Link to={ROUTES.HOME} className="inline-flex items-center gap-2.5 w-fit">
-            <LogoImage size="sm" className="brightness-0 invert" />
-            <span className="text-white text-xl font-bold tracking-tight">SSMS</span>
-          </Link>
+          <div />
           <div className="max-w-md space-y-5">
             <div>
               <p className="text-white/80 text-xs font-semibold uppercase tracking-[0.2em] mb-3">
