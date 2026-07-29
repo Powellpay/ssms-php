@@ -92,7 +92,7 @@ export default function AppLayout() {
             {sidebarOpen && <span className="text-lg font-bold text-primary">SSMS</span>}
           </div>
           {sidebarOpen && (
-            <span className="text-[10px] text-muted/40 font-mono tracking-tight">v{APP_VERSION}</span>
+            <span className="text-[10px] text-muted/40 font-bold font-mono tracking-tight">V{APP_VERSION}</span>
           )}
         </div>
 
