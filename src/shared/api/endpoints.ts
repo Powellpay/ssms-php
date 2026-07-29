@@ -19,6 +19,8 @@ export const ENDPOINTS = {
   STREAMS: `${V1}/streams`,
   STAFF: `${V1}/staff`,
   STUDENTS: `${V1}/students`,
+  STUDENTS_IMPORT: `${V1}/students/import`,
+  STUDENTS_IMPORT_TEMPLATE: `${V1}/students/import/template`,
   GUARDIANS: `${V1}/guardians`,
   ENROLLMENTS: `${V1}/enrollments`,
   SUBJECTS: `${V1}/subjects`,

@@ -119,11 +119,18 @@ export default function AppLayout() {
             {sidebarOpen && (
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-gray-900 truncate">{user?.name || 'User'}</p>
+                <p className="text-xs text-primary font-medium truncate">{user?.role?.role_name || ''}</p>
                 <p className="text-xs text-muted truncate">{user?.email || ''}</p>
               </div>
             )}
           </div>
         </div>
+        {/* Version */}
+        {sidebarOpen && (
+          <div className="px-4 py-2 border-t border-border">
+            <p className="text-[10px] text-muted/60 text-center">v1.0.0</p>
+          </div>
+        )}
       </aside>
 
       {/* Main area */}

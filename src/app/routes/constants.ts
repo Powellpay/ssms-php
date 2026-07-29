@@ -23,6 +23,7 @@ export const ROUTES = {
     LIST: '/students',
     ADD: '/students/add',
     VIEW: '/students/:id',
+    IMPORT: '/students/import',
   },
   CURRICULUM: {
     SUBJECTS: '/curriculum/subjects',

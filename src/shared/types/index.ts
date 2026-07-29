@@ -72,6 +72,16 @@ export interface Stream {
   class_level?: ClassLevel;
 }
 
+export interface LinkedUser {
+  id: number;
+  email: string;
+  username: string;
+  name: string;
+  status: string;
+  modules: ModuleSlug[];
+  role?: { id: number; role_name: string } | null;
+}
+
 export interface Staff {
   id: number;
   user_id?: number;
@@ -84,6 +94,9 @@ export interface Staff {
   email?: string;
   designation?: string;
   status: 'active' | 'on leave' | 'left';
+  user?: LinkedUser | null;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface Student {

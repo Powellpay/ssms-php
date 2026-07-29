@@ -16,6 +16,7 @@ import ClassLevelsPage from './modules/academic/ui/ClassLevelsPage';
 import StreamsPage from './modules/academic/ui/StreamsPage';
 import StaffListPage from './modules/staff/ui/StaffListPage';
 import StudentsListPage from './modules/students/ui/StudentsListPage';
+import StudentImportPage from './modules/students/ui/StudentImportPage';
 import SubjectsPage from './modules/curriculum/ui/SubjectsPage';
 import AssessmentRecordsPage from './modules/assessment/ui/AssessmentRecordsPage';
 import ReportsListPage from './modules/reports/ui/ReportsListPage';
@@ -50,6 +51,7 @@ function App() {
         </Route>
         <Route path={ROUTES.STAFF.LIST} element={<StaffListPage />} />
         <Route path={ROUTES.STUDENTS.LIST} element={<StudentsListPage />} />
+        <Route path={ROUTES.STUDENTS.IMPORT} element={<StudentImportPage />} />
         <Route path={ROUTES.CURRICULUM.SUBJECTS} element={<SubjectsPage />} />
         <Route path={ROUTES.ASSESSMENT.RECORDS} element={<AssessmentRecordsPage />} />
         <Route path={ROUTES.REPORTS.LIST} element={<ReportsListPage />} />

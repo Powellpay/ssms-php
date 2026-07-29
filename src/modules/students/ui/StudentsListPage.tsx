@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useStudentList, useCreateStudent, useUpdateStudent, useDeleteStudent } from '../../../shared/api/students/studentQueries';
-import { Users, Plus, Pencil, Trash2, X, Eye } from 'lucide-react';
+import { Users, Plus, Pencil, Trash2, X, Eye, Upload } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../../app/routes/constants';
 import type { Student } from '../../../shared/types';
@@ -37,7 +37,10 @@ export default function StudentsListPage() {
           <div className="p-3 rounded-xl bg-primary-light"><Users className="w-8 h-8 text-primary" /></div>
           <div><h1 className="text-2xl font-bold text-gray-900">Students</h1><p className="text-muted text-sm mt-1">Admissions, profiles, and enrollment</p></div>
         </div>
-        <button onClick={openAdd} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary-dark cursor-pointer"><Plus className="w-4 h-4" /> Add Student</button>
+        <div className="flex items-center gap-2">
+          <button onClick={() => navigate(ROUTES.STUDENTS.IMPORT)} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-border text-sm font-medium text-gray-600 hover:bg-gray-50 cursor-pointer"><Upload className="w-4 h-4" /> Import</button>
+          <button onClick={openAdd} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary-dark cursor-pointer"><Plus className="w-4 h-4" /> Add Student</button>
+        </div>
       </div>
 
       <div className="rounded-xl border border-border bg-white overflow-hidden">

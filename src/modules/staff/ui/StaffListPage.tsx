@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useStaffList, useCreateStaff, useUpdateStaff, useDeleteStaff } from '../../../shared/api/staff/staffQueries';
-import { Plus, Pencil, Trash2, UserCircle } from 'lucide-react';
+import { Plus, Pencil, Trash2, UserCircle, CheckCircle2 } from 'lucide-react';
 import type { ModuleSlug, Staff } from '../../../shared/types';
 import PageHeader from '../../../shared/components/ui/PageHeader';
 import DataTable from '../../../shared/components/ui/DataTable';
@@ -23,15 +23,30 @@ const MODULES: { slug: ModuleSlug; label: string }[] = [
   { slug: 'announcements', label: 'Announcements' },
 ];
 
-const defaultForm: Partial<Staff> = { staff_no: '', first_name: '', last_name: '', gender: 'Male', email: '', phone: '', designation: '', status: 'active', dob: '' };
+interface StaffForm {
+  staff_no: string; first_name: string; last_name: string; gender: 'Male' | 'Female';
+  email: string; phone: string; designation: string; status: string; dob: string;
+  password: string; password_confirmation: string;
+}
+
+const defaultForm: StaffForm = {
+  staff_no: '', first_name: '', last_name: '', gender: 'Male', email: '',
+  phone: '', designation: '', status: 'active', dob: '',
+  password: '', password_confirmation: '',
+};
 
 const columns = [
   { key: 'staff_no', label: 'Staff No', className: 'font-medium text-gray-900' },
   { key: 'name', label: 'Name', render: (item: Staff) => <span className="text-gray-700">{item.first_name} {item.last_name}</span> },
   { key: 'gender', label: 'Gender' },
   { key: 'designation', label: 'Designation', render: (item: Staff) => item.designation || '-' },
-  { key: 'email', label: 'Email', render: (item: Staff) => item.email || '-' },
-  { key: 'phone', label: 'Phone', render: (item: Staff) => item.phone || '-' },
+  { key: 'email', label: 'Login Email', render: (item: Staff) => item.user?.email || item.email || '-' },
+  {
+    key: 'user_status', label: 'User',
+    render: (item: Staff) => item.user
+      ? <span className="inline-flex items-center gap-1 text-xs text-success"><CheckCircle2 className="w-3 h-3" /> Active</span>
+      : <span className="text-xs text-muted">No account</span>,
+  },
   {
     key: 'status', label: 'Status',
     render: (item: Staff) => (
@@ -46,14 +61,20 @@ export default function StaffListPage() {
   const updateStaff = useUpdateStaff();
   const deleteStaff = useDeleteStaff();
   const [modal, setModal] = useState<{ open: boolean; edit?: Staff }>({ open: false });
-  const [form, setForm] = useState(defaultForm);
+  const [form, setForm] = useState<StaffForm>(defaultForm);
   const [selectedModules, setSelectedModules] = useState<ModuleSlug[]>([]);
   const [deleteId, setDeleteId] = useState<number | null>(null);
 
   const openAdd = () => { setForm(defaultForm); setSelectedModules([]); setModal({ open: true }); };
   const openEdit = (s: Staff) => {
-    setForm({ staff_no: s.staff_no, first_name: s.first_name, last_name: s.last_name, gender: s.gender, email: s.email || '', phone: s.phone || '', designation: s.designation || '', status: s.status, dob: s.dob || '' });
-    setSelectedModules([]);
+    setForm({
+      staff_no: s.staff_no, first_name: s.first_name, last_name: s.last_name,
+      gender: s.gender, email: s.user?.email || s.email || '',
+      phone: s.phone || '', designation: s.designation || '',
+      status: s.status, dob: s.dob || '',
+      password: '', password_confirmation: '',
+    });
+    setSelectedModules(s.user?.modules || []);
     setModal({ open: true, edit: s });
   };
 
@@ -65,12 +86,13 @@ export default function StaffListPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const payload: any = { ...form, modules: selectedModules.length > 0 ? selectedModules : undefined };
+    const payload: Record<string, unknown> = { ...form, modules: selectedModules.length > 0 ? selectedModules : undefined };
+    if (!payload.password) { delete payload.password; delete payload.password_confirmation; }
     if (modal.edit) {
       payload.id = modal.edit.id;
-      updateStaff.mutate(payload, { onSuccess: () => setModal({ open: false }) });
+      updateStaff.mutate(payload as Parameters<typeof updateStaff.mutate>[0], { onSuccess: () => setModal({ open: false }) });
     } else {
-      createStaff.mutate(payload, { onSuccess: () => setModal({ open: false }) });
+      createStaff.mutate(payload as Parameters<typeof createStaff.mutate>[0], { onSuccess: () => setModal({ open: false }) });
     }
   };
 
@@ -116,8 +138,12 @@ export default function StaffListPage() {
             <div><label className="block text-sm font-medium text-gray-700 mb-1">Status</label><select value={form.status} onChange={set('status')} className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary outline-none"><option value="active">Active</option><option value="on leave">On Leave</option><option value="left">Left</option></select></div>
           </div>
           <div className="grid grid-cols-2 gap-4">
-            <div><label className="block text-sm font-medium text-gray-700 mb-1">Email</label><input type="email" value={form.email} onChange={set('email')} className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary outline-none" /></div>
+            <div><label className="block text-sm font-medium text-gray-700 mb-1">Email (Login) *</label><input type="email" value={form.email} onChange={set('email')} className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary outline-none" /></div>
             <div><label className="block text-sm font-medium text-gray-700 mb-1">Phone</label><input value={form.phone} onChange={set('phone')} className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary outline-none" /></div>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div><label className="block text-sm font-medium text-gray-700 mb-1">Password {!modal.edit?.user && '*'}</label><input type="password" value={form.password} onChange={set('password')} className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary outline-none" placeholder={modal.edit?.user ? 'Leave blank to keep current' : ''} /></div>
+            <div><label className="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label><input type="password" value={form.password_confirmation} onChange={set('password_confirmation')} className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary outline-none" /></div>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Module Access</label>
@@ -134,6 +160,7 @@ export default function StaffListPage() {
                 </label>
               ))}
             </div>
+            <p className="text-xs text-muted mt-1">Select modules this staff can access. All modules if none selected.</p>
           </div>
           <div className="flex justify-end gap-3 pt-2">
             <button type="button" onClick={() => setModal({ open: false })} className="px-4 py-2 border border-border rounded-lg text-sm text-gray-600 hover:bg-gray-50 cursor-pointer">Cancel</button>
