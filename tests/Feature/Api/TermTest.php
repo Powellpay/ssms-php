@@ -58,7 +58,7 @@ class TermTest extends TestCase
             'end_date' => '2026-08-29',
         ]);
 
-        $response = $this->getJson('/api/terms', $this->authHeaders());
+        $response = $this->getJson('/api/v1/terms', $this->authHeaders());
 
         $response->assertStatus(200)
             ->assertJsonCount(2, 'data');
@@ -66,7 +66,7 @@ class TermTest extends TestCase
 
     public function test_can_create_term(): void
     {
-        $response = $this->postJson('/api/terms', [
+        $response = $this->postJson('/api/v1/terms', [
             'academic_year_id' => $this->academicYear->id,
             'term_name' => 'Term 3',
             'start_date' => '2026-09-15',
@@ -86,7 +86,7 @@ class TermTest extends TestCase
             'end_date' => '2026-05-02',
         ]);
 
-        $response = $this->getJson("/api/terms/{$term->id}", $this->authHeaders());
+        $response = $this->getJson("/api/v1/terms/{$term->id}", $this->authHeaders());
 
         $response->assertStatus(200)
             ->assertJsonFragment(['term_name' => 'Term 1']);
@@ -101,7 +101,7 @@ class TermTest extends TestCase
             'end_date' => '2026-05-02',
         ]);
 
-        $response = $this->putJson("/api/terms/{$term->id}", [
+        $response = $this->putJson("/api/v1/terms/{$term->id}", [
             'academic_year_id' => $this->academicYear->id,
             'term_name' => 'Term 1',
             'start_date' => '2026-02-03',
@@ -121,7 +121,7 @@ class TermTest extends TestCase
             'end_date' => '2026-05-02',
         ]);
 
-        $response = $this->deleteJson("/api/terms/{$term->id}", [], $this->authHeaders());
+        $response = $this->deleteJson("/api/v1/terms/{$term->id}", [], $this->authHeaders());
 
         $response->assertStatus(200);
         $this->assertDatabaseMissing('terms', ['id' => $term->id]);
@@ -129,7 +129,7 @@ class TermTest extends TestCase
 
     public function test_create_requires_valid_dates(): void
     {
-        $response = $this->postJson('/api/terms', [
+        $response = $this->postJson('/api/v1/terms', [
             'academic_year_id' => $this->academicYear->id,
             'term_name' => 'Invalid Term',
             'start_date' => '2026-12-01',

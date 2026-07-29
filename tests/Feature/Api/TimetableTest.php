@@ -60,7 +60,7 @@ class TimetableTest extends TestCase
 
     public function test_can_create_timetable_entry(): void
     {
-        $response = $this->postJson('/api/timetable', [
+        $response = $this->postJson('/api/v1/timetable', [
             'stream_id' => $this->stream->id,
             'subject_id' => $this->subject->id,
             'staff_id' => $this->staff->id,
@@ -82,7 +82,7 @@ class TimetableTest extends TestCase
             'day_of_week' => 'Monday', 'period_no' => 1, 'start_time' => '08:00', 'end_time' => '08:40',
         ]);
 
-        $response = $this->getJson('/api/timetable', $this->authHeaders());
+        $response = $this->getJson('/api/v1/timetable', $this->authHeaders());
 
         $response->assertStatus(200);
     }
@@ -95,7 +95,7 @@ class TimetableTest extends TestCase
             'day_of_week' => 'Monday', 'period_no' => 1, 'start_time' => '08:00', 'end_time' => '08:40',
         ]);
 
-        $response = $this->getJson("/api/timetable/{$timetable->id}", $this->authHeaders());
+        $response = $this->getJson("/api/v1/timetable/{$timetable->id}", $this->authHeaders());
 
         $response->assertStatus(200);
     }
@@ -108,7 +108,7 @@ class TimetableTest extends TestCase
             'day_of_week' => 'Monday', 'period_no' => 1, 'start_time' => '08:00', 'end_time' => '08:40',
         ]);
 
-        $response = $this->deleteJson("/api/timetable/{$timetable->id}", [], $this->authHeaders());
+        $response = $this->deleteJson("/api/v1/timetable/{$timetable->id}", [], $this->authHeaders());
 
         $response->assertStatus(200);
         $this->assertDatabaseMissing('timetable', ['id' => $timetable->id]);
@@ -116,7 +116,7 @@ class TimetableTest extends TestCase
 
     public function test_create_requires_valid_day(): void
     {
-        $response = $this->postJson('/api/timetable', [
+        $response = $this->postJson('/api/v1/timetable', [
             'stream_id' => $this->stream->id,
             'subject_id' => $this->subject->id,
             'staff_id' => $this->staff->id,

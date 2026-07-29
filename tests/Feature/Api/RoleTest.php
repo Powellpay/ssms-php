@@ -37,7 +37,7 @@ class RoleTest extends TestCase
     {
         Role::create(['role_name' => 'Teacher', 'description' => 'Teaching staff']);
 
-        $response = $this->getJson('/api/roles', $this->authHeaders());
+        $response = $this->getJson('/api/v1/roles', $this->authHeaders());
 
         $response->assertStatus(200)
             ->assertJsonCount(2, 'data');
@@ -45,7 +45,7 @@ class RoleTest extends TestCase
 
     public function test_can_create_role(): void
     {
-        $response = $this->postJson('/api/roles', [
+        $response = $this->postJson('/api/v1/roles', [
             'role_name' => 'Bursar',
             'description' => 'Manages fees',
         ], $this->authHeaders());
@@ -58,7 +58,7 @@ class RoleTest extends TestCase
     {
         $role = Role::create(['role_name' => 'Teacher', 'description' => 'Teaching staff']);
 
-        $response = $this->getJson("/api/roles/{$role->id}", $this->authHeaders());
+        $response = $this->getJson("/api/v1/roles/{$role->id}", $this->authHeaders());
 
         $response->assertStatus(200)
             ->assertJsonFragment(['role_name' => 'Teacher']);
@@ -68,7 +68,7 @@ class RoleTest extends TestCase
     {
         $role = Role::create(['role_name' => 'Temp', 'description' => 'Temporary']);
 
-        $response = $this->putJson("/api/roles/{$role->id}", [
+        $response = $this->putJson("/api/v1/roles/{$role->id}", [
             'role_name' => 'Permanent',
             'description' => 'Updated',
         ], $this->authHeaders());
@@ -81,7 +81,7 @@ class RoleTest extends TestCase
     {
         $role = Role::create(['role_name' => 'TempRole', 'description' => 'Will be deleted']);
 
-        $response = $this->deleteJson("/api/roles/{$role->id}", [], $this->authHeaders());
+        $response = $this->deleteJson("/api/v1/roles/{$role->id}", [], $this->authHeaders());
 
         $response->assertStatus(200);
         $this->assertDatabaseMissing('roles', ['id' => $role->id]);
@@ -91,7 +91,7 @@ class RoleTest extends TestCase
     {
         Role::create(['role_name' => 'Teacher', 'description' => '']);
 
-        $response = $this->postJson('/api/roles', [
+        $response = $this->postJson('/api/v1/roles', [
             'role_name' => 'Teacher',
         ], $this->authHeaders());
 
@@ -101,7 +101,7 @@ class RoleTest extends TestCase
 
     public function test_unauthenticated_request_fails(): void
     {
-        $response = $this->getJson('/api/roles');
+        $response = $this->getJson('/api/v1/roles');
 
         $response->assertStatus(401);
     }

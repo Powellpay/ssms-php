@@ -59,7 +59,7 @@ class DisciplineRecordTest extends TestCase
 
     public function test_can_create_discipline_record(): void
     {
-        $response = $this->postJson('/api/discipline-records', [
+        $response = $this->postJson('/api/v1/discipline-records', [
             'student_id' => $this->student->id,
             'term_id' => $this->term->id,
             'incident_date' => now()->format('Y-m-d'),
@@ -76,7 +76,7 @@ class DisciplineRecordTest extends TestCase
             'incident_date' => now()->format('Y-m-d'), 'description' => 'Fighting',
         ]);
 
-        $response = $this->getJson('/api/discipline-records', $this->authHeaders());
+        $response = $this->getJson('/api/v1/discipline-records', $this->authHeaders());
 
         $response->assertStatus(200);
     }
@@ -88,7 +88,7 @@ class DisciplineRecordTest extends TestCase
             'incident_date' => now()->format('Y-m-d'), 'description' => 'Fighting',
         ]);
 
-        $response = $this->getJson("/api/discipline-records/{$record->id}", $this->authHeaders());
+        $response = $this->getJson("/api/v1/discipline-records/{$record->id}", $this->authHeaders());
 
         $response->assertStatus(200);
     }
@@ -100,7 +100,7 @@ class DisciplineRecordTest extends TestCase
             'incident_date' => now()->format('Y-m-d'), 'description' => 'Fighting',
         ]);
 
-        $response = $this->deleteJson("/api/discipline-records/{$record->id}", [], $this->authHeaders());
+        $response = $this->deleteJson("/api/v1/discipline-records/{$record->id}", [], $this->authHeaders());
 
         $response->assertStatus(200);
         $this->assertDatabaseMissing('discipline_records', ['id' => $record->id]);

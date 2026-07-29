@@ -36,7 +36,7 @@ class StaffTest extends TestCase
 
     public function test_can_create_staff(): void
     {
-        $response = $this->postJson('/api/staff', [
+        $response = $this->postJson('/api/v1/staff', [
             'staff_no' => 'STF-001',
             'first_name' => 'Jane',
             'last_name' => 'Doe',
@@ -55,7 +55,7 @@ class StaffTest extends TestCase
             ['staff_no' => 'STF-002', 'first_name' => 'John', 'last_name' => 'Smith', 'gender' => 'Male', 'status' => 'active'],
         ]);
 
-        $response = $this->getJson('/api/staff', $this->authHeaders());
+        $response = $this->getJson('/api/v1/staff', $this->authHeaders());
 
         $response->assertStatus(200)
             ->assertJsonCount(2, 'data');
@@ -68,7 +68,7 @@ class StaffTest extends TestCase
             'gender' => 'Male', 'status' => 'inactive',
         ]);
 
-        $response = $this->deleteJson("/api/staff/{$staff->id}", [], $this->authHeaders());
+        $response = $this->deleteJson("/api/v1/staff/{$staff->id}", [], $this->authHeaders());
 
         $response->assertStatus(200);
         $this->assertDatabaseMissing('staff', ['id' => $staff->id]);

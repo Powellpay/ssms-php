@@ -3,10 +3,12 @@
 namespace App\Domain\Attendance\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Domain\Attendance\Requests\AttendanceRegisterRequest;
 use App\Domain\Attendance\Requests\AttendanceRequest;
 use App\Domain\Attendance\Resources\AttendanceCollection;
 use App\Domain\Attendance\Resources\AttendanceResource;
 use App\Domain\Attendance\Services\Contracts\AttendanceServiceInterface;
+use Illuminate\Http\Request;
 
 class AttendanceController extends Controller
 {
@@ -38,5 +40,38 @@ class AttendanceController extends Controller
     {
         $this->attendanceService->delete($id);
         return response()->json(['message' => 'Deleted']);
+    }
+
+    public function register(AttendanceRegisterRequest $request)
+    {
+        $recordedBy = (int) $request->user()->id;
+        $result = $this->attendanceService->markBulkAttendance(
+            $request->input('records'),
+            (int) $request->input('term_id'),
+            $request->input('attendance_date'),
+            $recordedBy
+        );
+
+        return response()->json([
+            'message' => "Attendance recorded for {$result['count']} student(s).",
+            'count' => $result['count'],
+        ]);
+    }
+
+    public function registerShow(Request $request)
+    {
+        $request->validate([
+            'term_id' => 'required|integer|exists:terms,id',
+            'attendance_date' => 'required|date',
+            'stream_id' => 'nullable|integer|exists:streams,id',
+        ]);
+
+        $register = $this->attendanceService->getRegister(
+            (int) $request->input('term_id'),
+            $request->input('attendance_date'),
+            $request->input('stream_id') ? (int) $request->input('stream_id') : null
+        );
+
+        return response()->json($register);
     }
 }

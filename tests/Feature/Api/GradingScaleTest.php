@@ -36,7 +36,7 @@ class GradingScaleTest extends TestCase
 
     public function test_can_create_grading_scale(): void
     {
-        $response = $this->postJson('/api/grading-scale', [
+        $response = $this->postJson('/api/v1/grading-scale', [
             'grade' => 'A',
             'descriptor' => 'Exceptional',
             'min_score' => 80,
@@ -54,7 +54,7 @@ class GradingScaleTest extends TestCase
             ['grade' => 'B', 'descriptor' => 'Outstanding', 'min_score' => 70, 'max_score' => 79.99, 'remarks' => ''],
         ]);
 
-        $response = $this->getJson('/api/grading-scale', $this->authHeaders());
+        $response = $this->getJson('/api/v1/grading-scale', $this->authHeaders());
 
         $response->assertStatus(200)
             ->assertJsonCount(2, 'data');
@@ -66,7 +66,7 @@ class GradingScaleTest extends TestCase
             'grade' => 'C', 'descriptor' => 'Satisfactory', 'min_score' => 55, 'max_score' => 69.99,
         ]);
 
-        $response = $this->putJson("/api/grading-scale/{$grade->id}", [
+        $response = $this->putJson("/api/v1/grading-scale/{$grade->id}", [
             'grade' => 'C',
             'descriptor' => 'Good',
             'min_score' => 55,
@@ -83,7 +83,7 @@ class GradingScaleTest extends TestCase
             'grade' => 'E', 'descriptor' => 'Elementary', 'min_score' => 0, 'max_score' => 39.99,
         ]);
 
-        $response = $this->deleteJson("/api/grading-scale/{$grade->id}", [], $this->authHeaders());
+        $response = $this->deleteJson("/api/v1/grading-scale/{$grade->id}", [], $this->authHeaders());
 
         $response->assertStatus(200);
         $this->assertDatabaseMissing('grading_scale', ['id' => $grade->id]);
@@ -91,7 +91,7 @@ class GradingScaleTest extends TestCase
 
     public function test_requires_min_less_than_max(): void
     {
-        $response = $this->postJson('/api/grading-scale', [
+        $response = $this->postJson('/api/v1/grading-scale', [
             'grade' => 'A',
             'descriptor' => 'Exceptional',
             'min_score' => 90,

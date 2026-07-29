@@ -68,7 +68,7 @@ class GenericSkillRatingTest extends TestCase
 
     public function test_can_create_generic_skill_rating(): void
     {
-        $response = $this->postJson('/api/generic-skill-ratings', [
+        $response = $this->postJson('/api/v1/generic-skill-ratings', [
             'student_id' => $this->student->id,
             'term_id' => $this->term->id,
             'generic_skill_id' => $this->genericSkill->id,
@@ -81,7 +81,7 @@ class GenericSkillRatingTest extends TestCase
 
     public function test_can_list_generic_skill_ratings(): void
     {
-        $response = $this->getJson('/api/generic-skill-ratings', $this->authHeaders());
+        $response = $this->getJson('/api/v1/generic-skill-ratings', $this->authHeaders());
 
         $response->assertStatus(200);
     }
@@ -96,7 +96,7 @@ class GenericSkillRatingTest extends TestCase
             'recorded_by' => $this->staff->id,
         ]);
 
-        $response = $this->deleteJson("/api/generic-skill-ratings/{$gsr->id}", [], $this->authHeaders());
+        $response = $this->deleteJson("/api/v1/generic-skill-ratings/{$gsr->id}", [], $this->authHeaders());
 
         $response->assertStatus(200);
         $this->assertDatabaseMissing('generic_skill_ratings', ['id' => $gsr->id]);

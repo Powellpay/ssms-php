@@ -58,7 +58,7 @@ class FinanceTest extends TestCase
 
     public function test_can_create_fee_structure(): void
     {
-        $response = $this->postJson('/api/fee-structures', [
+        $response = $this->postJson('/api/v1/fee-structures', [
             'class_level_id' => $this->classLevel->id,
             'term_id' => $this->term->id,
             'fee_category' => 'Tuition',
@@ -75,14 +75,14 @@ class FinanceTest extends TestCase
             'fee_category' => 'Tuition', 'amount' => 500000,
         ]);
 
-        $response = $this->getJson('/api/fee-structures', $this->authHeaders());
+        $response = $this->getJson('/api/v1/fee-structures', $this->authHeaders());
 
         $response->assertStatus(200);
     }
 
     public function test_can_create_invoice(): void
     {
-        $response = $this->postJson('/api/invoices', [
+        $response = $this->postJson('/api/v1/invoices', [
             'student_id' => $this->student->id,
             'term_id' => $this->term->id,
             'total_amount' => 500000,
@@ -99,7 +99,7 @@ class FinanceTest extends TestCase
             'total_amount' => 500000, 'issue_date' => now()->format('Y-m-d'),
         ]);
 
-        $response = $this->getJson('/api/invoices', $this->authHeaders());
+        $response = $this->getJson('/api/v1/invoices', $this->authHeaders());
 
         $response->assertStatus(200);
     }
@@ -111,7 +111,7 @@ class FinanceTest extends TestCase
             'total_amount' => 500000, 'issue_date' => now()->format('Y-m-d'),
         ]);
 
-        $response = $this->postJson('/api/payments', [
+        $response = $this->postJson('/api/v1/payments', [
             'invoice_id' => $invoice->id,
             'student_id' => $this->student->id,
             'amount' => 250000,
@@ -135,7 +135,7 @@ class FinanceTest extends TestCase
             'payment_date' => now()->format('Y-m-d'),
         ]);
 
-        $response = $this->getJson('/api/payments', $this->authHeaders());
+        $response = $this->getJson('/api/v1/payments', $this->authHeaders());
 
         $response->assertStatus(200);
     }

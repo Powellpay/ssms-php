@@ -36,7 +36,7 @@ class GenericSkillTest extends TestCase
 
     public function test_can_create_generic_skill(): void
     {
-        $response = $this->postJson('/api/generic-skills', [
+        $response = $this->postJson('/api/v1/generic-skills', [
             'skill_name' => 'Critical Thinking',
         ], $this->authHeaders());
 
@@ -49,7 +49,7 @@ class GenericSkillTest extends TestCase
         GenericSkill::create(['skill_name' => 'Critical Thinking']);
         GenericSkill::create(['skill_name' => 'Problem Solving']);
 
-        $response = $this->getJson('/api/generic-skills', $this->authHeaders());
+        $response = $this->getJson('/api/v1/generic-skills', $this->authHeaders());
 
         $response->assertStatus(200)
             ->assertJsonCount(2, 'data');
@@ -59,7 +59,7 @@ class GenericSkillTest extends TestCase
     {
         GenericSkill::create(['skill_name' => 'Critical Thinking']);
 
-        $response = $this->postJson('/api/generic-skills', [
+        $response = $this->postJson('/api/v1/generic-skills', [
             'skill_name' => 'Critical Thinking',
         ], $this->authHeaders());
 

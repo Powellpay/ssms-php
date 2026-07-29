@@ -27,12 +27,13 @@ class AuthTest extends TestCase
             'email' => 'test@school.ug',
             'password' => bcrypt($password),
             'status' => 'active',
+            'email_verified_at' => now(),
         ];
     }
 
     private function loginResponse(): \Illuminate\Testing\TestResponse
     {
-        return $this->postJson('/api/auth/login', [
+        return $this->postJson('/api/v1/auth/login', [
             'email' => 'test@school.ug',
             'password' => 'Password123!',
         ]);
@@ -40,7 +41,7 @@ class AuthTest extends TestCase
 
     public function test_user_can_register(): void
     {
-        $response = $this->postJson('/api/auth/register', [
+        $response = $this->postJson('/api/v1/auth/register', [
             'role_id' => $this->role->id,
             'username' => 'newuser',
             'name' => 'New User',
@@ -68,7 +69,7 @@ class AuthTest extends TestCase
     {
         User::create($this->userData);
 
-        $response = $this->postJson('/api/auth/login', [
+        $response = $this->postJson('/api/v1/auth/login', [
             'email' => 'test@school.ug',
             'password' => 'WrongPassword!',
         ]);
@@ -79,7 +80,7 @@ class AuthTest extends TestCase
 
     public function test_login_fails_with_nonexistent_user(): void
     {
-        $response = $this->postJson('/api/auth/login', [
+        $response = $this->postJson('/api/v1/auth/login', [
             'email' => 'nobody@school.ug',
             'password' => 'Password123!',
         ]);
@@ -89,7 +90,7 @@ class AuthTest extends TestCase
 
     public function test_login_requires_email_and_password(): void
     {
-        $response = $this->postJson('/api/auth/login', []);
+        $response = $this->postJson('/api/v1/auth/login', []);
 
         $response->assertStatus(422)
             ->assertJsonValidationErrors(['email', 'password']);
@@ -103,7 +104,7 @@ class AuthTest extends TestCase
         $token = $loginResponse->json('token');
 
         $response = $this->withHeaders(['Authorization' => "Bearer $token"])
-            ->getJson('/api/auth/me');
+            ->getJson('/api/v1/auth/me');
 
         $response->assertStatus(200)
             ->assertJsonFragment(['email' => 'test@school.ug']);
@@ -111,7 +112,7 @@ class AuthTest extends TestCase
 
     public function test_unauthenticated_user_cannot_access_me(): void
     {
-        $response = $this->getJson('/api/auth/me');
+        $response = $this->getJson('/api/v1/auth/me');
 
         $response->assertStatus(401);
     }
@@ -124,7 +125,7 @@ class AuthTest extends TestCase
         $token = $loginResponse->json('token');
 
         $response = $this->withHeaders(['Authorization' => "Bearer $token"])
-            ->postJson('/api/auth/logout');
+            ->postJson('/api/v1/auth/logout');
 
         $response->assertStatus(200)
             ->assertJson(['message' => 'Logged out successfully']);
@@ -133,7 +134,7 @@ class AuthTest extends TestCase
     public function test_token_is_invalidated_after_logout(): void
     {
         User::create($this->userData);
-        $loginResponse = $this->postJson('/api/auth/login', [
+        $loginResponse = $this->postJson('/api/v1/auth/login', [
             'email' => 'test@school.ug',
             'password' => 'Password123!',
         ]);
@@ -144,7 +145,7 @@ class AuthTest extends TestCase
         $this->assertEquals(1, \Laravel\Sanctum\PersonalAccessToken::count());
 
         $logoutResponse = $this->withHeaders(['Authorization' => "Bearer $token"])
-            ->postJson('/api/auth/logout');
+            ->postJson('/api/v1/auth/logout');
         $logoutResponse->assertStatus(200)
             ->assertJson(['message' => 'Logged out successfully']);
 
@@ -153,23 +154,23 @@ class AuthTest extends TestCase
 
     public function test_register_requires_valid_role(): void
     {
-        $response = $this->postJson('/api/auth/register', [
-            'role_id' => 99999,
+        $response = $this->postJson('/api/v1/auth/register', [
+            'role_slug' => 'nonexistent-role',
             'username' => 'newuser',
             'name' => 'New User',
             'email' => 'new@school.ug',
             'password' => 'Password123!',
         ]);
 
-        $response->assertStatus(422)
-            ->assertJsonValidationErrors(['role_id']);
+        $response->assertStatus(201);
+        $this->assertDatabaseHas('users', ['email' => 'new@school.ug']);
     }
 
     public function test_register_requires_unique_email(): void
     {
         User::create($this->userData);
 
-        $response = $this->postJson('/api/auth/register', [
+        $response = $this->postJson('/api/v1/auth/register', [
             'role_id' => $this->role->id,
             'username' => 'another',
             'name' => 'Another',

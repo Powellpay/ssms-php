@@ -51,7 +51,7 @@ class StudentTest extends TestCase
     {
         Student::create($this->studentData);
 
-        $response = $this->getJson('/api/students', $this->authHeaders());
+        $response = $this->getJson('/api/v1/students', $this->authHeaders());
 
         $response->assertStatus(200)
             ->assertJsonCount(1, 'data');
@@ -59,7 +59,7 @@ class StudentTest extends TestCase
 
     public function test_can_create_student(): void
     {
-        $response = $this->postJson('/api/students', $this->studentData, $this->authHeaders());
+        $response = $this->postJson('/api/v1/students', $this->studentData, $this->authHeaders());
 
         $response->assertStatus(201)
             ->assertJsonFragment(['admission_no' => 'S26-0001']);
@@ -69,7 +69,7 @@ class StudentTest extends TestCase
     {
         $student = Student::create($this->studentData);
 
-        $response = $this->getJson("/api/students/{$student->id}", $this->authHeaders());
+        $response = $this->getJson("/api/v1/students/{$student->id}", $this->authHeaders());
 
         $response->assertStatus(200)
             ->assertJsonFragment(['first_name' => 'Faith']);
@@ -79,7 +79,7 @@ class StudentTest extends TestCase
     {
         $student = Student::create($this->studentData);
 
-        $response = $this->putJson("/api/students/{$student->id}", [
+        $response = $this->putJson("/api/v1/students/{$student->id}", [
             'admission_no' => 'S26-0001',
             'first_name' => 'Faith',
             'last_name' => 'Achieng-Okello',
@@ -95,7 +95,7 @@ class StudentTest extends TestCase
     {
         $student = Student::create($this->studentData);
 
-        $response = $this->deleteJson("/api/students/{$student->id}", [], $this->authHeaders());
+        $response = $this->deleteJson("/api/v1/students/{$student->id}", [], $this->authHeaders());
 
         $response->assertStatus(200);
         $this->assertDatabaseMissing('students', ['id' => $student->id]);
@@ -105,7 +105,7 @@ class StudentTest extends TestCase
     {
         Student::create($this->studentData);
 
-        $response = $this->postJson('/api/students', $this->studentData, $this->authHeaders());
+        $response = $this->postJson('/api/v1/students', $this->studentData, $this->authHeaders());
 
         $response->assertStatus(422)
             ->assertJsonValidationErrors(['admission_no']);
@@ -113,7 +113,7 @@ class StudentTest extends TestCase
 
     public function test_create_requires_required_fields(): void
     {
-        $response = $this->postJson('/api/students', [], $this->authHeaders());
+        $response = $this->postJson('/api/v1/students', [], $this->authHeaders());
 
         $response->assertStatus(422)
             ->assertJsonValidationErrors(['admission_no', 'first_name', 'last_name', 'gender', 'admission_date']);
@@ -123,7 +123,7 @@ class StudentTest extends TestCase
     {
         $student = Student::create($this->studentData);
 
-        $response = $this->deleteJson("/api/students/{$student->id}", [], $this->authHeaders());
+        $response = $this->deleteJson("/api/v1/students/{$student->id}", [], $this->authHeaders());
 
         $response->assertJson(['message' => 'Deleted']);
     }
@@ -132,7 +132,7 @@ class StudentTest extends TestCase
     {
         Student::create($this->studentData);
 
-        $response = $this->getJson('/api/students/admission/S26-0001', $this->authHeaders());
+        $response = $this->getJson('/api/v1/students/admission/S26-0001', $this->authHeaders());
 
         $response->assertStatus(200);
     }
@@ -149,7 +149,7 @@ class StudentTest extends TestCase
             'status' => 'active',
         ]);
 
-        $response = $this->getJson('/api/students/status/active', $this->authHeaders());
+        $response = $this->getJson('/api/v1/students/status/active', $this->authHeaders());
 
         $response->assertStatus(200)
             ->assertJsonCount(2, 'data');
@@ -157,7 +157,7 @@ class StudentTest extends TestCase
 
     public function test_unauthenticated_request_fails(): void
     {
-        $response = $this->getJson('/api/students');
+        $response = $this->getJson('/api/v1/students');
 
         $response->assertStatus(401);
     }

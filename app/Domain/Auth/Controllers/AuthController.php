@@ -149,7 +149,7 @@ class AuthController extends Controller
 
     public function me(Request $request): UserResource
     {
-        return new UserResource($request->user());
+        return new UserResource($request->user()->load('school'));
     }
 
     public function forgotPassword(ForgotPasswordRequest $request): JsonResponse

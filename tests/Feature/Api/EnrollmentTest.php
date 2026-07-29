@@ -69,7 +69,7 @@ class EnrollmentTest extends TestCase
 
     public function test_can_create_enrollment(): void
     {
-        $response = $this->postJson('/api/enrollments', [
+        $response = $this->postJson('/api/v1/enrollments', [
             'student_id' => $this->student->id,
             'stream_id' => $this->stream->id,
             'academic_year_id' => $this->academicYear->id,
@@ -89,7 +89,7 @@ class EnrollmentTest extends TestCase
             'enrollment_date' => '2026-02-03',
         ]);
 
-        $response = $this->getJson('/api/enrollments', $this->authHeaders());
+        $response = $this->getJson('/api/v1/enrollments', $this->authHeaders());
 
         $response->assertStatus(200)
             ->assertJsonCount(1, 'data');
@@ -104,7 +104,7 @@ class EnrollmentTest extends TestCase
             'enrollment_date' => '2026-02-03',
         ]);
 
-        $response = $this->getJson("/api/enrollments/{$enrollment->id}", $this->authHeaders());
+        $response = $this->getJson("/api/v1/enrollments/{$enrollment->id}", $this->authHeaders());
 
         $response->assertStatus(200)
             ->assertJsonFragment(['student_id' => $this->student->id]);
@@ -119,7 +119,7 @@ class EnrollmentTest extends TestCase
             'enrollment_date' => '2026-02-03',
         ]);
 
-        $response = $this->deleteJson("/api/enrollments/{$enrollment->id}", [], $this->authHeaders());
+        $response = $this->deleteJson("/api/v1/enrollments/{$enrollment->id}", [], $this->authHeaders());
 
         $response->assertStatus(200);
         $this->assertDatabaseMissing('enrollments', ['id' => $enrollment->id]);
@@ -134,7 +134,7 @@ class EnrollmentTest extends TestCase
             'enrollment_date' => '2026-02-03',
         ]);
 
-        $response = $this->postJson('/api/enrollments', [
+        $response = $this->postJson('/api/v1/enrollments', [
             'student_id' => $this->student->id,
             'stream_id' => $this->stream->id,
             'academic_year_id' => $this->academicYear->id,

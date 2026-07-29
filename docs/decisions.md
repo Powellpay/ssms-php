@@ -118,3 +118,98 @@ Each entity gets its own dedicated ServiceProvider that binds Interface → Impl
 - Clear provider-per-entity ownership
 - Easy to disable/replace an entity's bindings
 - 34 providers registered, zero conflicts
+
+---
+
+## ADR-008: PDF Report Card Generation with dompdf
+**Date:** 2026-07-29
+
+### Context
+Need to generate printable report cards with subject results, skill ratings, attendance summary, and teacher comments. Output must be a downloadable PDF.
+
+### Decision
+Use `barryvdh/laravel-dompdf` for PDF generation. A dedicated `ReportCardPdfBuilder` service constructs the view data (loads subject results, skill ratings, grading scale, attendance). A Blade template (`reports/report-card`) renders the PDF with inline CSS, DejaVu Sans font, and the SSMS green (#1f6f43) design system. PDF download available via `GET /api/report-cards/{id}/pdf`.
+
+### Consequences
+- No external PDF service dependency
+- Template-driven — easy to customize layout
+- Grading computed dynamically from GradingScale lookup table
+
+---
+
+## ADR-009: Profile Management - Separate Controller
+**Date:** 2026-07-29
+
+### Context
+Profile management (avatar upload, password change, email verification) is distinct from authentication (login/logout). Mixing concerns violates SRP.
+
+### Decision
+Create a dedicated `ProfileController` and `ProfileRequest` for authenticated user profile operations:
+- `GET /auth/profile` — returns current user with avatar URL
+- `POST /auth/profile` — updates name, email, phone, password (optional), avatar (image upload)
+- Avatar stored in `public/avatars/` on the `public` disk; old avatar deleted on replacement
+- Password hashed only when provided (not empty)
+
+### Consequences
+- AuthController stays focused on login/register/logout/verification
+- Profile updates handled separately with image upload support
+- Frontend can send FormData for avatar upload
+
+---
+
+## ADR-011: Queue-Based CSV Import with Chunking
+**Date:** 2026-07-29
+
+### Context
+Student CSV imports with hundreds or thousands of rows were processed synchronously in a single DB transaction. Large imports caused request timeouts and blocked the HTTP response. A single failure rolled back the entire import.
+
+### Decision
+- The `import()` method parses the CSV, validates the header, chunks data rows into batches of 100, and dispatches one `ImportStudentsJob` per chunk to the `database` queue
+- Each row within a job runs in its own DB transaction — a single bad row does not block the rest of the chunk
+- The controller returns immediately with `{success: true, message, batches, total}`
+- Each `ImportStudentsJob` has a 5-minute timeout per chunk
+
+### Consequences
+- Import response is immediate, no request timeouts
+- Failed rows are isolated — good rows still import
+- Errors are logged per chunk via `Log::warning`
+- Requires a queue worker running (`php artisan queue:work`)
+
+---
+
+## ADR-012: Bulk Attendance Register with Upsert Pattern
+**Date:** 2026-07-29
+
+### Context
+Teachers need to mark attendance for an entire class on a given date. The existing single-record endpoint was impractical for daily class-wide attendance. The register view also needed a way to show the attendance status for all enrolled students in a stream on a given date.
+
+### Decision
+- `POST /api/attendance/register` accepts a bulk payload with `{term_id, attendance_date, records: [{student_id, status}]}`
+- For each record, existing attendance for that student+date is deleted (soft upsert) before inserting the new record
+- `recorded_by` is set from `$request->user()->id`
+- `GET /api/attendance/register` with `term_id` and `attendance_date` query params returns the full register — optionally filtered by `stream_id` via active enrollments
+- Request validation via dedicated `AttendanceRegisterRequest`
+
+### Consequences
+- One API call replaces N individual calls for a class
+- Clear register view for teachers to see who was marked and who is missing
+- Upsert pattern avoids composite unique constraint issues
+- Dedicated FormRequest keeps validation consistent
+
+---
+
+## ADR-010: Marks → Report Card Pipeline
+**Date:** 2026-07-29
+
+### Context
+Report cards should be auto-populated from existing assessment records (SubjectTermResult, GenericSkillRating, Attendance) rather than requiring manual data entry.
+
+### Decision
+- `ReportCardService::generateReportCard()` aggregates subject results, skill ratings, and attendance for a given student+term
+- Exposed via `POST /api/report-cards/generate` which creates a new ReportCard with auto-populated attendance counts
+- `ReportCardPdfBuilder` builds the PDF using the same aggregated data + grading scale lookup
+
+### Consequences
+- One-click report card generation from existing assessment data
+- Attendance counts auto-populated from attendance records
+- Consistent data between assessment records and report card output

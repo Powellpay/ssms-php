@@ -69,7 +69,7 @@ class AssessmentRecordTest extends TestCase
 
     public function test_can_create_assessment_record(): void
     {
-        $response = $this->postJson('/api/assessment-records', [
+        $response = $this->postJson('/api/v1/assessment-records', [
             'student_id' => $this->student->id,
             'subject_id' => $this->subject->id,
             'assessment_type_id' => $this->assessmentType->id,
@@ -84,7 +84,7 @@ class AssessmentRecordTest extends TestCase
 
     public function test_can_list_assessment_records(): void
     {
-        $response = $this->getJson('/api/assessment-records', $this->authHeaders());
+        $response = $this->getJson('/api/v1/assessment-records', $this->authHeaders());
 
         $response->assertStatus(200);
     }
@@ -101,7 +101,7 @@ class AssessmentRecordTest extends TestCase
             'recorded_by' => $this->staff->id,
         ]);
 
-        $response = $this->getJson("/api/assessment-records/{$record->id}", $this->authHeaders());
+        $response = $this->getJson("/api/v1/assessment-records/{$record->id}", $this->authHeaders());
 
         $response->assertStatus(200)
             ->assertJsonFragment(['score' => '75.00']);
@@ -119,7 +119,7 @@ class AssessmentRecordTest extends TestCase
             'recorded_by' => $this->staff->id,
         ]);
 
-        $response = $this->deleteJson("/api/assessment-records/{$record->id}", [], $this->authHeaders());
+        $response = $this->deleteJson("/api/v1/assessment-records/{$record->id}", [], $this->authHeaders());
 
         $response->assertStatus(200);
         $this->assertDatabaseMissing('assessment_records', ['id' => $record->id]);
@@ -127,7 +127,7 @@ class AssessmentRecordTest extends TestCase
 
     public function test_create_requires_valid_student(): void
     {
-        $response = $this->postJson('/api/assessment-records', [
+        $response = $this->postJson('/api/v1/assessment-records', [
             'student_id' => 999,
             'subject_id' => $this->subject->id,
             'assessment_type_id' => $this->assessmentType->id,

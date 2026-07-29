@@ -20,4 +20,8 @@ interface AttendanceServiceInterface
     public function markAttendance(int $studentId, int $termId, string $date, string $status): Attendance;
 
     public function getAttendanceSummary(int $studentId, int $termId): array;
+
+    public function markBulkAttendance(array $records, int $termId, string $date, int $recordedBy): array;
+
+    public function getRegister(int $termId, string $date, ?int $streamId): array;
 }

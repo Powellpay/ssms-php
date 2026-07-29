@@ -50,7 +50,7 @@ class LibraryTest extends TestCase
 
     public function test_can_create_book(): void
     {
-        $response = $this->postJson('/api/library-books', [
+        $response = $this->postJson('/api/v1/library-books', [
             'title' => 'Maths Textbook',
             'author' => 'John',
             'isbn' => '12345',
@@ -66,7 +66,7 @@ class LibraryTest extends TestCase
             'title' => 'Maths Textbook', 'author' => 'John', 'isbn' => '12345', 'total_copies' => 5,
         ]);
 
-        $response = $this->getJson('/api/library-books', $this->authHeaders());
+        $response = $this->getJson('/api/v1/library-books', $this->authHeaders());
 
         $response->assertStatus(200);
     }
@@ -77,7 +77,7 @@ class LibraryTest extends TestCase
             'title' => 'Maths Textbook', 'author' => 'John', 'isbn' => '12345', 'total_copies' => 5,
         ]);
 
-        $response = $this->postJson('/api/book-loans', [
+        $response = $this->postJson('/api/v1/book-loans', [
             'book_id' => $book->id,
             'student_id' => $this->student->id,
             'staff_id' => $this->staff->id,
@@ -99,7 +99,7 @@ class LibraryTest extends TestCase
             'borrow_date' => now()->format('Y-m-d'), 'due_date' => now()->addDays(14)->format('Y-m-d'),
         ]);
 
-        $response = $this->getJson('/api/book-loans', $this->authHeaders());
+        $response = $this->getJson('/api/v1/book-loans', $this->authHeaders());
 
         $response->assertStatus(200);
     }
@@ -110,7 +110,7 @@ class LibraryTest extends TestCase
             'title' => 'Maths Textbook', 'author' => 'John', 'isbn' => '12345', 'total_copies' => 5, 'available_copies' => 5,
         ]);
 
-        $response = $this->putJson("/api/library-books/{$book->id}", [
+        $response = $this->putJson("/api/v1/library-books/{$book->id}", [
             'title' => 'Maths Textbook',
             'author' => 'John',
             'isbn' => '12345',

@@ -39,7 +39,7 @@ class ClassLevelTest extends TestCase
         ClassLevel::create(['level_name' => 'S1', 'numeric_level' => 1]);
         ClassLevel::create(['level_name' => 'S2', 'numeric_level' => 2]);
 
-        $response = $this->getJson('/api/class-levels', $this->authHeaders());
+        $response = $this->getJson('/api/v1/class-levels', $this->authHeaders());
 
         $response->assertStatus(200)
             ->assertJsonCount(2, 'data');
@@ -47,7 +47,7 @@ class ClassLevelTest extends TestCase
 
     public function test_can_create_class_level(): void
     {
-        $response = $this->postJson('/api/class-levels', [
+        $response = $this->postJson('/api/v1/class-levels', [
             'level_name' => 'S3',
             'numeric_level' => 3,
             'description' => 'Senior Three',
@@ -61,7 +61,7 @@ class ClassLevelTest extends TestCase
     {
         $classLevel = ClassLevel::create(['level_name' => 'S4', 'numeric_level' => 4]);
 
-        $response = $this->getJson("/api/class-levels/{$classLevel->id}", $this->authHeaders());
+        $response = $this->getJson("/api/v1/class-levels/{$classLevel->id}", $this->authHeaders());
 
         $response->assertStatus(200)
             ->assertJsonFragment(['level_name' => 'S4']);
@@ -71,7 +71,7 @@ class ClassLevelTest extends TestCase
     {
         $classLevel = ClassLevel::create(['level_name' => 'S5', 'numeric_level' => 5]);
 
-        $response = $this->putJson("/api/class-levels/{$classLevel->id}", [
+        $response = $this->putJson("/api/v1/class-levels/{$classLevel->id}", [
             'level_name' => 'Senior Five',
             'numeric_level' => 5,
         ], $this->authHeaders());
@@ -84,7 +84,7 @@ class ClassLevelTest extends TestCase
     {
         $classLevel = ClassLevel::create(['level_name' => 'S6', 'numeric_level' => 6]);
 
-        $response = $this->deleteJson("/api/class-levels/{$classLevel->id}", [], $this->authHeaders());
+        $response = $this->deleteJson("/api/v1/class-levels/{$classLevel->id}", [], $this->authHeaders());
 
         $response->assertStatus(200);
         $this->assertDatabaseMissing('class_levels', ['id' => $classLevel->id]);
@@ -94,7 +94,7 @@ class ClassLevelTest extends TestCase
     {
         ClassLevel::create(['level_name' => 'S1', 'numeric_level' => 1]);
 
-        $response = $this->postJson('/api/class-levels', [
+        $response = $this->postJson('/api/v1/class-levels', [
             'level_name' => 'S1',
             'numeric_level' => 1,
         ], $this->authHeaders());

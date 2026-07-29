@@ -36,7 +36,7 @@ class AnnouncementTest extends TestCase
 
     public function test_can_create_announcement(): void
     {
-        $response = $this->postJson('/api/announcements', [
+        $response = $this->postJson('/api/v1/announcements', [
             'title' => 'Holiday',
             'message' => 'School closed',
             'target_role' => 'all',
@@ -51,7 +51,7 @@ class AnnouncementTest extends TestCase
             'title' => 'Holiday', 'message' => 'School closed', 'target_role' => 'all',
         ]);
 
-        $response = $this->getJson('/api/announcements', $this->authHeaders());
+        $response = $this->getJson('/api/v1/announcements', $this->authHeaders());
 
         $response->assertStatus(200);
     }
@@ -62,7 +62,7 @@ class AnnouncementTest extends TestCase
             'title' => 'Holiday', 'message' => 'School closed', 'target_role' => 'all',
         ]);
 
-        $response = $this->deleteJson("/api/announcements/{$announcement->id}", [], $this->authHeaders());
+        $response = $this->deleteJson("/api/v1/announcements/{$announcement->id}", [], $this->authHeaders());
 
         $response->assertStatus(200);
         $this->assertDatabaseMissing('announcements', ['id' => $announcement->id]);

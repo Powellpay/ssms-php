@@ -64,7 +64,7 @@ class SubjectTermResultTest extends TestCase
             'subject_code' => 'MTC', 'subject_name' => 'Mathematics', 'category' => 'Core',
         ]);
 
-        $response = $this->postJson('/api/subject-term-results', [
+        $response = $this->postJson('/api/v1/subject-term-results', [
             'student_id' => $student->id,
             'subject_id' => $subject->id,
             'term_id' => $term->id,
@@ -77,7 +77,7 @@ class SubjectTermResultTest extends TestCase
 
     public function test_can_list_subject_term_results(): void
     {
-        $response = $this->getJson('/api/subject-term-results', $this->authHeaders());
+        $response = $this->getJson('/api/v1/subject-term-results', $this->authHeaders());
 
         $response->assertStatus(200);
     }
@@ -109,7 +109,7 @@ class SubjectTermResultTest extends TestCase
             'final_grade' => 'B',
         ]);
 
-        $response = $this->getJson("/api/subject-term-results/{$result->id}", $this->authHeaders());
+        $response = $this->getJson("/api/v1/subject-term-results/{$result->id}", $this->authHeaders());
 
         $response->assertStatus(200)
             ->assertJsonFragment(['final_grade' => 'B']);
@@ -142,7 +142,7 @@ class SubjectTermResultTest extends TestCase
             'final_grade' => 'C',
         ]);
 
-        $response = $this->deleteJson("/api/subject-term-results/{$result->id}", [], $this->authHeaders());
+        $response = $this->deleteJson("/api/v1/subject-term-results/{$result->id}", [], $this->authHeaders());
 
         $response->assertStatus(200);
         $this->assertDatabaseMissing('subject_term_results', ['id' => $result->id]);

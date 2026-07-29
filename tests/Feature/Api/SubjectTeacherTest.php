@@ -75,7 +75,7 @@ class SubjectTeacherTest extends TestCase
 
     public function test_can_create_subject_teacher(): void
     {
-        $response = $this->postJson('/api/subject-teachers', [
+        $response = $this->postJson('/api/v1/subject-teachers', [
             'subject_id' => $this->subject->id,
             'stream_id' => $this->stream->id,
             'staff_id' => $this->staff->id,
@@ -95,7 +95,7 @@ class SubjectTeacherTest extends TestCase
             'academic_year_id' => $this->academicYear->id,
         ]);
 
-        $response = $this->getJson('/api/subject-teachers', $this->authHeaders());
+        $response = $this->getJson('/api/v1/subject-teachers', $this->authHeaders());
 
         $response->assertStatus(200)
             ->assertJsonCount(1, 'data');
@@ -110,7 +110,7 @@ class SubjectTeacherTest extends TestCase
             'academic_year_id' => $this->academicYear->id,
         ]);
 
-        $response = $this->deleteJson("/api/subject-teachers/{$subjectTeacher->id}", [], $this->authHeaders());
+        $response = $this->deleteJson("/api/v1/subject-teachers/{$subjectTeacher->id}", [], $this->authHeaders());
 
         $response->assertStatus(200);
         $this->assertDatabaseMissing('subject_teachers', ['id' => $subjectTeacher->id]);

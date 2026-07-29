@@ -63,7 +63,7 @@ class ReportCardTest extends TestCase
 
     public function test_can_create_report_card(): void
     {
-        $response = $this->postJson('/api/report-cards', [
+        $response = $this->postJson('/api/v1/report-cards', [
             'student_id' => $this->student->id,
             'term_id' => $this->term->id,
             'stream_id' => $this->stream->id,
@@ -76,7 +76,7 @@ class ReportCardTest extends TestCase
 
     public function test_can_list_report_cards(): void
     {
-        $response = $this->getJson('/api/report-cards', $this->authHeaders());
+        $response = $this->getJson('/api/v1/report-cards', $this->authHeaders());
 
         $response->assertStatus(200);
     }
@@ -91,7 +91,7 @@ class ReportCardTest extends TestCase
             'days_absent' => 2,
         ]);
 
-        $response = $this->getJson("/api/report-cards/{$card->id}", $this->authHeaders());
+        $response = $this->getJson("/api/v1/report-cards/{$card->id}", $this->authHeaders());
 
         $response->assertStatus(200)
             ->assertJsonFragment(['days_present' => 58]);
@@ -107,7 +107,7 @@ class ReportCardTest extends TestCase
             'days_absent' => 2,
         ]);
 
-        $response = $this->deleteJson("/api/report-cards/{$card->id}", [], $this->authHeaders());
+        $response = $this->deleteJson("/api/v1/report-cards/{$card->id}", [], $this->authHeaders());
 
         $response->assertStatus(200);
         $this->assertDatabaseMissing('report_cards', ['id' => $card->id]);

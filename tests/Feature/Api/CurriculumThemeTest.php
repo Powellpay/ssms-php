@@ -48,7 +48,7 @@ class CurriculumThemeTest extends TestCase
 
     public function test_can_create_theme(): void
     {
-        $response = $this->postJson('/api/curriculum-themes', [
+        $response = $this->postJson('/api/v1/curriculum-themes', [
             'subject_id' => $this->subject->id,
             'class_level_id' => $this->classLevel->id,
             'theme_code' => 'MTC-S1-01',
@@ -68,7 +68,7 @@ class CurriculumThemeTest extends TestCase
             'theme_name' => 'Numbers and Operations',
         ]);
 
-        $response = $this->getJson('/api/curriculum-themes', $this->authHeaders());
+        $response = $this->getJson('/api/v1/curriculum-themes', $this->authHeaders());
 
         $response->assertStatus(200)
             ->assertJsonCount(1, 'data');
@@ -83,7 +83,7 @@ class CurriculumThemeTest extends TestCase
             'theme_name' => 'Numbers',
         ]);
 
-        $response = $this->putJson("/api/curriculum-themes/{$theme->id}", [
+        $response = $this->putJson("/api/v1/curriculum-themes/{$theme->id}", [
             'subject_id' => $this->subject->id,
             'class_level_id' => $this->classLevel->id,
             'theme_code' => 'MTC-S1-01',

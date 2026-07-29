@@ -39,7 +39,7 @@ class GuardianTest extends TestCase
         Guardian::create(['first_name' => 'Peter', 'last_name' => 'Lutalo', 'relationship' => 'Father', 'phone' => '0771000001']);
         Guardian::create(['first_name' => 'Mary', 'last_name' => 'Nakato', 'relationship' => 'Mother', 'phone' => '0771000002']);
 
-        $response = $this->getJson('/api/guardians', $this->authHeaders());
+        $response = $this->getJson('/api/v1/guardians', $this->authHeaders());
 
         $response->assertStatus(200)
             ->assertJsonCount(2, 'data');
@@ -47,7 +47,7 @@ class GuardianTest extends TestCase
 
     public function test_can_create_guardian(): void
     {
-        $response = $this->postJson('/api/guardians', [
+        $response = $this->postJson('/api/v1/guardians', [
             'first_name' => 'John',
             'last_name' => 'Mukasa',
             'relationship' => 'Uncle',
@@ -62,7 +62,7 @@ class GuardianTest extends TestCase
     {
         $guardian = Guardian::create(['first_name' => 'Sarah', 'last_name' => 'Nabatanzi', 'relationship' => 'Mother', 'phone' => '0771000004']);
 
-        $response = $this->getJson("/api/guardians/{$guardian->id}", $this->authHeaders());
+        $response = $this->getJson("/api/v1/guardians/{$guardian->id}", $this->authHeaders());
 
         $response->assertStatus(200)
             ->assertJsonFragment(['first_name' => 'Sarah']);
@@ -72,7 +72,7 @@ class GuardianTest extends TestCase
     {
         $guardian = Guardian::create(['first_name' => 'Tom', 'last_name' => 'Kato', 'relationship' => 'Father', 'phone' => '0771000005']);
 
-        $response = $this->putJson("/api/guardians/{$guardian->id}", [
+        $response = $this->putJson("/api/v1/guardians/{$guardian->id}", [
             'first_name' => 'Tom',
             'last_name' => 'Kato',
             'relationship' => 'Father',
@@ -87,7 +87,7 @@ class GuardianTest extends TestCase
     {
         $guardian = Guardian::create(['first_name' => 'Alice', 'last_name' => 'Nambi', 'relationship' => 'Mother', 'phone' => '0771000007']);
 
-        $response = $this->deleteJson("/api/guardians/{$guardian->id}", [], $this->authHeaders());
+        $response = $this->deleteJson("/api/v1/guardians/{$guardian->id}", [], $this->authHeaders());
 
         $response->assertStatus(200);
         $this->assertDatabaseMissing('guardians', ['id' => $guardian->id]);

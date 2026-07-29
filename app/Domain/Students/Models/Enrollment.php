@@ -2,6 +2,8 @@
 
 namespace App\Domain\Students\Models;
 
+use App\Domain\Academic\Models\AcademicYear;
+use App\Domain\Academic\Models\Stream;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Domain\Shared\Traits\BelongsToSchool;

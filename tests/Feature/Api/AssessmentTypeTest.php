@@ -36,7 +36,7 @@ class AssessmentTypeTest extends TestCase
 
     public function test_can_create_assessment_type(): void
     {
-        $response = $this->postJson('/api/assessment-types', [
+        $response = $this->postJson('/api/v1/assessment-types', [
             'type_name' => 'Continuous Assessment Test',
             'category' => 'Formative',
         ], $this->authHeaders());
@@ -52,7 +52,7 @@ class AssessmentTypeTest extends TestCase
             ['type_name' => 'End of Term Exam', 'category' => 'Summative'],
         ]);
 
-        $response = $this->getJson('/api/assessment-types', $this->authHeaders());
+        $response = $this->getJson('/api/v1/assessment-types', $this->authHeaders());
 
         $response->assertStatus(200)
             ->assertJsonCount(2, 'data');
@@ -64,7 +64,7 @@ class AssessmentTypeTest extends TestCase
             'type_name' => 'Practical Assessment', 'category' => 'Formative',
         ]);
 
-        $response = $this->getJson("/api/assessment-types/{$type->id}", $this->authHeaders());
+        $response = $this->getJson("/api/v1/assessment-types/{$type->id}", $this->authHeaders());
 
         $response->assertStatus(200)
             ->assertJsonFragment(['type_name' => 'Practical Assessment']);
@@ -76,7 +76,7 @@ class AssessmentTypeTest extends TestCase
             'type_name' => 'CAT 1', 'category' => 'Formative',
         ]);
 
-        $response = $this->putJson("/api/assessment-types/{$type->id}", [
+        $response = $this->putJson("/api/v1/assessment-types/{$type->id}", [
             'type_name' => 'CAT 2',
             'category' => 'Formative',
         ], $this->authHeaders());
@@ -91,7 +91,7 @@ class AssessmentTypeTest extends TestCase
             'type_name' => 'Quiz', 'category' => 'Formative',
         ]);
 
-        $response = $this->deleteJson("/api/assessment-types/{$type->id}", [], $this->authHeaders());
+        $response = $this->deleteJson("/api/v1/assessment-types/{$type->id}", [], $this->authHeaders());
 
         $response->assertStatus(200);
         $this->assertDatabaseMissing('assessment_types', ['id' => $type->id]);
@@ -99,7 +99,7 @@ class AssessmentTypeTest extends TestCase
 
     public function test_create_requires_valid_category(): void
     {
-        $response = $this->postJson('/api/assessment-types', [
+        $response = $this->postJson('/api/v1/assessment-types', [
             'type_name' => 'Invalid CAT',
             'category' => 'Invalid',
         ], $this->authHeaders());

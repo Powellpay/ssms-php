@@ -18,7 +18,7 @@
 
 ---
 
-## User - 2026-07-01
+## User - 2026-07-01 (updated 2026-07-29)
 
 ### Fields
 - id: int - Primary key
@@ -29,6 +29,8 @@
 - password: string - Bcrypt hashed
 - phone: string - Contact number
 - status: string - active/inactive
+- avatar: string (nullable) - Avatar image path
+- email_verified_at: datetime (nullable) - Email verification timestamp
 - last_login: datetime - Last login timestamp
 
 ### API Endpoints
@@ -38,6 +40,8 @@
 | POST | /api/auth/login | Login (returns token) |
 | POST | /api/auth/logout | Revoke token |
 | GET | /api/auth/me | Current user profile |
+| GET | /api/auth/profile | Get profile (same as me) |
+| POST | /api/auth/profile | Update profile (name, email, phone, avatar, password) |
 | GET | /api/users | List all users |
 | POST | /api/users | Create user |
 | GET | /api/users/{id} | Get one |
@@ -119,7 +123,26 @@
 
 ---
 
-## Student - 2026-07-01
+## Student - 2026-07-01 (updated 2026-07-29)
+
+### API Endpoints (updated)
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | /api/students | List all |
+| POST | /api/students | Create |
+| GET | /api/students/{id} | Get one |
+| PUT | /api/students/{id} | Update |
+| DELETE | /api/students/{id} | Delete |
+| POST | /api/students/import | Import from CSV (chunks to queue, returns immediately) |
+| GET | /api/students/import/template | Download CSV template |
+
+### Import Flow
+1. User uploads CSV via `POST /api/students/import` with `stream_id` + `academic_year_id`
+2. Backend validates header, chunks rows into batches of 100
+3. Each chunk dispatched to `ImportStudentsJob` on the `database` queue (5-min timeout per chunk)
+4. Each row within a chunk runs in its own DB transaction
+5. Response returns immediately: `{success: true, message, batches, total}`
+6. Queue worker processes in background (`php artisan queue:work`)
 
 ### Fields
 - id: int - Primary key
@@ -296,7 +319,7 @@
 
 ---
 
-## ReportCard - 2026-07-01
+## ReportCard - 2026-07-01 (updated 2026-07-29)
 
 ### Fields
 - id: int - Primary key
@@ -310,19 +333,83 @@
 - next_term_begins: date
 - date_issued: date
 
+### API Endpoints
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | /api/report-cards | List all |
+| POST | /api/report-cards | Create |
+| POST | /api/report-cards/generate | Generate from assessment records + attendance |
+| GET | /api/report-cards/{id} | Get one |
+| PUT | /api/report-cards/{id} | Update |
+| DELETE | /api/report-cards/{id} | Delete |
+| GET | /api/report-cards/{id}/pdf | Download report card as PDF |
+
 ---
 
-## Attendance - 2026-07-01
+## Attendance - 2026-07-01 (updated 2026-07-29)
 
 ### Fields
 - id: int - Primary key
+- school_id: int - FK to schools
 - student_id: int - FK
 - term_id: int - FK
 - attendance_date: date
 - status: string - Present/Absent/Late/Excused
-- recorded_by: int - FK to staff
+- recorded_by: int - FK to staff (nullable)
+
+### API Endpoints
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | /api/attendance | List all |
+| POST | /api/attendance | Create single record |
+| GET | /api/attendance/{id} | Get one |
+| PUT | /api/attendance/{id} | Update |
+| DELETE | /api/attendance/{id} | Delete |
+| POST | /api/attendance/register | Bulk register attendance for a term/date |
+| GET | /api/attendance/register | Get register for a term/date (optionally filtered by stream) |
+
+### Files Generated/Updated
+- [x] Collection: `app/Domain/Attendance/Resources/AttendanceCollection.php`
+- [x] Controller: `app/Domain/Attendance/Controllers/AttendanceController.php`
+- [x] Model: `app/Domain/Attendance/Models/Attendance.php`
+- [x] Provider: `app/Domain/Attendance/Providers/AttendanceServiceProvider.php`
+- [x] Repository: `app/Domain/Attendance/Repositories/Eloquent/AttendanceRepository.php`
+- [x] Repository Interface: `app/Domain/Attendance/Repositories/Contracts/AttendanceRepositoryInterface.php`
+- [x] Request: `app/Domain/Attendance/Requests/AttendanceRequest.php`
+- [x] Request (Register): `app/Domain/Attendance/Requests/AttendanceRegisterRequest.php`
+- [x] Resource: `app/Domain/Attendance/Resources/AttendanceResource.php`
+- [x] Routes: `app/Domain/Attendance/routes/attendance/_index.php`
+- [x] Service: `app/Domain/Attendance/Services/AttendanceService.php`
+- [x] Service Interface: `app/Domain/Attendance/Services/Contracts/AttendanceServiceInterface.php`
 
 ---
+
+## ImportStudentsJob - 2026-07-29
+
+### Fields (constructor)
+- rows: array - Chunk of CSV data rows
+- header: array - CSV header columns
+- schoolId: int - School for multi-tenancy
+- defaultStreamId: int|null - Optional stream for enrollment
+- academicYearId: int|null - Optional academic year for enrollment
+
+### Description
+Queue job that processes a chunk of student data from CSV import. Each row is validated (required fields, gender), a Student record is created, and an optional Enrollment record is created. Runs each row in its own DB transaction so partial failures don't block the batch. Errors are logged via `Log::warning`.
+
+### Files Generated
+- [x] Job: `app/Domain/Students/Jobs/ImportStudentsJob.php`
+
+---
+
+## StudentImportController - Updated 2026-07-29
+
+### Changes
+- `import()` now parses CSV into chunks of 100 rows and dispatches `ImportStudentsJob` to the queue for each chunk
+- Returns immediate response with batch count and total rows
+- `downloadTemplate()` now sends `Cache-Control: no-cache, no-store, must-revalidate` and `Pragma: no-cache` headers to fix browser download caching issues
+
+### Files Updated
+- [x] Controller: `app/Domain/Students/Controllers/StudentImportController.php`
 
 ## Timetable - 2026-07-01
 

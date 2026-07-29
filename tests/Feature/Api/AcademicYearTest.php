@@ -43,7 +43,7 @@ class AcademicYearTest extends TestCase
             'is_current' => true,
         ]);
 
-        $response = $this->getJson('/api/academic-years', $this->authHeaders());
+        $response = $this->getJson('/api/v1/academic-years', $this->authHeaders());
 
         $response->assertStatus(200)
             ->assertJsonCount(1, 'data');
@@ -51,7 +51,7 @@ class AcademicYearTest extends TestCase
 
     public function test_can_create_academic_year(): void
     {
-        $response = $this->postJson('/api/academic-years', [
+        $response = $this->postJson('/api/v1/academic-years', [
             'year_name' => '2027',
             'start_date' => '2027-02-01',
             'end_date' => '2027-12-15',
@@ -71,7 +71,7 @@ class AcademicYearTest extends TestCase
             'year_name' => '2027', 'start_date' => '2027-02-01', 'end_date' => '2027-12-15', 'is_current' => false,
         ]);
 
-        $response = $this->postJson("/api/academic-years/{$year2->id}/set-current", [], $this->authHeaders());
+        $response = $this->postJson("/api/v1/academic-years/{$year2->id}/set-current", [], $this->authHeaders());
 
         $response->assertStatus(200);
 
@@ -85,7 +85,7 @@ class AcademicYearTest extends TestCase
             'year_name' => '2026', 'start_date' => '2026-02-03', 'end_date' => '2026-12-04', 'is_current' => true,
         ]);
 
-        $response = $this->getJson("/api/academic-years/{$year->id}", $this->authHeaders());
+        $response = $this->getJson("/api/v1/academic-years/{$year->id}", $this->authHeaders());
 
         $response->assertStatus(200)
             ->assertJsonFragment(['year_name' => '2026']);
@@ -97,7 +97,7 @@ class AcademicYearTest extends TestCase
             'year_name' => '2026', 'start_date' => '2026-02-03', 'end_date' => '2026-12-04', 'is_current' => false,
         ]);
 
-        $response = $this->putJson("/api/academic-years/{$year->id}", [
+        $response = $this->putJson("/api/v1/academic-years/{$year->id}", [
             'year_name' => '2026',
             'start_date' => '2026-02-01',
             'end_date' => '2026-12-01',
@@ -114,7 +114,7 @@ class AcademicYearTest extends TestCase
             'year_name' => '2026', 'start_date' => '2026-02-03', 'end_date' => '2026-12-04', 'is_current' => false,
         ]);
 
-        $response = $this->deleteJson("/api/academic-years/{$year->id}", [], $this->authHeaders());
+        $response = $this->deleteJson("/api/v1/academic-years/{$year->id}", [], $this->authHeaders());
 
         $response->assertStatus(200);
         $this->assertDatabaseMissing('academic_years', ['id' => $year->id]);
@@ -126,7 +126,7 @@ class AcademicYearTest extends TestCase
             'year_name' => '2026', 'start_date' => '2026-02-03', 'end_date' => '2026-12-04',
         ]);
 
-        $response = $this->postJson('/api/academic-years', [
+        $response = $this->postJson('/api/v1/academic-years', [
             'year_name' => '2026',
             'start_date' => '2026-02-01',
             'end_date' => '2026-12-01',
@@ -138,7 +138,7 @@ class AcademicYearTest extends TestCase
 
     public function test_create_requires_valid_dates(): void
     {
-        $response = $this->postJson('/api/academic-years', [
+        $response = $this->postJson('/api/v1/academic-years', [
             'year_name' => '2027',
             'start_date' => '2027-12-01',
             'end_date' => '2027-01-01',

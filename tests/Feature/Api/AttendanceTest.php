@@ -69,7 +69,7 @@ class AttendanceTest extends TestCase
 
     public function test_can_mark_attendance(): void
     {
-        $response = $this->postJson('/api/attendance', [
+        $response = $this->postJson('/api/v1/attendance', [
             'student_id' => $this->student1->id,
             'term_id' => $this->term->id,
             'attendance_date' => now()->format('Y-m-d'),
@@ -86,7 +86,7 @@ class AttendanceTest extends TestCase
             'attendance_date' => now()->format('Y-m-d'), 'status' => 'Present',
         ]);
 
-        $response = $this->getJson('/api/attendance', $this->authHeaders());
+        $response = $this->getJson('/api/v1/attendance', $this->authHeaders());
 
         $response->assertStatus(200);
     }
@@ -98,7 +98,7 @@ class AttendanceTest extends TestCase
             'attendance_date' => now()->format('Y-m-d'), 'status' => 'Present',
         ]);
 
-        $response = $this->getJson("/api/attendance/{$attendance->id}", $this->authHeaders());
+        $response = $this->getJson("/api/v1/attendance/{$attendance->id}", $this->authHeaders());
 
         $response->assertStatus(200);
     }
@@ -110,7 +110,7 @@ class AttendanceTest extends TestCase
             'attendance_date' => now()->format('Y-m-d'), 'status' => 'Present',
         ]);
 
-        $response = $this->putJson("/api/attendance/{$attendance->id}", [
+        $response = $this->putJson("/api/v1/attendance/{$attendance->id}", [
             'student_id' => $this->student1->id,
             'term_id' => $this->term->id,
             'attendance_date' => now()->format('Y-m-d'),
@@ -127,7 +127,7 @@ class AttendanceTest extends TestCase
             'attendance_date' => now()->format('Y-m-d'), 'status' => 'Present',
         ]);
 
-        $response = $this->deleteJson("/api/attendance/{$attendance->id}", [], $this->authHeaders());
+        $response = $this->deleteJson("/api/v1/attendance/{$attendance->id}", [], $this->authHeaders());
 
         $response->assertStatus(200);
         $this->assertDatabaseMissing('attendance', ['id' => $attendance->id]);
@@ -135,7 +135,7 @@ class AttendanceTest extends TestCase
 
     public function test_create_requires_valid_status(): void
     {
-        $response = $this->postJson('/api/attendance', [
+        $response = $this->postJson('/api/v1/attendance', [
             'student_id' => $this->student1->id,
             'term_id' => $this->term->id,
             'attendance_date' => now()->format('Y-m-d'),
@@ -152,7 +152,7 @@ class AttendanceTest extends TestCase
             'attendance_date' => now()->format('Y-m-d'), 'status' => 'Present',
         ]);
 
-        $response = $this->postJson('/api/attendance', [
+        $response = $this->postJson('/api/v1/attendance', [
             'student_id' => $this->student1->id,
             'term_id' => $this->term->id,
             'attendance_date' => now()->format('Y-m-d'),

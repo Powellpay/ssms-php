@@ -14,7 +14,7 @@ class StudentImportController extends Controller
     public function import(Request $request): JsonResponse
     {
         $request->validate([
-            'file' => 'required|file|mimes:csv,txt|max:2048',
+            'file' => 'required|file|mimes:csv,txt|max:5120',
             'stream_id' => 'nullable|integer|exists:streams,id',
             'academic_year_id' => 'nullable|integer|exists:academic_years,id',
         ]);
@@ -26,29 +26,28 @@ class StudentImportController extends Controller
 
         $csv = array_map('str_getcsv', file($file->getRealPath()));
         if (empty($csv) || count($csv) < 2) {
-            return response()->json(['success' => false, 'message' => 'CSV file must have a header row and at least one data row.'], 422);
+            return response()->json(['success' => false, 'message' => 'CSV must have header + at least one row.'], 422);
         }
 
         $header = array_map('trim', $csv[0]);
         $expected = ['first_name', 'last_name', 'gender'];
         $missing = array_diff($expected, $header);
         if (!empty($missing)) {
-            return response()->json(['success' => false, 'message' => 'Missing required columns: ' . implode(', ', $missing)], 422);
+            return response()->json(['success' => false, 'message' => 'Missing columns: ' . implode(', ', $missing)], 422);
         }
 
         $rows = array_slice($csv, 1);
+        $totalRows = count($rows);
         $imported = 0;
         $errors = [];
-        $students = [];
 
-        DB::beginTransaction();
-        try {
-            foreach ($rows as $i => $row) {
+        foreach (array_chunk($rows, 100) as $chunkIndex => $chunk) {
+            foreach ($chunk as $i => $row) {
                 $data = array_combine($header, $row);
-                $rowNum = $i + 2;
+                $rowNum = ($chunkIndex * 100) + $i + 2;
 
                 if (empty(trim($data['first_name'] ?? '')) || empty(trim($data['last_name'] ?? ''))) {
-                    $errors[] = "Row {$rowNum}: first_name and last_name are required.";
+                    $errors[] = "Row {$rowNum}: first_name and last_name required.";
                     continue;
                 }
 
@@ -58,54 +57,52 @@ class StudentImportController extends Controller
                     continue;
                 }
 
-                $admissionNo = trim($data['admission_no'] ?? ('STD-' . str_pad((string) (Student::max('id') + 1 + $imported), 4, '0', STR_PAD_LEFT)));
-                $dob = !empty(trim($data['dob'] ?? '')) ? trim($data['dob']) : null;
-                $admissionDate = !empty(trim($data['admission_date'] ?? '')) ? trim($data['admission_date']) : now()->toDateString();
-                $status = in_array(strtolower(trim($data['status'] ?? 'active')), ['active', 'transferred', 'graduated', 'dropped'])
-                    ? strtolower(trim($data['status']))
-                    : 'active';
-                $student = Student::create([
-                    'school_id' => $schoolId,
-                    'admission_no' => $admissionNo,
-                    'first_name' => trim($data['first_name']),
-                    'last_name' => trim($data['last_name']),
-                    'gender' => ucfirst($gender),
-                    'dob' => $dob,
-                    'admission_date' => $admissionDate,
-                    'status' => $status,
-                ]);
+                try {
+                    DB::beginTransaction();
 
-                if ($defaultStreamId && $academicYearId) {
-                    Enrollment::create([
-                        'student_id' => $student->id,
-                        'stream_id' => $defaultStreamId,
-                        'academic_year_id' => $academicYearId,
-                        'enrollment_date' => $admissionDate,
-                        'status' => 'active',
+                    $admissionNo = trim($data['admission_no'] ?? ('STD-' . str_pad((string) (Student::max('id') + 1 + $imported), 4, '0', STR_PAD_LEFT)));
+
+                    $student = Student::create([
+                        'school_id' => $schoolId,
+                        'admission_no' => $admissionNo,
+                        'first_name' => trim($data['first_name']),
+                        'last_name' => trim($data['last_name']),
+                        'gender' => ucfirst($gender),
+                        'dob' => !empty(trim($data['dob'] ?? '')) ? trim($data['dob']) : null,
+                        'admission_date' => !empty(trim($data['admission_date'] ?? '')) ? trim($data['admission_date']) : now()->toDateString(),
+                        'status' => in_array(strtolower(trim($data['status'] ?? 'active')), ['active', 'transferred', 'graduated', 'dropped'])
+                            ? strtolower(trim($data['status'])) : 'active',
                     ]);
+
+                    if ($defaultStreamId && $academicYearId) {
+                        Enrollment::create([
+                            'student_id' => $student->id,
+                            'stream_id' => $defaultStreamId,
+                            'academic_year_id' => $academicYearId,
+                            'enrollment_date' => $student->admission_date,
+                            'status' => 'active',
+                        ]);
+                    }
+
+                    DB::commit();
+                    $imported++;
+                } catch (\Throwable $e) {
+                    DB::rollBack();
+                    $errors[] = "Row {$rowNum}: {$e->getMessage()}";
                 }
-
-                $imported++;
             }
-
-            DB::commit();
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json([
-                'success' => false,
-                'message' => 'Import failed: ' . $e->getMessage(),
-            ], 500);
         }
 
         return response()->json([
             'success' => true,
-            'message' => "Imported {$imported} student(s) successfully." . (count($errors) ? " {$errors} error(s)." : ''),
+            'message' => "Imported {$imported} of {$totalRows} student(s)." . (count($errors) ? " " . count($errors) . " error(s)." : ''),
             'imported' => $imported,
+            'total' => $totalRows,
             'errors' => $errors,
         ]);
     }
 
-    public function downloadTemplate(): \Illuminate\Http\Response
+    public function downloadTemplate()
     {
         $headers = ['first_name', 'last_name', 'gender', 'admission_no', 'dob', 'admission_date', 'status'];
         $sample = ['Jane', 'Doe', 'Female', 'STD-2026-0001', '2012-01-15', '2026-02-03', 'active'];
@@ -120,6 +117,8 @@ class StudentImportController extends Controller
         return response()->stream($callback, 200, [
             'Content-Type' => 'text/csv',
             'Content-Disposition' => 'attachment; filename="student-import-template.csv"',
+            'Cache-Control' => 'no-cache, no-store, must-revalidate',
+            'Pragma' => 'no-cache',
         ]);
     }
 }

@@ -36,7 +36,7 @@ class SkillRatingScaleTest extends TestCase
 
     public function test_can_create_skill_rating(): void
     {
-        $response = $this->postJson('/api/skill-rating-scale', [
+        $response = $this->postJson('/api/v1/skill-rating-scale', [
             'rating_code' => 'BEG',
             'rating_label' => 'Beginning',
             'rating_value' => 1,
@@ -53,7 +53,7 @@ class SkillRatingScaleTest extends TestCase
             ['rating_code' => 'DEV', 'rating_label' => 'Developing', 'rating_value' => 2],
         ]);
 
-        $response = $this->getJson('/api/skill-rating-scale', $this->authHeaders());
+        $response = $this->getJson('/api/v1/skill-rating-scale', $this->authHeaders());
 
         $response->assertStatus(200)
             ->assertJsonCount(2, 'data');
@@ -65,7 +65,7 @@ class SkillRatingScaleTest extends TestCase
             'rating_code' => 'BEG', 'rating_label' => 'Beginning', 'rating_value' => 1,
         ]);
 
-        $response = $this->putJson("/api/skill-rating-scale/{$rating->id}", [
+        $response = $this->putJson("/api/v1/skill-rating-scale/{$rating->id}", [
             'rating_code' => 'BEG',
             'rating_label' => 'Beginner',
             'rating_value' => 1,
@@ -81,7 +81,7 @@ class SkillRatingScaleTest extends TestCase
             'rating_code' => 'EXP', 'rating_label' => 'Expert', 'rating_value' => 4,
         ]);
 
-        $response = $this->deleteJson("/api/skill-rating-scale/{$rating->id}", [], $this->authHeaders());
+        $response = $this->deleteJson("/api/v1/skill-rating-scale/{$rating->id}", [], $this->authHeaders());
 
         $response->assertStatus(200);
         $this->assertDatabaseMissing('skill_rating_scale', ['id' => $rating->id]);
@@ -93,7 +93,7 @@ class SkillRatingScaleTest extends TestCase
             'rating_code' => 'BEG', 'rating_label' => 'Beginning', 'rating_value' => 1,
         ]);
 
-        $response = $this->postJson('/api/skill-rating-scale', [
+        $response = $this->postJson('/api/v1/skill-rating-scale', [
             'rating_code' => 'BEG',
             'rating_label' => 'Duplicate',
             'rating_value' => 1,

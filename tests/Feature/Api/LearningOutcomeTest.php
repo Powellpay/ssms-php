@@ -55,7 +55,7 @@ class LearningOutcomeTest extends TestCase
 
     public function test_can_create_learning_outcome(): void
     {
-        $response = $this->postJson('/api/learning-outcomes', [
+        $response = $this->postJson('/api/v1/learning-outcomes', [
             'theme_id' => $this->theme->id,
             'outcome_code' => 'MTC-S1-01-01',
             'description' => 'Count and write numbers up to 100',
@@ -73,7 +73,7 @@ class LearningOutcomeTest extends TestCase
             'description' => 'Count and write numbers up to 100',
         ]);
 
-        $response = $this->getJson('/api/learning-outcomes', $this->authHeaders());
+        $response = $this->getJson('/api/v1/learning-outcomes', $this->authHeaders());
 
         $response->assertStatus(200)
             ->assertJsonCount(1, 'data');
