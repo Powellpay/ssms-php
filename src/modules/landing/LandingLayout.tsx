@@ -1,7 +1,8 @@
 import { Outlet, Link } from 'react-router-dom';
 import { ROUTES } from '../../app/routes/constants';
-import { GraduationCap, Menu, X } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { useState } from 'react';
+import LogoImage from '../../shared/components/LogoImage';
 
 export default function LandingLayout() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -12,9 +13,7 @@ export default function LandingLayout() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <Link to={ROUTES.HOME} className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-lg bg-primary flex items-center justify-center">
-                <GraduationCap className="w-5 h-5 text-white" />
-              </div>
+              <LogoImage size="sm" />
               <span className="text-lg font-bold text-primary">SSMS</span>
             </Link>
 
@@ -51,7 +50,7 @@ export default function LandingLayout() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted">
             <div className="flex items-center gap-2">
-              <GraduationCap className="w-4 h-4 text-primary" />
+              <LogoImage size="sm" />
               <span className="font-semibold text-gray-700">SSMS</span>
               <span>&mdash; School Management System</span>
             </div>

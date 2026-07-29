@@ -1,7 +1,8 @@
 import type { PropsWithChildren, ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { ROUTES } from '../../app/routes/constants';
-import { GraduationCap, Home, Sparkles } from 'lucide-react';
+import { Home, Sparkles } from 'lucide-react';
+import LogoImage from '../../shared/components/LogoImage';
 
 interface AuthLayoutProps {
   title: string;
@@ -16,9 +17,7 @@ export default function AuthLayout({ title, subtitle, children }: PropsWithChild
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-gradient-to-br from-primary-dark via-primary to-primary/80">
         <div className="relative z-10 flex flex-col justify-between p-10 xl:p-12 w-full">
           <Link to={ROUTES.HOME} className="inline-flex items-center gap-2.5 w-fit">
-            <div className="w-9 h-9 rounded-lg bg-white/20 flex items-center justify-center backdrop-blur-sm">
-              <GraduationCap className="w-5 h-5 text-white" />
-            </div>
+            <LogoImage size="sm" className="brightness-0 invert" />
             <span className="text-white text-xl font-bold tracking-tight">SSMS</span>
           </Link>
           <div className="max-w-md space-y-5">
@@ -48,9 +47,7 @@ export default function AuthLayout({ title, subtitle, children }: PropsWithChild
       <div className="flex-1 flex flex-col min-h-screen">
         <header className="flex items-center gap-3 px-5 sm:px-6 py-4 border-b border-border bg-white/95 backdrop-blur-sm sticky top-0 z-20">
           <Link to={ROUTES.HOME} className="inline-flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-              <GraduationCap className="w-4 h-4 text-white" />
-            </div>
+            <LogoImage size="sm" />
             <span className="text-lg font-bold text-primary">SSMS</span>
           </Link>
           <div className="ml-auto">

@@ -6,13 +6,14 @@ import { ROUTES } from '../../../app/routes/constants';
 import { useLogout } from '../../api/auth/authQueries';
 import type { ModuleSlug } from '../../types';
 import {
-  GraduationCap, LayoutDashboard, Users, ClipboardCheck,
+  LayoutDashboard, Users, ClipboardCheck,
   BarChart3, CalendarCheck, Timer, Wallet, Library,
   Megaphone, Menu, X, ChevronDown, LogOut, School,
   UserCircle, BookMarked, Scale,
 } from 'lucide-react';
 import { cn } from '../../utils/cn';
 import { APP_VERSION } from '../../config/version';
+import LogoImage from '../LogoImage';
 
 interface NavItem {
   icon: React.ComponentType<{ className?: string }>;
@@ -86,7 +87,7 @@ export default function AppLayout() {
       >
         {/* Logo */}
         <div className={cn('flex items-center h-16 px-4 border-b border-border', !sidebarOpen && 'lg:justify-center')}>
-          <GraduationCap className="w-8 h-8 text-primary shrink-0" />
+          <LogoImage size="sm" />
           {sidebarOpen && <span className="ml-2.5 text-lg font-bold text-primary">SSMS</span>}
         </div>
 
