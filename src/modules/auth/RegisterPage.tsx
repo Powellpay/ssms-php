@@ -51,7 +51,7 @@ export default function RegisterPage() {
   const passwordsMatch = !form.password_confirmation || form.password === form.password_confirmation;
 
   return (
-    <AuthLayout title="Register Your School" subtitle="Free to use. Aligned to the Uganda NCDC Curriculum.">
+    <AuthLayout title="Register Your School" subtitle="Free to use. Aligned to the Uganda NCDC Curriculum." heroImage="/images/school_building_block.jpg">
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div className="relative">

@@ -40,7 +40,7 @@ export default function ResetPasswordPage() {
 
   if (isSuccess) {
     return (
-      <AuthLayout title="Password Reset" subtitle="Your password has been changed successfully.">
+      <AuthLayout title="Password Reset" subtitle="Your password has been changed successfully." heroImage="/images/class_discussion.jpg">
         <div className="text-center space-y-4 py-4">
           <div className="mx-auto w-16 h-16 rounded-full bg-success-light flex items-center justify-center">
             <CheckCircle className="w-8 h-8 text-success" />
@@ -58,7 +58,7 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <AuthLayout title="Reset Password" subtitle="Enter your new password below.">
+    <AuthLayout title="Reset Password" subtitle="Enter your new password below." heroImage="/images/class_discussion.jpg">
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="relative">
           <KeyRound className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5 pointer-events-none" />

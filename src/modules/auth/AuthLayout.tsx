@@ -23,7 +23,7 @@ export default function AuthLayout({ title, subtitle, children, heroImage = '/im
             className="absolute inset-0 w-full h-full object-cover"
           />
         )}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary-dark/95 via-primary/90 to-primary/80" />
+        <div className="absolute inset-0 bg-gradient-to-br from-primary-dark/70 via-primary/50 to-primary/30" />
         <div className="relative z-10 flex flex-col justify-between p-10 xl:p-12 w-full">
           <div />
           <div className="max-w-md space-y-5">

@@ -44,7 +44,7 @@ export default function ForgotPasswordPage() {
   const inputCls = "w-full pl-11 pr-4 py-3.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-colors text-sm";
 
   return (
-    <AuthLayout title="Reset Password" subtitle="We'll send you a reset link">
+    <AuthLayout title="Reset Password" subtitle="We'll send you a reset link" heroImage="/images/class_discussion.jpg">
       {sent ? (
         <div className="text-center space-y-4">
           <div className="w-16 h-16 rounded-full bg-success-light flex items-center justify-center mx-auto">

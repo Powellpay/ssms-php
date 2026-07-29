@@ -42,7 +42,7 @@ export default function LoginPage() {
   const inputCls = "w-full pl-11 pr-4 py-3.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-colors text-sm";
 
   return (
-    <AuthLayout title="Sign In" subtitle="Welcome back to SSMS">
+    <AuthLayout title="Sign In" subtitle="Welcome back to SSMS" heroImage="/images/school_classroom.jpg">
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="relative">
           <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5 pointer-events-none" />
