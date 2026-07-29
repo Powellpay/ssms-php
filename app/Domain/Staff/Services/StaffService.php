@@ -25,12 +25,24 @@ class StaffService implements StaffServiceInterface
 
     public function create(array $data): Staff
     {
-        return $this->staffRepository->create($data);
+        $modules = $data['modules'] ?? null;
+        unset($data['modules']);
+
+        $staff = $this->staffRepository->create($data);
+        $this->syncStaffModules($staff, $modules);
+
+        return $staff->load('user');
     }
 
     public function update(int $id, array $data): Staff
     {
-        return $this->staffRepository->update($id, $data);
+        $modules = $data['modules'] ?? null;
+        unset($data['modules']);
+
+        $staff = $this->staffRepository->update($id, $data);
+        $this->syncStaffModules($staff, $modules);
+
+        return $staff->load('user');
     }
 
     public function delete(int $id): bool
@@ -41,5 +53,15 @@ class StaffService implements StaffServiceInterface
     public function findByStaffNo(string $no): ?Staff
     {
         return Staff::where('staff_no', $no)->first();
+    }
+
+    private function syncStaffModules(Staff $staff, ?array $modules): void
+    {
+        if ($modules === null) return;
+
+        $user = $staff->user;
+        if (!$user) return;
+
+        $user->update(['modules' => $modules]);
     }
 }

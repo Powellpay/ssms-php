@@ -25,6 +25,7 @@ class User extends Authenticatable
         'password',
         'phone',
         'status',
+        'modules',
         'last_login',
     ];
 
@@ -38,6 +39,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'last_login' => 'datetime',
+            'modules' => 'array',
         ];
     }
 

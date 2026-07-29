@@ -25,6 +25,8 @@ class StaffRequest extends FormRequest
             'email' => 'nullable|email|unique:staff,email,' . $id,
             'designation' => 'nullable|string',
             'status' => 'nullable|in:active,on leave,left',
+            'modules' => 'nullable|array',
+            'modules.*' => 'string|in:' . implode(',', \App\Domain\Auth\Services\ModuleAccessService::ALL_MODULES),
         ];
     }
 }

@@ -25,6 +25,7 @@ use App\Domain\Assessment\Models\SubjectTermResult;
 use App\Domain\Academic\Models\Term;
 use App\Domain\Auth\Models\User;
 use App\Domain\Auth\Models\School;
+use App\Domain\Auth\Services\ModuleAccessService;
 use App\Domain\Curriculum\Models\ClassSubject;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -64,6 +65,7 @@ class DatabaseSeeder extends Seeder
             'email' => 'oscar@gmail.com',
             'password' => Hash::make('ChangeMe123!'),
             'status' => 'active',
+            'modules' => ModuleAccessService::ALL_MODULES,
         ]);
 
         // Academic Years
@@ -257,5 +259,7 @@ class DatabaseSeeder extends Seeder
             'next_term_begins' => '2026-05-25',
             'date_issued' => '2026-05-08',
         ]);
+
+        $this->call(SampleAccountSeeder::class);
     }
 }

@@ -31,6 +31,7 @@ class UserService implements UserServiceInterface
     public function create(array $data): User
     {
         $data['password'] = Hash::make($data['password']);
+        $data['modules'] = ModuleAccessService::ALL_MODULES;
         return $this->userRepository->create($data);
     }
 
