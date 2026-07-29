@@ -99,6 +99,7 @@ class UserService implements UserServiceInterface
                     <p>Thank you for creating a ' . config('brand.name') . ' account. Use the verification code below to activate your account.</p>
                     <p style="font-size:14px; color:#64748b;">Enter this code on the verification page to activate your account.</p>
                 ',
+                'logoUrl' => url('/logo.png'),
                 'otp' => $otp,
                 'ctaUrl' => $frontendUrl . '/verify-email',
                 'ctaLabel' => 'Activate Your Account',
@@ -198,6 +199,7 @@ class UserService implements UserServiceInterface
                     <p style="font-size:14px; color:#64748b;">This password reset link will expire in 60 minutes.</p>
                     <p style="font-size:14px; color:#64748b;">If you did not request a password reset, no further action is required. Your account is safe.</p>
                 ',
+                'logoUrl' => url('/logo.png'),
                 'ctaUrl' => $resetUrl,
                 'ctaLabel' => 'Reset My Password',
                 'tip' => 'Never share this email with anyone. ' . config('brand.name') . ' will never ask for your password.',
