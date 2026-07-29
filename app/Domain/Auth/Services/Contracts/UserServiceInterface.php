@@ -22,4 +22,10 @@ interface UserServiceInterface
     public function authenticate(string $username, string $password): ?User;
 
     public function findByRole(string $roleName): Collection;
+
+    public function sendVerificationCode(User $user): string;
+
+    public function verifyEmail(int $userId, string $code): User;
+
+    public function resendVerificationCode(string $email): array;
 }
