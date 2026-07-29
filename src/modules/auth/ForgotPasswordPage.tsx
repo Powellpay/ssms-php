@@ -1,5 +1,8 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import type { AxiosError } from 'axios';
+import type { ApiError } from '../../shared/api/auth/authTypes';
+import { useForgotPassword } from '../../shared/api/auth/authQueries';
 import { ROUTES } from '../../app/routes/constants';
 import { Mail, ArrowLeft, Send } from 'lucide-react';
 import AuthLayout from './AuthLayout';
@@ -7,23 +10,17 @@ import AuthLayout from './AuthLayout';
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
   const [sent, setSent] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const forgotMutation = useForgotPassword();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
-    setLoading(true);
-    try {
-      // TODO: Implement password reset API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      setSent(true);
-    } catch {
-      setError('Failed to send reset link. Try again.');
-    } finally {
-      setLoading(false);
-    }
+    forgotMutation.mutate({ email }, {
+      onSuccess: () => setSent(true),
+    });
   };
+
+  const axiosError = forgotMutation.error as AxiosError<ApiError> | undefined;
+  const error = axiosError?.response?.data?.message || axiosError?.message;
 
   const inputCls = "w-full pl-11 pr-4 py-3.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-colors text-sm";
 
@@ -63,10 +60,10 @@ export default function ForgotPasswordPage() {
 
           <button
             type="submit"
-            disabled={loading}
+            disabled={forgotMutation.isPending}
             className="w-full inline-flex items-center justify-center px-8 py-3.5 rounded-lg bg-primary text-white hover:bg-primary-dark transition-colors font-medium text-sm disabled:opacity-50 cursor-pointer"
           >
-            {loading ? (
+            {forgotMutation.isPending ? (
               <span className="flex items-center gap-2">
                 <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                 Sending...
