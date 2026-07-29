@@ -15,13 +15,12 @@ class StudentImportController extends Controller
     {
         $request->validate([
             'file' => 'required|file|mimes:csv,txt|max:2048',
-            'school_id' => 'required|integer|exists:schools,id',
             'stream_id' => 'nullable|integer|exists:streams,id',
             'academic_year_id' => 'nullable|integer|exists:academic_years,id',
         ]);
 
         $file = $request->file('file');
-        $schoolId = (int) $request->input('school_id');
+        $schoolId = (int) $request->user()->school_id;
         $defaultStreamId = $request->input('stream_id') ? (int) $request->input('stream_id') : null;
         $academicYearId = $request->input('academic_year_id') ? (int) $request->input('academic_year_id') : null;
 
