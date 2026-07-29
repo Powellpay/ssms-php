@@ -26,6 +26,20 @@ class StaffResource extends JsonResource
             'status' => $this->status,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
+            'user' => $this->whenLoaded('user', fn() => [
+                'id' => $this->user->id,
+                'email' => $this->user->email,
+                'username' => $this->user->username,
+                'name' => $this->user->name,
+                'status' => $this->user->status,
+                'modules' => $this->user->modules ?? [],
+                'role' => $this->user->relationLoaded('role') && $this->user->role
+                    ? [
+                        'id' => $this->user->role->id,
+                        'role_name' => $this->user->role->role_name,
+                      ]
+                    : null,
+            ]),
         ];
     }
 }

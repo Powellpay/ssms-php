@@ -2,10 +2,13 @@
 
 namespace App\Domain\Staff\Services;
 
+use App\Domain\Auth\Models\User;
+use App\Domain\Auth\Services\ModuleAccessService;
 use App\Domain\Staff\Models\Staff;
 use App\Domain\Staff\Repositories\Contracts\StaffRepositoryInterface;
 use App\Domain\Staff\Services\Contracts\StaffServiceInterface;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Hash;
 
 class StaffService implements StaffServiceInterface
 {
@@ -25,24 +28,38 @@ class StaffService implements StaffServiceInterface
 
     public function create(array $data): Staff
     {
-        $modules = $data['modules'] ?? null;
-        unset($data['modules']);
+        $modules = $data['modules'] ?? [];
+        $password = $data['password'] ?? null;
+        $email = $data['email'] ?? null;
+        unset($data['modules'], $data['password'], $data['password_confirmation']);
 
         $staff = $this->staffRepository->create($data);
-        $this->syncStaffModules($staff, $modules);
 
-        return $staff->load('user');
+        if ($email && $password) {
+            $this->createOrUpdateUser($staff, $email, $password, $modules);
+        } else {
+            $this->syncStaffModules($staff, $modules);
+        }
+
+        return $staff->load('user.role');
     }
 
     public function update(int $id, array $data): Staff
     {
         $modules = $data['modules'] ?? null;
-        unset($data['modules']);
+        $password = $data['password'] ?? null;
+        $email = $data['email'] ?? null;
+        unset($data['modules'], $data['password'], $data['password_confirmation']);
 
         $staff = $this->staffRepository->update($id, $data);
-        $this->syncStaffModules($staff, $modules);
 
-        return $staff->load('user');
+        if ($email && $password) {
+            $this->createOrUpdateUser($staff, $email, $password, $modules ?? []);
+        } else {
+            $this->syncStaffModules($staff, $modules);
+        }
+
+        return $staff->load('user.role');
     }
 
     public function delete(int $id): bool
@@ -63,5 +80,34 @@ class StaffService implements StaffServiceInterface
         if (!$user) return;
 
         $user->update(['modules' => $modules]);
+    }
+
+    private function createOrUpdateUser(Staff $staff, string $email, string $password, array $modules): User
+    {
+        $user = $staff->user;
+
+        if ($user) {
+            $user->update([
+                'email' => $email,
+                'password' => Hash::make($password),
+                'modules' => $modules,
+            ]);
+            return $user;
+        }
+
+        $user = User::create([
+            'school_id' => $staff->school_id,
+            'role_id' => 4,
+            'username' => strstr($email, '@', true),
+            'name' => $staff->first_name . ' ' . $staff->last_name,
+            'email' => $email,
+            'password' => Hash::make($password),
+            'status' => 'active',
+            'modules' => $modules,
+        ]);
+
+        $staff->update(['user_id' => $user->id]);
+
+        return $user;
     }
 }

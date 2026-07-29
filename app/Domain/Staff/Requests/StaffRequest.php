@@ -22,9 +22,11 @@ class StaffRequest extends FormRequest
             'gender' => 'required|in:Male,Female',
             'dob' => 'nullable|date',
             'phone' => 'nullable|string',
-            'email' => 'nullable|email|unique:staff,email,' . $id,
+            'email' => 'nullable|email|unique:users,email,' . ($this->user_id ?? 'NULL') . '|unique:staff,email,' . $id,
             'designation' => 'nullable|string',
             'status' => 'nullable|in:active,on leave,left',
+            'password' => 'nullable|string|min:8|confirmed',
+            'password_confirmation' => 'nullable|string|min:8',
             'modules' => 'nullable|array',
             'modules.*' => 'string|in:' . implode(',', \App\Domain\Auth\Services\ModuleAccessService::ALL_MODULES),
         ];
