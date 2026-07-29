@@ -2,6 +2,7 @@
 
 namespace App\Domain\Staff\Services;
 
+use App\Domain\Auth\Models\Role;
 use App\Domain\Auth\Models\User;
 use App\Domain\Auth\Services\ModuleAccessService;
 use App\Domain\Staff\Models\Staff;
@@ -95,9 +96,11 @@ class StaffService implements StaffServiceInterface
             return $user;
         }
 
+        $teacherRole = Role::findBySlug('teacher', $staff->school_id);
+
         $user = User::create([
             'school_id' => $staff->school_id,
-            'role_id' => 4,
+            'role_id' => $teacherRole?->id ?? 4,
             'username' => strstr($email, '@', true),
             'name' => $staff->first_name . ' ' . $staff->last_name,
             'email' => $email,

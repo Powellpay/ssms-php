@@ -4,6 +4,7 @@ namespace App\Domain\Auth\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Domain\Auth\Models\School;
+use App\Domain\Auth\Models\Role;
 use App\Domain\Auth\Requests\UserRequest;
 use App\Domain\Auth\Requests\VerifyEmailRequest;
 use App\Domain\Auth\Requests\ResendVerificationRequest;
@@ -31,7 +32,10 @@ class AuthController extends Controller
         ]);
 
         $data['school_id'] = $school->id;
-        $data['role_id'] ??= 1;
+        $roleSlug = $data['role_slug'] ?? 'administrator';
+        $role = Role::findBySlug($roleSlug);
+        $data['role_id'] = $role?->id ?? 1;
+        unset($data['role_slug'], $data['school_name']);
 
         $user = $this->userService->create($data);
         $this->userService->sendVerificationCode($user);

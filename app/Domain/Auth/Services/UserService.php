@@ -90,7 +90,7 @@ class UserService implements UserServiceInterface
             'expires_at' => $expiresAt,
         ]);
 
-        $user->sendEmailVerificationNotification(new VerifyEmail($otp, 30));
+        $user->notify(new VerifyEmail($otp, 30));
 
         return $otp;
     }
@@ -167,7 +167,7 @@ class UserService implements UserServiceInterface
             'expires_at' => $expiresAt,
         ]);
 
-        $user->sendEmailVerificationNotification(new ResetPassword($token, 60));
+        $user->notify(new ResetPassword($token, 60));
 
         return ['message' => 'If the email exists, a reset link has been sent.'];
     }

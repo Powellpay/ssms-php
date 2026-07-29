@@ -15,6 +15,7 @@ class UserResource extends JsonResource
         return [
             'id' => $this->id,
             'role_id' => $this->role_id,
+            'role_slug' => $this->relationLoaded('role') ? $this->role?->slug : null,
             'username' => $this->username,
             'name' => $this->name,
             'email' => $this->email,

@@ -45,16 +45,16 @@ class DatabaseSeeder extends Seeder
         ]);
         $sid = $school->id;
 
-        // Roles
+        // Roles (global defaults — available to all schools)
         Role::insert([
-            ['role_name' => 'Administrator', 'description' => 'Full system access'],
-            ['role_name' => 'Head Teacher', 'description' => 'School head, approves report cards'],
-            ['role_name' => 'Director of Studies', 'description' => 'Oversees academics and curriculum'],
-            ['role_name' => 'Teacher', 'description' => 'Subject/class teacher'],
-            ['role_name' => 'Bursar', 'description' => 'Manages fees and finance'],
-            ['role_name' => 'Librarian', 'description' => 'Manages library'],
-            ['role_name' => 'Parent', 'description' => 'Views child progress and fees'],
-            ['role_name' => 'Student', 'description' => 'Views own results and timetable'],
+            ['role_name' => 'Administrator', 'slug' => 'administrator', 'description' => 'Full system access'],
+            ['role_name' => 'Head Teacher', 'slug' => 'head-teacher', 'description' => 'School head, approves report cards'],
+            ['role_name' => 'Director of Studies', 'slug' => 'director-of-studies', 'description' => 'Oversees academics and curriculum'],
+            ['role_name' => 'Teacher', 'slug' => 'teacher', 'description' => 'Subject/class teacher'],
+            ['role_name' => 'Bursar', 'slug' => 'bursar', 'description' => 'Manages fees and finance'],
+            ['role_name' => 'Librarian', 'slug' => 'librarian', 'description' => 'Manages library'],
+            ['role_name' => 'Parent', 'slug' => 'parent', 'description' => 'Views child progress and fees'],
+            ['role_name' => 'Student', 'slug' => 'student', 'description' => 'Views own results and timetable'],
         ]);
 
         User::create([

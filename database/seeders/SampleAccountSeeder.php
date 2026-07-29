@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Domain\Auth\Models\Role;
 use App\Domain\Auth\Models\User;
 use App\Domain\Auth\Services\ModuleAccessService;
 use App\Domain\Staff\Models\Staff;
@@ -38,9 +39,11 @@ class SampleAccountSeeder extends Seeder
             $modules = $account['modules'];
             unset($account['staff_no']);
 
+            $teacherRole = Role::findBySlug('teacher', 1);
+
             $user = User::create([
                 'school_id' => 1,
-                'role_id' => 4,
+                'role_id' => $teacherRole?->id ?? 4,
                 'username' => $account['username'],
                 'name' => $staff->first_name . ' ' . $staff->last_name,
                 'email' => $account['email'],
@@ -57,9 +60,11 @@ class SampleAccountSeeder extends Seeder
 
         $student = Student::where('admission_no', 'S26-0001')->first();
         if ($student) {
+            $studentRole = Role::findBySlug('student', 1);
+
             User::create([
                 'school_id' => 1,
-                'role_id' => 8,
+                'role_id' => $studentRole?->id ?? 8,
                 'username' => 'faith.achieng',
                 'name' => $student->first_name . ' ' . $student->last_name,
                 'email' => 'faith@demo.school',
