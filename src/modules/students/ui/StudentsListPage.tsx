@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useStudentList, useCreateStudent, useUpdateStudent, useDeleteStudent } from '../../../shared/api/students/studentQueries';
 import { Users, Plus, Pencil, Trash2, X, Eye, Upload } from 'lucide-react';
+import SSMSLoader from '../../../shared/components/SSMSLoader';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../../app/routes/constants';
 import type { Student } from '../../../shared/types';
@@ -44,7 +45,7 @@ export default function StudentsListPage() {
       </div>
 
       <div className="rounded-xl border border-border bg-white overflow-hidden">
-        {isLoading ? <div className="p-8 text-center text-muted">Loading...</div>
+        {isLoading ? <SSMSLoader />
         : !list?.length ? <div className="p-8 text-center text-muted">No students found. Click "Add Student" to register one.</div>
         : <div className="overflow-x-auto">
             <table className="w-full">

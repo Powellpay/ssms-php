@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useLibraryBooks as useList, useCreateLibraryBook as useCreate, useUpdateLibraryBook as useUpdate, useDeleteLibraryBook as useDelete } from '../../../shared/api/library/libraryQueries';
 import { Plus, Pencil, Trash2, X, Library } from 'lucide-react';
+import SSMSLoader from '../../../shared/components/SSMSLoader';
 import type { LibraryBook } from '../../../shared/types';
 
 const df: Partial<LibraryBook> = { title: '', author: '', isbn: '', category: '', total_copies: 1, available_copies: 1 };
@@ -34,7 +35,7 @@ export default function BooksPage() {
         <button onClick={openAdd} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary-dark cursor-pointer"><Plus className="w-4 h-4" /> Add Book</button>
       </div>
       <div className="rounded-xl border border-border bg-white overflow-hidden">
-        {isLoading ? <div className="p-8 text-center text-muted">Loading...</div>
+        {isLoading ? <SSMSLoader />
         : !list?.length ? <div className="p-8 text-center text-muted">No books in catalogue.</div>
         : <div className="overflow-x-auto"><table className="w-full">
             <thead><tr className="bg-gray-50">

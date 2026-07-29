@@ -3,6 +3,7 @@ import { useAttendanceList, useCreateAttendance, useUpdateAttendance, useDeleteA
 import { useStudentList } from '../../../shared/api/students/studentQueries';
 import { useTerms } from '../../../shared/api/academic/academicQueries';
 import { CalendarCheck, Plus, Pencil, Trash2, X } from 'lucide-react';
+import SSMSLoader from '../../../shared/components/SSMSLoader';
 import type { Attendance } from '../../../shared/types';
 import { formatDate } from '../../../shared/utils/formatDate';
 
@@ -45,7 +46,7 @@ export default function AttendancePage() {
         <button onClick={openAdd} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary-dark cursor-pointer"><Plus className="w-4 h-4" /> Add Attendance</button>
       </div>
       <div className="rounded-xl border border-border bg-white overflow-hidden">
-        {isLoading ? <div className="p-8 text-center text-muted">Loading...</div>
+        {isLoading ? <SSMSLoader />
         : !list?.length ? <div className="p-8 text-center text-muted">No attendance records found.</div>
         : <div className="overflow-x-auto"><table className="w-full">
             <thead><tr className="bg-gray-50">

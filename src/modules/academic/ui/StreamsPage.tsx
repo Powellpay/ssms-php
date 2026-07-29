@@ -3,6 +3,7 @@ import { useStreams, useCreateStream, useUpdateStream, useDeleteStream } from '.
 import { useClassLevels, useAcademicYears } from '../../../shared/api/academic/academicQueries';
 import { useStaffList } from '../../../shared/api/staff/staffQueries';
 import { GitBranch, Plus, Pencil, Trash2, X } from 'lucide-react';
+import SSMSLoader from '../../../shared/components/SSMSLoader';
 import type { Stream } from '../../../shared/types';
 
 const df: Partial<Stream> = { class_level_id: undefined, academic_year_id: undefined, stream_name: '', class_teacher_id: undefined };
@@ -39,7 +40,7 @@ export default function StreamsPage() {
         <button onClick={openAdd} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary-dark cursor-pointer"><Plus className="w-4 h-4" /> Add Stream</button>
       </div>
       <div className="rounded-xl border border-border bg-white overflow-hidden">
-        {isLoading ? <div className="p-8 text-center text-muted">Loading...</div>
+        {isLoading ? <SSMSLoader />
         : !list?.length ? <div className="p-8 text-center text-muted">No streams found.</div>
         : <div className="overflow-x-auto"><table className="w-full">
             <thead><tr className="bg-gray-50">

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useAnnouncements, useCreateAnnouncement, useUpdateAnnouncement, useDeleteAnnouncement } from '../../../shared/api/announcements/announcementQueries';
 import { Megaphone, Plus, Pencil, Trash2, X } from 'lucide-react';
+import SSMSLoader from '../../../shared/components/SSMSLoader';
 import type { Announcement } from '../../../shared/types';
 import { formatDateTime } from '../../../shared/utils/formatDate';
 
@@ -37,7 +38,7 @@ export default function AnnouncementsListPage() {
         <button onClick={openAdd} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary-dark cursor-pointer"><Plus className="w-4 h-4" /> Add Announcement</button>
       </div>
       <div className="rounded-xl border border-border bg-white overflow-hidden">
-        {isLoading ? <div className="p-8 text-center text-muted">Loading...</div>
+        {isLoading ? <SSMSLoader />
         : !list?.length ? <div className="p-8 text-center text-muted">No announcements found.</div>
         : <div className="overflow-x-auto"><table className="w-full">
             <thead><tr className="bg-gray-50">

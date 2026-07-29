@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useClassLevels, useCreateClassLevel, useUpdateClassLevel, useDeleteClassLevel } from '../../../shared/api/academic/academicQueries';
 import { Layers, Plus, Pencil, Trash2, X } from 'lucide-react';
+import SSMSLoader from '../../../shared/components/SSMSLoader';
 import type { ClassLevel } from '../../../shared/types';
 
 const df: Partial<ClassLevel> = { level_name: '', numeric_level: 1, description: '' };
@@ -36,7 +37,7 @@ export default function ClassLevelsPage() {
         <button onClick={openAdd} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary-dark cursor-pointer"><Plus className="w-4 h-4" /> Add Level</button>
       </div>
       <div className="rounded-xl border border-border bg-white overflow-hidden">
-        {isLoading ? <div className="p-8 text-center text-muted">Loading...</div>
+        {isLoading ? <SSMSLoader />
         : !list?.length ? <div className="p-8 text-center text-muted">No class levels found.</div>
         : <div className="overflow-x-auto"><table className="w-full">
             <thead><tr className="bg-gray-50">
