@@ -7,6 +7,8 @@ use App\Domain\Auth\Models\School;
 use App\Domain\Auth\Requests\UserRequest;
 use App\Domain\Auth\Requests\VerifyEmailRequest;
 use App\Domain\Auth\Requests\ResendVerificationRequest;
+use App\Domain\Auth\Requests\ForgotPasswordRequest;
+use App\Domain\Auth\Requests\ResetPasswordRequest;
 use App\Domain\Auth\Resources\UserResource;
 use App\Domain\Auth\Services\Contracts\UserServiceInterface;
 use Illuminate\Http\JsonResponse;
@@ -146,21 +148,47 @@ class AuthController extends Controller
         return new UserResource($request->user());
     }
 
-    public function forgotPassword(Request $request): JsonResponse
+    public function forgotPassword(ForgotPasswordRequest $request): JsonResponse
     {
-        $request->validate(['email' => 'required|email']);
+        try {
+            $result = $this->userService->sendPasswordResetLink(
+                $request->input('email')
+            );
 
-        return response()->json(['message' => 'Password reset link sent']);
+            return response()->json([
+                'success' => true,
+                'code' => 'RESET_LINK_SENT',
+                'message' => $result['message'],
+            ]);
+        } catch (\RuntimeException $e) {
+            return response()->json([
+                'success' => false,
+                'code' => 'RESET_LINK_FAILED',
+                'message' => $e->getMessage(),
+            ], $e->getCode() ?: 400);
+        }
     }
 
-    public function resetPassword(Request $request): JsonResponse
+    public function resetPassword(ResetPasswordRequest $request): JsonResponse
     {
-        $request->validate([
-            'email' => 'required|email',
-            'token' => 'required|string',
-            'password' => 'required|string|min:8',
-        ]);
+        try {
+            $this->userService->resetPassword(
+                $request->input('email'),
+                $request->input('token'),
+                $request->input('password')
+            );
 
-        return response()->json(['message' => 'Password reset successfully']);
+            return response()->json([
+                'success' => true,
+                'code' => 'PASSWORD_RESET',
+                'message' => 'Password reset successfully.',
+            ]);
+        } catch (\RuntimeException $e) {
+            return response()->json([
+                'success' => false,
+                'code' => 'RESET_FAILED',
+                'message' => $e->getMessage(),
+            ], $e->getCode() ?: 400);
+        }
     }
 }

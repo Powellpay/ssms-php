@@ -28,4 +28,8 @@ interface UserServiceInterface
     public function verifyEmail(int $userId, string $code): User;
 
     public function resendVerificationCode(string $email): array;
+
+    public function sendPasswordResetLink(string $email): array;
+
+    public function resetPassword(string $email, string $token, string $password): User;
 }

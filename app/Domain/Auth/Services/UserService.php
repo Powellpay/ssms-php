@@ -4,6 +4,7 @@ namespace App\Domain\Auth\Services;
 
 use App\Domain\Auth\Models\EmailVerification;
 use App\Domain\Auth\Models\User;
+use App\Domain\Auth\Notifications\ResetPassword;
 use App\Domain\Auth\Notifications\VerifyEmail;
 use App\Domain\Auth\Repositories\Contracts\UserRepositoryInterface;
 use App\Domain\Auth\Services\Contracts\UserServiceInterface;
@@ -140,5 +141,56 @@ class UserService implements UserServiceInterface
             'user_id' => $user->id,
             'message' => 'Verification code sent successfully.',
         ];
+    }
+
+    public function sendPasswordResetLink(string $email): array
+    {
+        $user = $this->findByEmail($email);
+        if (!$user) {
+            return ['message' => 'If the email exists, a reset link has been sent.'];
+        }
+
+        $token = Str::random(64);
+        $expiresAt = now()->addMinutes(60);
+
+        EmailVerification::where('user_id', $user->id)
+            ->where('type', 'password_reset')
+            ->whereNull('used_at')
+            ->delete();
+
+        EmailVerification::create([
+            'user_id' => $user->id,
+            'token_hash' => Hash::make($token),
+            'otp_code' => '',
+            'type' => 'password_reset',
+            'expires_at' => $expiresAt,
+        ]);
+
+        $user->sendEmailVerificationNotification(new ResetPassword($token, 60));
+
+        return ['message' => 'If the email exists, a reset link has been sent.'];
+    }
+
+    public function resetPassword(string $email, string $token, string $password): User
+    {
+        $user = $this->findByEmail($email);
+        if (!$user) {
+            throw new \RuntimeException('Invalid or expired reset link.', 400);
+        }
+
+        $record = EmailVerification::where('user_id', $user->id)
+            ->where('type', 'password_reset')
+            ->whereNull('used_at')
+            ->where('expires_at', '>', now())
+            ->first();
+
+        if (!$record || !Hash::check($token, $record->token_hash)) {
+            throw new \RuntimeException('Invalid or expired reset link.', 400);
+        }
+
+        $record->markAsUsed();
+        $user->update(['password' => Hash::make($password)]);
+
+        return $user;
     }
 }
