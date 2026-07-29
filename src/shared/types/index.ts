@@ -27,7 +27,10 @@ export interface User {
   name: string;
   email: string;
   phone?: string;
+  avatar?: string | null;
+  email_verified_at?: string | null;
   status: 'active' | 'inactive';
+  school_name?: string | null;
   created_at: string;
   updated_at: string;
   role?: Role;

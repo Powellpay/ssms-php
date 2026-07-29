@@ -26,6 +26,10 @@ import InvoicesPage from './modules/finance/ui/InvoicesPage';
 import DisciplineListPage from './modules/discipline/ui/DisciplineListPage';
 import BooksPage from './modules/library/ui/BooksPage';
 import AnnouncementsListPage from './modules/announcements/ui/AnnouncementsListPage';
+import AccountLayout from './modules/account/AccountLayout';
+import ProfileSettingsPage from './modules/account/ui/ProfileSettingsPage';
+import SecurityPage from './modules/account/ui/SecurityPage';
+import RolesListPage from './modules/roles/ui/RolesListPage';
 import ModuleGuard from './shared/components/guard/ModuleGuard';
 
 function App() {
@@ -62,6 +66,12 @@ function App() {
         <Route path={ROUTES.DISCIPLINE.LIST} element={<ModuleGuard module="discipline"><DisciplineListPage /></ModuleGuard>} />
         <Route path={ROUTES.LIBRARY.BOOKS} element={<ModuleGuard module="library"><BooksPage /></ModuleGuard>} />
         <Route path={ROUTES.ANNOUNCEMENTS.LIST} element={<ModuleGuard module="announcements"><AnnouncementsListPage /></ModuleGuard>} />
+        <Route path="/account" element={<AccountLayout />}>
+          <Route index element={<Navigate to={ROUTES.ACCOUNT.PROFILE} replace />} />
+          <Route path={ROUTES.ACCOUNT.PROFILE} element={<ProfileSettingsPage />} />
+          <Route path={ROUTES.ACCOUNT.SECURITY} element={<SecurityPage />} />
+        </Route>
+        <Route path={ROUTES.ROLES.LIST} element={<RolesListPage />} />
       </Route>
 
       <Route path="*" element={<Navigate to={ROUTES.HOME} replace />} />

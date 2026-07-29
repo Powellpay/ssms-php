@@ -6,7 +6,6 @@ import { ENDPOINTS } from '../../../shared/api/endpoints';
 import { ROUTES } from '../../../app/routes/constants';
 import PageHeader from '../../../shared/components/ui/PageHeader';
 import FormSection from '../../../shared/components/ui/FormSection';
-import IconField, { inputClass } from '../../../shared/components/ui/IconField';
 
 interface ImportResult {
   imported: number;

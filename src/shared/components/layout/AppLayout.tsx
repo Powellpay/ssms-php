@@ -1,45 +1,48 @@
-import { useState } from 'react';
-import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
+import { Outlet, Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from '../../../app/store/hooks';
 import { logout } from '../../../app/store/slices/authSlice';
 import { ROUTES } from '../../../app/routes/constants';
 import { useLogout } from '../../api/auth/authQueries';
+import { baseNavGroups } from './sidebarNavGroups';
+import type { NavGroup } from './sidebarNavGroups';
 import type { ModuleSlug } from '../../types';
-import {
-  LayoutDashboard, Users, ClipboardCheck,
-  BarChart3, CalendarCheck, Timer, Wallet, Library,
-  Megaphone, Menu, X, ChevronDown, LogOut, School,
-  UserCircle, BookMarked, Scale,
-} from 'lucide-react';
+import { Menu, ChevronDown, ChevronRight, LogOut } from 'lucide-react';
 import { cn } from '../../utils/cn';
 import { APP_VERSION } from '../../config/version';
 import LogoImage from '../LogoImage';
 
-interface NavItem {
-  icon: React.ComponentType<{ className?: string }>;
-  label: string;
-  path: string;
-  module: ModuleSlug;
+const moduleLabelMap: Record<string, ModuleSlug> = {
+  Dashboard: 'dashboard',
+  Academic: 'academic',
+  Staff: 'staff',
+  Students: 'students',
+  Curriculum: 'curriculum',
+  Assessment: 'assessment',
+  Reports: 'reports',
+  Attendance: 'attendance',
+  Timetable: 'timetable',
+  Finance: 'finance',
+  Discipline: 'discipline',
+  Library: 'library',
+  Announcements: 'announcements',
+};
+
+function isSubItemActive(subTo: string, pathname: string): boolean {
+  if (subTo === ROUTES.DASHBOARD) return pathname === subTo;
+  return pathname.startsWith(subTo);
 }
 
-const ALL_NAV_ITEMS: NavItem[] = [
-  { icon: LayoutDashboard, label: 'Dashboard', path: ROUTES.DASHBOARD, module: 'dashboard' },
-  { icon: School, label: 'Academic', path: '/academic', module: 'academic' },
-  { icon: UserCircle, label: 'Staff', path: ROUTES.STAFF.LIST, module: 'staff' },
-  { icon: Users, label: 'Students', path: ROUTES.STUDENTS.LIST, module: 'students' },
-  { icon: BookMarked, label: 'Curriculum', path: ROUTES.CURRICULUM.SUBJECTS, module: 'curriculum' },
-  { icon: ClipboardCheck, label: 'Assessment', path: ROUTES.ASSESSMENT.RECORDS, module: 'assessment' },
-  { icon: BarChart3, label: 'Reports', path: ROUTES.REPORTS.LIST, module: 'reports' },
-  { icon: CalendarCheck, label: 'Attendance', path: ROUTES.ATTENDANCE.REGISTER, module: 'attendance' },
-  { icon: Timer, label: 'Timetable', path: ROUTES.TIMETABLE.VIEW, module: 'timetable' },
-  { icon: Wallet, label: 'Finance', path: ROUTES.FINANCE.INVOICES, module: 'finance' },
-  { icon: Scale, label: 'Discipline', path: ROUTES.DISCIPLINE.LIST, module: 'discipline' },
-  { icon: Library, label: 'Library', path: ROUTES.LIBRARY.BOOKS, module: 'library' },
-  { icon: Megaphone, label: 'Announcements', path: ROUTES.ANNOUNCEMENTS.LIST, module: 'announcements' },
-];
+function groupHasActiveItem(group: NavGroup, pathname: string): boolean {
+  return group.subItems.some((s) => isSubItemActive(s.to, pathname));
+}
 
 export default function AppLayout() {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(() => {
+    if (typeof window !== 'undefined') return window.innerWidth >= 1024;
+    return true;
+  });
+  const [openGroup, setOpenGroup] = useState<number | null>(null);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const location = useLocation();
   const user = useAppSelector((s) => s.auth.user);
@@ -47,16 +50,27 @@ export default function AppLayout() {
   const navigate = useNavigate();
   const logoutMutation = useLogout();
 
-  const allowedModules = user?.is_school_admin || !user?.modules
-    ? ALL_NAV_ITEMS.map(i => i.module)
-    : user.modules;
+  const groups = useMemo(() => {
+    const allowedModules = user?.is_school_admin || !user?.modules
+      ? Object.values(moduleLabelMap)
+      : user.modules;
+    const moduleSet = new Set(allowedModules);
+    return baseNavGroups.filter((g) => {
+      if (g.label === 'Account' || g.label === 'Administration') return true;
+      const m = moduleLabelMap[g.label];
+      return m ? moduleSet.has(m) : false;
+    });
+  }, [user]);
 
-  const moduleSet = new Set(allowedModules);
-  const navItems = ALL_NAV_ITEMS.filter(i => moduleSet.has(i.module));
+  useEffect(() => {
+    const idx = groups.findIndex((g) => groupHasActiveItem(g, location.pathname));
+    if (idx >= 0) {
+      setOpenGroup(idx);
+    }
+  }, [location.pathname, groups]);
 
-  const isActive = (path: string) => {
-    if (path === ROUTES.DASHBOARD) return location.pathname === path;
-    return location.pathname.startsWith(path);
+  const toggleGroup = (idx: number) => {
+    setOpenGroup(openGroup === idx ? null : idx);
   };
 
   const handleLogout = () => {
@@ -70,7 +84,6 @@ export default function AppLayout() {
 
   return (
     <div className="flex h-screen overflow-hidden bg-bg">
-      {/* Mobile overlay */}
       {sidebarOpen && (
         <div
           className="fixed inset-0 bg-black/50 z-20 lg:hidden"
@@ -78,47 +91,101 @@ export default function AppLayout() {
         />
       )}
 
-      {/* Sidebar */}
       <aside
         className={cn(
-          'fixed lg:static inset-y-0 left-0 z-30 w-64 bg-white border-r border-border flex flex-col transition-transform duration-200',
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0 lg:w-16',
+          'fixed lg:static inset-y-0 left-0 z-30 bg-white border-r border-border flex flex-col transition-all duration-200',
+          sidebarOpen ? 'w-64' : 'w-16 -translate-x-full lg:translate-x-0',
         )}
       >
-        {/* Logo */}
-        <div className={cn('flex items-center justify-between h-16 px-4 border-b border-border', !sidebarOpen && 'lg:justify-center')}>
-          <div className="flex items-center gap-2.5">
+        <div className={cn('flex items-center h-16 px-4 border-b border-border shrink-0', !sidebarOpen && 'justify-center')}>
+          <div className="flex items-center gap-2.5 min-w-0">
             <LogoImage size="sm" />
             {sidebarOpen && <span className="text-lg font-bold text-primary">SSMS</span>}
           </div>
           {sidebarOpen && (
-            <span className="text-[10px] font-bold font-mono tracking-tight">V{APP_VERSION}</span>
+            <span className="ml-auto text-[10px] font-bold font-mono tracking-tight">V{APP_VERSION}</span>
           )}
         </div>
 
-        {/* Navigation */}
         <nav className="flex-1 overflow-y-auto py-2 px-2 space-y-0.5">
-          {navItems.map((item) => (
-            <Link
-              key={item.path}
-              to={item.path}
-              className={cn(
-                'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors',
-                isActive(item.path)
-                  ? 'bg-primary-light text-primary font-semibold'
-                  : 'text-gray-600 hover:bg-primary-light hover:text-primary',
-                !sidebarOpen && 'lg:justify-center lg:px-2',
-              )}
-              title={item.label}
-            >
-              <item.icon className="w-5 h-5 shrink-0" />
-              {sidebarOpen && <span>{item.label}</span>}
-            </Link>
-          ))}
+          {groups.map((group, idx) => {
+            const isSingle = group.subItems.length === 1;
+            const isOpen = openGroup === idx;
+            const singleItem = group.subItems[0];
+
+            if (isSingle && singleItem) {
+              return (
+                <NavLink
+                  key={singleItem.to}
+                  to={singleItem.to}
+                  end={singleItem.to === ROUTES.DASHBOARD}
+                  className={({ isActive }) =>
+                    cn(
+                      'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors',
+                      isActive
+                        ? 'bg-primary-light text-primary font-semibold'
+                        : 'text-gray-600 hover:bg-primary-light hover:text-primary',
+                      !sidebarOpen && 'justify-center px-2',
+                    )
+                  }
+                  title={sidebarOpen ? undefined : group.label}
+                >
+                  <group.icon className="w-5 h-5 shrink-0" />
+                  {sidebarOpen && <span>{group.label}</span>}
+                </NavLink>
+              );
+            }
+
+            return (
+              <div key={group.label}>
+                <button
+                  onClick={() => toggleGroup(idx)}
+                  className={cn(
+                    'flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm transition-colors text-left',
+                    isOpen || groupHasActiveItem(group, location.pathname)
+                      ? 'bg-primary-light text-primary font-semibold'
+                      : 'text-gray-600 hover:bg-primary-light hover:text-primary',
+                    !sidebarOpen && 'justify-center px-2',
+                  )}
+                  title={sidebarOpen ? undefined : group.label}
+                >
+                  <group.icon className="w-5 h-5 shrink-0" />
+                  {sidebarOpen && (
+                    <>
+                      <span className="flex-1">{group.label}</span>
+                      {isOpen ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+                    </>
+                  )}
+                </button>
+
+                {sidebarOpen && isOpen && (
+                  <div className="ml-3 pl-3 border-l-2 border-primary/20 space-y-0.5 mt-0.5">
+                    {group.subItems.map((sub) => (
+                      <NavLink
+                        key={sub.to}
+                        to={sub.to}
+                        end={sub.to === ROUTES.DASHBOARD}
+                        className={({ isActive }) =>
+                          cn(
+                            'flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors',
+                            isActive
+                              ? 'bg-primary-light text-primary font-semibold'
+                              : 'text-gray-500 hover:bg-primary-light hover:text-primary',
+                          )
+                        }
+                      >
+                        <sub.icon className="w-4 h-4 shrink-0" />
+                        <span>{sub.label}</span>
+                      </NavLink>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </nav>
 
-        {/* User section */}
-        <div className="border-t border-border p-3">
+        <div className="border-t border-border p-3 shrink-0">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-full bg-primary flex items-center justify-center text-white text-sm font-bold shrink-0">
               {user?.name?.charAt(0) || 'U'}
@@ -134,22 +201,18 @@ export default function AppLayout() {
         </div>
       </aside>
 
-      {/* Main area */}
       <div className="flex-1 flex flex-col min-w-0">
-        {/* Top bar */}
         <header className="sticky top-0 z-10 h-16 bg-white border-b border-border flex items-center justify-between px-4 lg:px-6">
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="p-2 rounded-lg text-gray-500 hover:bg-gray-100 lg:hidden cursor-pointer"
-          >
-            {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </button>
-          <button
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="hidden lg:flex p-2 rounded-lg text-gray-500 hover:bg-gray-100 cursor-pointer"
+            className="p-2 rounded-lg text-gray-500 hover:bg-gray-100 cursor-pointer shrink-0"
           >
             <Menu className="w-5 h-5" />
           </button>
+
+          <span className="text-sm font-semibold text-gray-800 truncate max-w-[200px] sm:max-w-[300px] lg:max-w-[400px] mx-2">
+            {user?.school_name || 'SSMS'}
+          </span>
 
           <div className="flex items-center gap-4 ml-auto">
             <div className="relative">
@@ -172,6 +235,13 @@ export default function AppLayout() {
                       <p className="text-sm font-medium text-gray-900">{user?.name}</p>
                       <p className="text-xs text-muted">{user?.email}</p>
                     </div>
+                    <Link
+                      to={ROUTES.ACCOUNT.PROFILE}
+                      onClick={() => setUserMenuOpen(false)}
+                      className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-50"
+                    >
+                      Account Settings
+                    </Link>
                     <button
                       onClick={handleLogout}
                       className="flex items-center gap-2 w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 cursor-pointer"
@@ -185,7 +255,6 @@ export default function AppLayout() {
           </div>
         </header>
 
-        {/* Main content */}
         <main className="flex-1 overflow-auto p-4 sm:p-6 lg:p-8">
           <Outlet />
         </main>

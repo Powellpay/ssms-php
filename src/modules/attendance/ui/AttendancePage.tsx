@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useAttendanceList, useCreateAttendance, useUpdateAttendance, useDeleteAttendance } from '../../../shared/api/attendance/attendanceQueries';
 import { useStudentList } from '../../../shared/api/students/studentQueries';
-import { useTerms } from '../../../shared/api/academic/academicQueries';
-import { CalendarCheck, Plus, Pencil, Trash2, User, BookOpen, CalendarDays } from 'lucide-react';
+import { useTerms, useStreams } from '../../../shared/api/academic/academicQueries';
+import { CalendarCheck, Plus, Pencil, Trash2, User, BookOpen, CalendarDays, GitBranch, ClipboardList } from 'lucide-react';
 import SSMSLoader from '../../../shared/components/SSMSLoader';
 import type { Attendance } from '../../../shared/types';
 import { formatDate } from '../../../shared/utils/formatDate';
@@ -12,6 +12,7 @@ import FormSection from '../../../shared/components/ui/FormSection';
 import IconField, { inputClass, selectClass } from '../../../shared/components/ui/IconField';
 import ModalFooter from '../../../shared/components/ui/ModalFooter';
 import PageHeader from '../../../shared/components/ui/PageHeader';
+import AttendanceRegister from './AttendanceRegister';
 
 const statuses = ['Present', 'Absent', 'Late', 'Excused'] as const;
 const df: Partial<Attendance> = { student_id: 0, term_id: 0, attendance_date: '', status: 'Present' };
@@ -20,12 +21,22 @@ export default function AttendancePage() {
   const { data: list, isLoading } = useAttendanceList();
   const { data: students } = useStudentList();
   const { data: terms } = useTerms();
+  const { data: streams } = useStreams();
   const create = useCreateAttendance();
   const update = useUpdateAttendance();
   const del = useDeleteAttendance();
+
   const [modal, setModal] = useState<{ open: boolean; edit?: Attendance }>({ open: false });
   const [form, setForm] = useState<Partial<Attendance>>(df);
   const [deleteId, setDeleteId] = useState<number | null>(null);
+
+  const [selectedTermId, setSelectedTermId] = useState<number>(0);
+  const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]);
+  const [selectedStreamId, setSelectedStreamId] = useState<number>(0);
+  const [showHistory, setShowHistory] = useState(false);
+
+  const studentMap = new Map(students?.map(s => [s.id, s]));
+  const termMap = new Map(terms?.map(t => [t.id, t]));
 
   const openAdd = () => { setForm(df); setModal({ open: true }); };
   const openEdit = (s: Attendance) => { setForm({ ...s }); setModal({ open: true, edit: s }); };
@@ -37,8 +48,7 @@ export default function AttendancePage() {
     else create.mutate(form, { onSuccess: () => setModal({ open: false }) });
   };
 
-  const studentMap = new Map(students?.map(s => [s.id, s]));
-  const termMap = new Map(terms?.map(t => [t.id, t]));
+  const today = new Date().toISOString().split('T')[0];
 
   return (
     <div className="space-y-6">
@@ -46,36 +56,83 @@ export default function AttendancePage() {
         icon={<CalendarCheck className="w-8 h-8 text-primary" />}
         title="Attendance"
         description="Daily attendance register per stream."
-        action={<button onClick={openAdd} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary-dark cursor-pointer"><Plus className="w-4 h-4" /> Add Attendance</button>}
+        action={
+          <div className="flex items-center gap-2">
+            <button onClick={() => setShowHistory(!showHistory)} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-border text-sm font-medium text-gray-600 hover:bg-gray-50 cursor-pointer">
+              <ClipboardList className="w-4 h-4" /> {showHistory ? 'Register' : 'History'}
+            </button>
+            <button onClick={openAdd} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary-dark cursor-pointer"><Plus className="w-4 h-4" /> Add Attendance</button>
+          </div>
+        }
       />
-      <div className="rounded-xl border border-border bg-white overflow-hidden">
-        {isLoading ? <SSMSLoader />
-        : !list?.length ? <div className="p-8 text-center text-muted">No attendance records found.</div>
-        : <div className="overflow-x-auto"><table className="w-full">
-            <thead><tr className="bg-gray-50">
-              <th className="text-left p-3 text-sm font-semibold text-gray-600">Student</th>
-              <th className="text-left p-3 text-sm font-semibold text-gray-600">Term</th>
-              <th className="text-left p-3 text-sm font-semibold text-gray-600">Date</th>
-              <th className="text-left p-3 text-sm font-semibold text-gray-600">Status</th>
-              <th className="text-right p-3 text-sm font-semibold text-gray-600">Actions</th>
-            </tr></thead>
-            <tbody>{list.map((item: Attendance) => {
-              const st = studentMap.get(item.student_id);
-              const t = termMap.get(item.term_id);
-              return (
-              <tr key={item.id} className="border-t border-border hover:bg-gray-50/50">
-                <td className="p-3 text-sm text-gray-600">{st ? `${st.first_name} ${st.last_name}` : item.student_id}</td>
-                <td className="p-3 text-sm text-gray-600">{t?.term_name ?? item.term_id}</td>
-                <td className="p-3 text-sm text-gray-600">{formatDate(item.attendance_date)}</td>
-                <td className="p-3 text-sm"><span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${item.status === 'Present' ? 'bg-success-light text-success' : item.status === 'Late' ? 'bg-warning-light text-warning' : item.status === 'Excused' ? 'bg-primary-light text-primary' : 'bg-alert-error-bg text-alert-error-text'}`}>{item.status}</span></td>
-                <td className="p-3 text-right">
-                  <button onClick={() => openEdit(item)} className="p-1.5 text-muted hover:text-primary rounded cursor-pointer"><Pencil className="w-4 h-4" /></button>
-                  <button onClick={() => setDeleteId(item.id)} className="p-1.5 text-muted hover:text-red-600 rounded cursor-pointer"><Trash2 className="w-4 h-4" /></button>
-                </td>
-              </tr>
-              );
-            })}</tbody></table></div>}
-      </div>
+
+      {!showHistory ? (
+        <>
+          <div className="rounded-xl border border-border bg-white p-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <IconField label="Date" icon={CalendarDays} required>
+                <input type="date" value={selectedDate} onChange={e => setSelectedDate(e.target.value)} max={today} className={inputClass} />
+              </IconField>
+              <IconField label="Term" icon={BookOpen} required>
+                <select value={selectedTermId || ''} onChange={e => setSelectedTermId(Number(e.target.value))} className={selectClass}>
+                  <option value="">Select term</option>
+                  {terms?.map(t => <option key={t.id} value={t.id}>{t.term_name}</option>)}
+                </select>
+              </IconField>
+              <IconField label="Stream" icon={GitBranch} required>
+                <select value={selectedStreamId || ''} onChange={e => setSelectedStreamId(Number(e.target.value))} className={selectClass}>
+                  <option value="">Select stream</option>
+                  {streams?.map(s => <option key={s.id} value={s.id}>{s.stream_name}</option>)}
+                </select>
+              </IconField>
+            </div>
+          </div>
+
+          {selectedStreamId && selectedTermId && selectedDate ? (
+            <AttendanceRegister
+              termId={selectedTermId}
+              attendanceDate={selectedDate}
+              streamId={selectedStreamId}
+            />
+          ) : (
+            <div className="rounded-xl border border-border bg-white p-12 text-center">
+              <CalendarCheck className="w-12 h-12 text-muted mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-1">Select a stream to take attendance</h3>
+              <p className="text-sm text-muted">Choose a date, term, and stream above to view the attendance register.</p>
+            </div>
+          )}
+        </>
+      ) : (
+        <div className="rounded-xl border border-border bg-white overflow-hidden">
+          {isLoading ? <SSMSLoader />
+          : !list?.length ? <div className="p-8 text-center text-muted">No attendance records found.</div>
+          : <div className="overflow-x-auto"><table className="w-full">
+              <thead><tr className="bg-gray-50">
+                <th className="text-left p-3 text-sm font-semibold text-gray-600">Student</th>
+                <th className="text-left p-3 text-sm font-semibold text-gray-600">Term</th>
+                <th className="text-left p-3 text-sm font-semibold text-gray-600">Date</th>
+                <th className="text-left p-3 text-sm font-semibold text-gray-600">Status</th>
+                <th className="text-right p-3 text-sm font-semibold text-gray-600">Actions</th>
+              </tr></thead>
+              <tbody>{list.map((item: Attendance) => {
+                const st = studentMap.get(item.student_id);
+                const t = termMap.get(item.term_id);
+                return (
+                <tr key={item.id} className="border-t border-border hover:bg-gray-50/50">
+                  <td className="p-3 text-sm text-gray-600">{st ? `${st.first_name} ${st.last_name}` : item.student_id}</td>
+                  <td className="p-3 text-sm text-gray-600">{t?.term_name ?? item.term_id}</td>
+                  <td className="p-3 text-sm text-gray-600">{formatDate(item.attendance_date)}</td>
+                  <td className="p-3 text-sm"><span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${item.status === 'Present' ? 'bg-success-light text-success' : item.status === 'Late' ? 'bg-warning-light text-warning' : item.status === 'Excused' ? 'bg-primary-light text-primary' : 'bg-alert-error-bg text-alert-error-text'}`}>{item.status}</span></td>
+                  <td className="p-3 text-right">
+                    <button onClick={() => openEdit(item)} className="p-1.5 text-muted hover:text-primary rounded cursor-pointer"><Pencil className="w-4 h-4" /></button>
+                    <button onClick={() => setDeleteId(item.id)} className="p-1.5 text-muted hover:text-red-600 rounded cursor-pointer"><Trash2 className="w-4 h-4" /></button>
+                  </td>
+                </tr>
+                );
+              })}</tbody></table></div>}
+        </div>
+      )}
+
       <Modal open={modal.open} onClose={() => setModal({ open: false })} title={modal.edit ? 'Edit Attendance' : 'Add Attendance'} subtitle="Record daily attendance for a learner" maxWidth="md">
         <form onSubmit={handleSubmit}>
           <div className="p-6 space-y-5">

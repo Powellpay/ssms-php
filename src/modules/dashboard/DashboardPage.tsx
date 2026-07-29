@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { useAppSelector } from '../../app/store/hooks';
 import { useClassLevels, useStreams } from '../../shared/api/academic/academicQueries';
 import { useStudentList } from '../../shared/api/students/studentQueries';
@@ -105,14 +106,14 @@ export default function DashboardPage() {
             <h3 className="text-sm font-semibold text-gray-900 mb-4">Quick Links</h3>
             <div className="space-y-2">
               {quickLinks.map((link) => (
-                <a
+                <Link
                   key={link.label}
-                  href={link.path}
+                  to={link.path}
                   className="flex items-center justify-between px-4 py-3 rounded-lg border border-border hover:bg-primary-light hover:border-primary/30 transition-colors group"
                 >
                   <span className="text-sm font-medium text-gray-700">{link.label}</span>
                   <ArrowRight className="w-4 h-4 text-muted group-hover:text-primary transition-colors" />
-                </a>
+                </Link>
               ))}
             </div>
           </div>

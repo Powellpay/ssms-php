@@ -12,6 +12,7 @@ import FormSection from '../../../shared/components/ui/FormSection';
 import IconField, { inputClass, selectClass } from '../../../shared/components/ui/IconField';
 import ModalFooter from '../../../shared/components/ui/ModalFooter';
 import PageHeader from '../../../shared/components/ui/PageHeader';
+import StudentImportModal from './StudentImportModal';
 
 const genders = ['Male', 'Female'] as const;
 const statuses = ['active', 'transferred', 'graduated', 'dropped'] as const;
@@ -26,6 +27,7 @@ export default function StudentsListPage() {
   const [modal, setModal] = useState<{ open: boolean; edit?: Student }>({ open: false });
   const [form, setForm] = useState<Partial<Student>>(df);
   const [deleteId, setDeleteId] = useState<number | null>(null);
+  const [importOpen, setImportOpen] = useState(false);
 
   const openAdd = () => { setForm(df); setModal({ open: true }); };
   const openEdit = (s: Student) => { setForm({ ...s }); setModal({ open: true, edit: s }); };
@@ -45,7 +47,7 @@ export default function StudentsListPage() {
         description="Admissions, profiles, and enrollment"
         action={
           <div className="flex items-center gap-2">
-            <button onClick={() => navigate(ROUTES.STUDENTS.IMPORT)} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-border text-sm font-medium text-gray-600 hover:bg-gray-50 cursor-pointer"><Upload className="w-4 h-4" /> Import</button>
+            <button onClick={() => setImportOpen(true)} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-border text-sm font-medium text-gray-600 hover:bg-gray-50 cursor-pointer"><Upload className="w-4 h-4" /> Import</button>
             <button onClick={openAdd} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary-dark cursor-pointer"><Plus className="w-4 h-4" /> Add Student</button>
           </div>
         }
@@ -137,6 +139,12 @@ export default function StudentsListPage() {
           />
         </form>
       </Modal>
+
+      <StudentImportModal
+        open={importOpen}
+        onClose={() => setImportOpen(false)}
+        onSuccess={() => {}}
+      />
 
       <ConfirmDialog
         open={deleteId !== null}

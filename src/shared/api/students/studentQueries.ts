@@ -48,6 +48,26 @@ export function useDeleteStudent() {
   });
 }
 
+export function useImportStudents() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (formData: FormData) => {
+      const { data } = await api.post(ENDPOINTS.STUDENTS_IMPORT, formData);
+      return data;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: studentKeys.list() }),
+  });
+}
+
+export function useDownloadTemplate() {
+  return useMutation({
+    mutationFn: async () => {
+      const { data } = await api.get(ENDPOINTS.STUDENTS_IMPORT_TEMPLATE, { responseType: 'blob' });
+      return data;
+    },
+  });
+}
+
 export function useGuardianList() {
   return useQuery<Guardian[]>({
     queryKey: ['guardians', 'list'],

@@ -63,4 +63,12 @@ export const ROUTES = {
   ANNOUNCEMENTS: {
     LIST: '/announcements',
   },
+  ACCOUNT: {
+    PROFILE: '/account/profile',
+    SECURITY: '/account/security',
+  },
+  ROLES: {
+    LIST: '/roles',
+    ADD: '/roles/add',
+  },
 };
