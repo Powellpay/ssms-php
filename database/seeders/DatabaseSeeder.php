@@ -57,9 +57,14 @@ class DatabaseSeeder extends Seeder
             ['role_name' => 'Student', 'slug' => 'student', 'description' => 'Views own results and timetable'],
         ];
 
+        // Backfill slugs on existing roles first (for upgrade from old seed)
+        foreach ($defaultRoles as $roleData) {
+            Role::where('role_name', $roleData['role_name'])->whereNull('slug')->update(['slug' => $roleData['slug']]);
+        }
+
         foreach ($defaultRoles as $roleData) {
             Role::updateOrCreate(
-                ['slug' => $roleData['slug'], 'school_id' => null],
+                ['slug' => $roleData['slug']],
                 $roleData
             );
         }
