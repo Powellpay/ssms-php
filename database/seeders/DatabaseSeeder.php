@@ -46,7 +46,7 @@ class DatabaseSeeder extends Seeder
         $sid = $school->id;
 
         // Roles (global defaults — available to all schools)
-        Role::insert([
+        $defaultRoles = [
             ['role_name' => 'Administrator', 'slug' => 'administrator', 'description' => 'Full system access'],
             ['role_name' => 'Head Teacher', 'slug' => 'head-teacher', 'description' => 'School head, approves report cards'],
             ['role_name' => 'Director of Studies', 'slug' => 'director-of-studies', 'description' => 'Oversees academics and curriculum'],
@@ -55,7 +55,14 @@ class DatabaseSeeder extends Seeder
             ['role_name' => 'Librarian', 'slug' => 'librarian', 'description' => 'Manages library'],
             ['role_name' => 'Parent', 'slug' => 'parent', 'description' => 'Views child progress and fees'],
             ['role_name' => 'Student', 'slug' => 'student', 'description' => 'Views own results and timetable'],
-        ]);
+        ];
+
+        foreach ($defaultRoles as $roleData) {
+            Role::updateOrCreate(
+                ['slug' => $roleData['slug'], 'school_id' => null],
+                $roleData
+            );
+        }
 
         User::create([
             'school_id' => $sid,
